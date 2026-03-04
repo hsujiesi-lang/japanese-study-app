@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="JP Study">
+<title>Japanese Study App</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: #f5f5f5; color: #333; min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+  header {
+    background: linear-gradient(135deg, #37474F 0%, #546E7A 100%);
+    color: white; text-align: center; padding: 24px 16px 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  header h1 { font-size: 1.5em; margin-bottom: 14px; }
+  header h1 span { font-size: 0.65em; opacity: 0.8; }
+  .tabs { display: flex; justify-content: center; }
+  .tab-btn {
+    background: transparent; border: none; color: rgba(255,255,255,0.6);
+    font-size: 0.9em; padding: 10px 14px; cursor: pointer;
+    border-bottom: 3px solid transparent; font-weight: 500; white-space: nowrap;
+  }
+  .tab-btn.active { color: white; border-bottom-color: #FF7043; }
+  .legend {
+    display: flex; justify-content: center; gap: 14px; padding: 8px 16px;
+    background: #ECEFF1; font-size: 0.78em; flex-wrap: wrap;
+  }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-jp { background: #C62828; } .dot-rom { background: #1565C0; } .dot-eng { background: #2E7D32; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px; }
+  .section-header {
+    background: #E8EAF6; color: #37474F; padding: 10px 16px;
+    border-radius: 8px; font-size: 1em; font-weight: 600; margin: 18px 0 10px;
+  }
+  .cards {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px; margin-bottom: 8px;
+  }
+  .card {
+    background: white; border-radius: 10px; padding: 14px 40px 14px 16px;
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    position: relative; border: 2px solid transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card:active { border-color: #FF7043; background: #FFF3E0; }
+  .card .sp { position: absolute; top: 12px; right: 12px; font-size: 1.1em; opacity: 0.35; }
+  .card .jp { color: #C62828; font-size: 1.3em; font-weight: 600; margin-bottom: 3px; line-height: 1.3; }
+  .card .rm { color: #1565C0; font-size: 0.88em; margin-bottom: 2px; }
+  .card .en { color: #2E7D32; font-size: 0.82em; }
+  .sc {
+    background: #FAFAFC; border-radius: 10px; padding: 14px 44px 14px 16px;
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    position: relative; border: 2px solid transparent; margin-bottom: 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sc:active { border-color: #FF7043; background: #FFF3E0; }
+  .sc .sp { position: absolute; top: 14px; right: 14px; font-size: 1.1em; opacity: 0.35; }
+  .sc .jp { color: #C62828; font-size: 1.15em; font-weight: 600; margin-bottom: 3px; }
+  .sc .rm { color: #1565C0; font-size: 0.85em; margin-bottom: 2px; padding-left: 8px; }
+  .sc .en { color: #2E7D32; font-size: 0.82em; padding-left: 8px; }
+  .pc {
+    background: #F0F0FF; border-radius: 10px; padding: 14px 44px 14px 16px;
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    position: relative; border: 2px solid transparent; margin-bottom: 10px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .pc:active { border-color: #FF7043; background: #FFF3E0; }
+  .pc .sp { position: absolute; top: 14px; right: 14px; font-size: 1.1em; opacity: 0.35; }
+  .pc .jp { color: #C62828; font-size: 1.25em; font-weight: 700; margin-bottom: 3px; }
+  .pc .rm { color: #1565C0; font-size: 0.85em; margin-bottom: 2px; padding-left: 8px; }
+  .pc .en { color: #2E7D32; font-size: 0.82em; padding-left: 8px; }
+  .note { background: #FFF3E0; color: #E65100; padding: 8px 14px; border-radius: 8px; font-size: 0.8em; margin: 6px 0 10px; }
+  .lbl { color: #757575; font-size: 0.8em; margin: 12px 0 6px 4px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  footer { text-align: center; padding: 20px; color: #999; font-size: 0.72em; }
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.15em; }
+    .tab-btn { font-size: 0.8em; padding: 8px 10px; }
+    .cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+    .card .jp { font-size: 1.1em; }
+    main { padding: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Japanese Study App <span>| Click to hear</span></h1>
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchTab('age',this)">Age</button>
+    <button class="tab-btn" onclick="switchTab('school',this)">School Year</button>
+    <button class="tab-btn" onclick="switchTab('greeting',this)">Greeting</button>
+    <button class="tab-btn" onclick="switchTab('vocab',this)">Vocabularies</button>
+  </nav>
+</header>
+<div class="legend">
+  <span><span class="dot dot-jp"></span> Japanese</span>
+  <span><span class="dot dot-rom"></span> Romaji</span>
+  <span><span class="dot dot-eng"></span> English</span>
+</div>
+
+<main>
+
+<!-- ==================== AGE ==================== -->
+<div id="age" class="tab-content active">
+<div class="section-header">Section 1: Ages 0 ~ 10</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ゼロさい</div><div class="rm">zerosai</div><div class="en">0 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いっさい</div><div class="rm">issai</div><div class="en">1 year old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にさい</div><div class="rm">nisai</div><div class="en">2 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">さんさい</div><div class="rm">sansai</div><div class="en">3 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">よんさい</div><div class="rm">yonsai</div><div class="en">4 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ごさい</div><div class="rm">gosai</div><div class="en">5 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ろくさい</div><div class="rm">rokusai</div><div class="en">6 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ななさい</div><div class="rm">nanasai</div><div class="en">7 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">はっさい</div><div class="rm">hassai</div><div class="en">8 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">きゅうさい</div><div class="rm">kyuusai</div><div class="en">9 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅっさい</div><div class="rm">jussai</div><div class="en">10 years old</div></div>
+</div>
+<div class="note">&#x2726; Note: "jussai" can also be pronounced "jissai"</div>
+
+<div class="section-header">Section 2: Ages 11 ~ 21</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅういっさい</div><div class="rm">juuissai</div><div class="en">11 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうにさい</div><div class="rm">juunisai</div><div class="en">12 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうさんさい</div><div class="rm">juusansai</div><div class="en">13 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうよんさい</div><div class="rm">juuyonsai</div><div class="en">14 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうごさい</div><div class="rm">juugosai</div><div class="en">15 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうろくさい</div><div class="rm">juurokusai</div><div class="en">16 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうななさい</div><div class="rm">juunanasai</div><div class="en">17 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうはっさい</div><div class="rm">juuhassai</div><div class="en">18 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうきゅうさい</div><div class="rm">juukyuusai</div><div class="en">19 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">はたち</div><div class="rm">hatachi</div><div class="en">20 years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にじゅういっさい</div><div class="rm">nijuuissai</div><div class="en">21 years old</div></div>
+</div>
+<div class="note">&#x2726; Note: Age 20 — "hatachi" is a special traditional reading</div>
+
+<div class="section-header">Section 3: Asking for Someone's Age</div>
+<div class="lbl">Vocabulary:</div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">なんさい</div><div class="rm">nansai</div><div class="en">what age / how old</div></div>
+<div class="lbl">Example Sentences:</div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">なんさいですか。</div><div class="rm">nansai desu ka.</div><div class="en">How old (are you)?</div></div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">メアリーさんは なんさいですか。</div><div class="rm">Mearii san wa nansai desu ka.</div><div class="en">How old is Mary?</div></div>
+
+<div class="section-header">Section 4: Saying Someone's Age</div>
+<div class="lbl">Sentence Pattern:</div>
+<div class="pc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">X は Y です。</div><div class="rm">X wa Y desu.</div><div class="en">X is Y.</div></div>
+<div class="lbl">Example Sentences:</div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じゅうきゅうさいです。</div><div class="rm">Juukyuusai desu.</div><div class="en">(I am) 19 years old.</div></div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">やましたせんせいは ごじゅっさいです。</div><div class="rm">Yamashita sensee wa gojussai desu.</div><div class="en">Professor Yamashita is 50 years old.</div></div>
+</div>
+
+<!-- ==================== SCHOOL YEAR ==================== -->
+<div id="school" class="tab-content">
+<div class="section-header">Section 1: School Year Levels 1 ~ 6</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いちねんせい</div><div class="rm">ichinensee</div><div class="en">1st year / Grade 1</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にねんせい</div><div class="rm">ninensee</div><div class="en">2nd year / Grade 2</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">さんねんせい</div><div class="rm">sannensee</div><div class="en">3rd year / Grade 3</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">よねんせい</div><div class="rm">yonensee</div><div class="en">4th year / Grade 4</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ごねんせい</div><div class="rm">gonensee</div><div class="en">5th year / Grade 5</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ろくねんせい</div><div class="rm">rokunensee</div><div class="en">6th year / Grade 6</div></div>
+</div>
+
+<div class="section-header">Section 2: Asking for Someone's Year Level</div>
+<div class="lbl">Vocabulary:</div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">なんねんせい</div><div class="rm">nannensee</div><div class="en">what year student</div></div>
+<div class="lbl">Example Sentences:</div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">なんねんせいですか。</div><div class="rm">nannensee desu ka.</div><div class="en">What year student (are you)?</div></div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">メアリーさんは なんねんせいですか。</div><div class="rm">Mearii san wa nannensee desu ka.</div><div class="en">What year student is Mary?</div></div>
+
+<div class="section-header">Section 3: Saying Someone's Year Level</div>
+<div class="lbl">Sentence Pattern:</div>
+<div class="pc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">X は Y です。</div><div class="rm">X wa Y desu.</div><div class="en">X is Y.</div></div>
+<div class="lbl">Example Sentences:</div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いちねんせいです。</div><div class="rm">Ichinensee desu.</div><div class="en">(I am) a first year student.</div></div>
+<div class="sc" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">たけしさんは よねんせいです。</div><div class="rm">Takeshi san wa yonensee desu.</div><div class="en">Takeshi is a fourth year student.</div></div>
+</div>
+
+<!-- ==================== GREETING ==================== -->
+<div id="greeting" class="tab-content">
+<div class="section-header">Daily Greetings</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おはようございます</div><div class="rm">ohayoo gozaimasu</div><div class="en">Good morning</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">こんにちは</div><div class="rm">konnichiwa</div><div class="en">Good afternoon / Hello</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">こんばんは</div><div class="rm">konbanwa</div><div class="en">Good evening</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">さようなら</div><div class="rm">sayoonara</div><div class="en">Goodbye</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おやすみなさい</div><div class="rm">oyasuminasai</div><div class="en">Good night</div></div>
+</div>
+
+<div class="section-header">Polite Expressions</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ありがとうございます</div><div class="rm">arigatoo gozaimasu</div><div class="en">Thank you</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">すみません</div><div class="rm">sumimasen</div><div class="en">Excuse me / I'm sorry</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いいえ</div><div class="rm">iie</div><div class="en">No / Don't mention it</div></div>
+</div>
+
+<div class="section-header">Going Out &amp; Coming Home</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いってきます</div><div class="rm">ittekimasu</div><div class="en">I'll go and come back</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いってらっしゃい</div><div class="rm">itterasshai</div><div class="en">Please go and come back</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ただいま</div><div class="rm">tadaima</div><div class="en">I'm home</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おかえりなさい</div><div class="rm">okaerinasai</div><div class="en">Welcome home</div></div>
+</div>
+
+<div class="section-header">Eating</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いただきます</div><div class="rm">itadakimasu</div><div class="en">Expression before eating</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ごちそうさまでした</div><div class="rm">gochisoo sama deshita</div><div class="en">Expression after eating</div></div>
+</div>
+
+<div class="section-header">Self-Introduction</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">はじめまして</div><div class="rm">hajimemashite</div><div class="en">How do you do</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">どうぞよろしく</div><div class="rm">doozo yoroshiku</div><div class="en">Nice to meet you</div></div>
+</div>
+</div>
+
+<!-- ==================== VOCABULARIES ==================== -->
+<div id="vocab" class="tab-content">
+<div class="section-header">School (学校)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">だいがく</div><div class="rm">daigaku</div><div class="en">college; university</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">こうこう</div><div class="rm">kookoo</div><div class="en">high school</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">がくせい</div><div class="rm">gakusee</div><div class="en">student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">だいがくせい</div><div class="rm">daigakusee</div><div class="en">college student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">りゅうがくせい</div><div class="rm">ryuugakusee</div><div class="en">international student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">せんせい</div><div class="rm">sensee</div><div class="en">professor; teacher</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ねんせい</div><div class="rm">nensee</div><div class="en">...year student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いちねんせい</div><div class="rm">ichinensee</div><div class="en">first year student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">せんこう</div><div class="rm">senkoo</div><div class="en">major</div></div>
+</div>
+
+<div class="section-header">Person (人)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">わたし</div><div class="rm">watashi</div><div class="en">I</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ともだち</div><div class="rm">tomodachi</div><div class="en">friend</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">さん</div><div class="rm">san</div><div class="en">Mr./Ms.</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">じん</div><div class="rm">jin</div><div class="en">...people</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にほんじん</div><div class="rm">nihonjin</div><div class="en">Japanese people</div></div>
+</div>
+
+<div class="section-header">Time (時間)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いま</div><div class="rm">ima</div><div class="en">now</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ごぜん</div><div class="rm">gozen</div><div class="en">A.M.</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ごご</div><div class="rm">gogo</div><div class="en">P.M.</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いちじ</div><div class="rm">ichiji</div><div class="en">one o'clock</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">はん</div><div class="rm">han</div><div class="en">half</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にじはん</div><div class="rm">nijihan</div><div class="en">half past two</div></div>
+</div>
+
+<div class="section-header">Others (その他)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にほん</div><div class="rm">Nihon</div><div class="en">Japan</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">アメリカ</div><div class="rm">Amerika</div><div class="en">U.S.A.</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">にほんご</div><div class="rm">nihongo</div><div class="en">Japanese language</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">さい</div><div class="rm">sai</div><div class="en">...years old</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">でんわ</div><div class="rm">denwa</div><div class="en">telephone</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ばんごう</div><div class="rm">bangoo</div><div class="en">number</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">なまえ</div><div class="rm">namae</div><div class="en">name</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">なに</div><div class="rm">nani</div><div class="en">what</div></div>
+</div>
+
+<div class="section-header">Expressions (表現)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">あのう</div><div class="rm">anoo</div><div class="en">um...</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">はい</div><div class="rm">hai</div><div class="en">yes</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">そうです</div><div class="rm">soodesu</div><div class="en">that's right</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">そうですか</div><div class="rm">soo desu ka</div><div class="en">I see. / Is that so?</div></div>
+</div>
+
+<div class="section-header">Countries (国)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">イギリス</div><div class="rm">Igirisu</div><div class="en">Britain</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">オーストラリア</div><div class="rm">Oosutoraria</div><div class="en">Australia</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">かんこく</div><div class="rm">kankoku</div><div class="en">Korea</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">カナダ</div><div class="rm">Kanada</div><div class="en">Canada</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ちゅうごく</div><div class="rm">Chuugoku</div><div class="en">China</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">インド</div><div class="rm">Indo</div><div class="en">India</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">エジプト</div><div class="rm">Ejiputo</div><div class="en">Egypt</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">フィリピン</div><div class="rm">Firipin</div><div class="en">Philippines</div></div>
+</div>
+
+<div class="section-header">Majors (専攻)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">アジアけんきゅう</div><div class="rm">ajia kenkyuu</div><div class="en">Asian studies</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">けいざい</div><div class="rm">keezai</div><div class="en">economics</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">こうがく</div><div class="rm">koogaku</div><div class="en">engineering</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">こくさいかんけい</div><div class="rm">kokusai kankee</div><div class="en">international relations</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">コンピューター</div><div class="rm">konpyuutaa</div><div class="en">computer</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">せいじ</div><div class="rm">seeji</div><div class="en">politics</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">せいぶつがく</div><div class="rm">seebutsugaku</div><div class="en">biology</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ビジネス</div><div class="rm">bijinesu</div><div class="en">business</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">ぶんがく</div><div class="rm">bungaku</div><div class="en">literature</div></div>
+</div>
+
+<div class="section-header">Occupations (職業)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いしゃ</div><div class="rm">isha</div><div class="en">doctor</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">かいしゃいん</div><div class="rm">kaishain</div><div class="en">office worker</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">かんごし</div><div class="rm">kangoshi</div><div class="en">nurse</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">こうこうせい</div><div class="rm">kookoosee</div><div class="en">high school student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">しゅふ</div><div class="rm">shufu</div><div class="en">housewife</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">だいがくいんせい</div><div class="rm">daigakuinsee</div><div class="en">graduate student</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">べんごし</div><div class="rm">bengoshi</div><div class="en">lawyer</div></div>
+</div>
+
+<div class="section-header">Family (家族)</div>
+<div class="cards">
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おかあさん</div><div class="rm">okaasan</div><div class="en">mother</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おとうさん</div><div class="rm">otoosan</div><div class="en">father</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おねえさん</div><div class="rm">oneesan</div><div class="en">older sister</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">おにいさん</div><div class="rm">oniisan</div><div class="en">older brother</div></div>
+  <div class="card" onclick="s(this)"><span class="sp">&#x1f50a;</span><div class="jp">いもうと</div><div class="rm">imooto</div><div class="en">younger sister</div></div>
+</div>
+</div>
+
+</main>
+<footer>Japanese Study App</footer>
+
+<script>
+function s(el){
+  var t=el.querySelector('.jp').textContent;
+  t=t.replace(/～/g,'').replace(/X/g,'').replace(/Y/g,'').replace(/\s+/g,' ').trim();
+  if(!t)return;
+  if(window.speechSynthesis){
+    window.speechSynthesis.cancel();
+    var u=new SpeechSynthesisUtterance(t);
+    u.lang='ja-JP';u.rate=0.8;
+    window.speechSynthesis.speak(u);
+  }
+}
+function switchTab(id,btn){
+  var tabs=document.querySelectorAll('.tab-content');
+  var btns=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<tabs.length;i++) tabs[i].className='tab-content';
+  for(var i=0;i<btns.length;i++) btns[i].className='tab-btn';
+  document.getElementById(id).className='tab-content active';
+  btn.className='tab-btn active';
+}
+</script>
+</body>
+</html>
