@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="JP Study">
+<meta name="referrer" content="no-referrer">
 <title>Japanese Study App</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -557,8 +558,15 @@ function s(el){
   t=t.replace(/～/g,'').replace(/X/g,'').replace(/Y/g,'').replace(/\s+/g,' ').trim();
   if(!t)return;
   if(_a){_a.pause();_a=null;}
-  _a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q='+encodeURIComponent(t));
-  _a.play();
+  _a=new Audio('https://translate.googleapis.com/translate_tts?ie=UTF-8&tl=ja&client=gtx&q='+encodeURIComponent(t));
+  _a.play().catch(function(){
+    if(window.speechSynthesis){
+      speechSynthesis.cancel();
+      var u=new SpeechSynthesisUtterance(t);
+      u.lang='ja-JP';u.rate=0.8;
+      speechSynthesis.speak(u);
+    }
+  });
 }
 function switchTab(id,btn){
   var tabs=document.querySelectorAll('.tab-content');
