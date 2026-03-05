@@ -550,17 +550,15 @@
 <footer>Japanese Study App</footer>
 
 <script>
+var _a=null;
 function s(el){
   var j=el.querySelector('.jp')||el.querySelector('.h');
   var t=j?j.textContent:'';
   t=t.replace(/～/g,'').replace(/X/g,'').replace(/Y/g,'').replace(/\s+/g,' ').trim();
   if(!t)return;
-  if(window.speechSynthesis){
-    window.speechSynthesis.cancel();
-    var u=new SpeechSynthesisUtterance(t);
-    u.lang='ja-JP';u.rate=0.8;
-    window.speechSynthesis.speak(u);
-  }
+  if(_a){_a.pause();_a=null;}
+  _a=new Audio('https://translate.google.com/translate_tts?ie=UTF-8&tl=ja&client=tw-ob&q='+encodeURIComponent(t));
+  _a.play();
 }
 function switchTab(id,btn){
   var tabs=document.querySelectorAll('.tab-content');
