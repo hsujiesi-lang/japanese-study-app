@@ -82,6 +82,23 @@
   .lbl { color: #757575; font-size: 0.8em; margin: 12px 0 6px 4px; }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
+  /* ---- Hiragana Grid ---- */
+  .hgrid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 8px; margin-bottom: 8px;
+  }
+  .hc {
+    background: white; border-radius: 10px; padding: 10px 4px; text-align: center;
+    cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border: 2px solid transparent; -webkit-tap-highlight-color: transparent;
+  }
+  .hc:active { border-color: #FF7043; background: #FFF3E0; }
+  .hc .h { color: #C62828; font-size: 1.8em; font-weight: 600; line-height: 1.2; }
+  .hc .r { color: #1565C0; font-size: 0.72em; margin-top: 2px; }
+  .hgrid3 {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; margin-bottom: 8px; max-width: 480px;
+  }
   footer { text-align: center; padding: 20px; color: #999; font-size: 0.72em; }
   @media (max-width: 600px) {
     header h1 { font-size: 1.15em; }
@@ -101,6 +118,7 @@
     <button class="tab-btn" onclick="switchTab('school',this)">School Year</button>
     <button class="tab-btn" onclick="switchTab('greeting',this)">Greeting</button>
     <button class="tab-btn" onclick="switchTab('vocab',this)">Vocabularies</button>
+    <button class="tab-btn" onclick="switchTab('hiragana',this)">Hiragana</button>
   </nav>
 </header>
 <div class="legend">
@@ -326,12 +344,215 @@
 </div>
 </div>
 
+<!-- ==================== HIRAGANA ==================== -->
+<div id="hiragana" class="tab-content">
+
+<div class="section-header">Basic Hiragana (清音)</div>
+<div class="lbl">a / i / u / e / o</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">あ</div><div class="r">a</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">い</div><div class="r">i</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">う</div><div class="r">u</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">え</div><div class="r">e</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">お</div><div class="r">o</div></div>
+</div>
+<div class="lbl">ka / ki / ku / ke / ko</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">か</div><div class="r">ka</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">き</div><div class="r">ki</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">く</div><div class="r">ku</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">け</div><div class="r">ke</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">こ</div><div class="r">ko</div></div>
+</div>
+<div class="lbl">sa / shi / su / se / so</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">さ</div><div class="r">sa</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">し</div><div class="r">shi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">す</div><div class="r">su</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">せ</div><div class="r">se</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">そ</div><div class="r">so</div></div>
+</div>
+<div class="lbl">ta / chi / tsu / te / to</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">た</div><div class="r">ta</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ち</div><div class="r">chi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">つ</div><div class="r">tsu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">て</div><div class="r">te</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">と</div><div class="r">to</div></div>
+</div>
+<div class="lbl">na / ni / nu / ne / no</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">な</div><div class="r">na</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">に</div><div class="r">ni</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぬ</div><div class="r">nu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ね</div><div class="r">ne</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">の</div><div class="r">no</div></div>
+</div>
+<div class="lbl">ha / hi / fu / he / ho</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">は</div><div class="r">ha</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ひ</div><div class="r">hi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ふ</div><div class="r">fu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">へ</div><div class="r">he</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ほ</div><div class="r">ho</div></div>
+</div>
+<div class="lbl">ma / mi / mu / me / mo</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">ま</div><div class="r">ma</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">み</div><div class="r">mi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">む</div><div class="r">mu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">め</div><div class="r">me</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">も</div><div class="r">mo</div></div>
+</div>
+<div class="lbl">ya / yu / yo</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">や</div><div class="r">ya</div></div>
+  <div class="hc" style="visibility:hidden"></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ゆ</div><div class="r">yu</div></div>
+  <div class="hc" style="visibility:hidden"></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">よ</div><div class="r">yo</div></div>
+</div>
+<div class="lbl">ra / ri / ru / re / ro</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">ら</div><div class="r">ra</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">り</div><div class="r">ri</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">る</div><div class="r">ru</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">れ</div><div class="r">re</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ろ</div><div class="r">ro</div></div>
+</div>
+<div class="lbl">wa / wo / n</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">わ</div><div class="r">wa</div></div>
+  <div class="hc" style="visibility:hidden"></div>
+  <div class="hc" style="visibility:hidden"></div>
+  <div class="hc" style="visibility:hidden"></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">を</div><div class="r">wo</div></div>
+</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">ん</div><div class="r">n</div></div>
+</div>
+
+<div class="section-header">Dakuten — Voiced (濁音)</div>
+<div class="lbl">ga / gi / gu / ge / go</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">が</div><div class="r">ga</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぎ</div><div class="r">gi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぐ</div><div class="r">gu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">げ</div><div class="r">ge</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ご</div><div class="r">go</div></div>
+</div>
+<div class="lbl">za / ji / zu / ze / zo</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">ざ</div><div class="r">za</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">じ</div><div class="r">ji</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ず</div><div class="r">zu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぜ</div><div class="r">ze</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぞ</div><div class="r">zo</div></div>
+</div>
+<div class="lbl">da / di / du / de / do</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">だ</div><div class="r">da</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぢ</div><div class="r">di</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">づ</div><div class="r">du</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">で</div><div class="r">de</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ど</div><div class="r">do</div></div>
+</div>
+<div class="lbl">ba / bi / bu / be / bo</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">ば</div><div class="r">ba</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">び</div><div class="r">bi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぶ</div><div class="r">bu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">べ</div><div class="r">be</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぼ</div><div class="r">bo</div></div>
+</div>
+
+<div class="section-header">Handakuten — P-sounds (半濁音)</div>
+<div class="lbl">pa / pi / pu / pe / po</div>
+<div class="hgrid">
+  <div class="hc" onclick="s(this)"><div class="jp h">ぱ</div><div class="r">pa</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぴ</div><div class="r">pi</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぷ</div><div class="r">pu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぺ</div><div class="r">pe</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぽ</div><div class="r">po</div></div>
+</div>
+
+<div class="section-header">Combo Hiragana (拗音)</div>
+<div class="lbl">kya / kyu / kyo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">きゃ</div><div class="r">kya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">きゅ</div><div class="r">kyu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">きょ</div><div class="r">kyo</div></div>
+</div>
+<div class="lbl">sha / shu / sho</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">しゃ</div><div class="r">sha</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">しゅ</div><div class="r">shu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">しょ</div><div class="r">sho</div></div>
+</div>
+<div class="lbl">cha / chu / cho</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">ちゃ</div><div class="r">cha</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ちゅ</div><div class="r">chu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ちょ</div><div class="r">cho</div></div>
+</div>
+<div class="lbl">nya / nyu / nyo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">にゃ</div><div class="r">nya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">にゅ</div><div class="r">nyu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">にょ</div><div class="r">nyo</div></div>
+</div>
+<div class="lbl">hya / hyu / hyo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">ひゃ</div><div class="r">hya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ひゅ</div><div class="r">hyu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ひょ</div><div class="r">hyo</div></div>
+</div>
+<div class="lbl">mya / myu / myo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">みゃ</div><div class="r">mya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">みゅ</div><div class="r">myu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">みょ</div><div class="r">myo</div></div>
+</div>
+<div class="lbl">rya / ryu / ryo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">りゃ</div><div class="r">rya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">りゅ</div><div class="r">ryu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">りょ</div><div class="r">ryo</div></div>
+</div>
+<div class="lbl">gya / gyu / gyo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">ぎゃ</div><div class="r">gya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぎゅ</div><div class="r">gyu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぎょ</div><div class="r">gyo</div></div>
+</div>
+<div class="lbl">ja / ju / jo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">じゃ</div><div class="r">ja</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">じゅ</div><div class="r">ju</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">じょ</div><div class="r">jo</div></div>
+</div>
+<div class="lbl">bya / byu / byo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">びゃ</div><div class="r">bya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">びゅ</div><div class="r">byu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">びょ</div><div class="r">byo</div></div>
+</div>
+<div class="lbl">pya / pyu / pyo</div>
+<div class="hgrid3">
+  <div class="hc" onclick="s(this)"><div class="jp h">ぴゃ</div><div class="r">pya</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぴゅ</div><div class="r">pyu</div></div>
+  <div class="hc" onclick="s(this)"><div class="jp h">ぴょ</div><div class="r">pyo</div></div>
+</div>
+
+</div>
+
 </main>
 <footer>Japanese Study App</footer>
 
 <script>
 function s(el){
-  var t=el.querySelector('.jp').textContent;
+  var j=el.querySelector('.jp')||el.querySelector('.h');
+  var t=j?j.textContent:'';
   t=t.replace(/～/g,'').replace(/X/g,'').replace(/Y/g,'').replace(/\s+/g,' ').trim();
   if(!t)return;
   if(window.speechSynthesis){
