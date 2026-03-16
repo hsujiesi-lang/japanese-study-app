@@ -30,6 +30,14 @@
     border-bottom: 3px solid transparent; font-weight: 500; white-space: nowrap;
   }
   .tab-btn.active { color: white; border-bottom-color: #FF7043; }
+  .tab-btn.hidden { display: none; }
+  .week-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; }
+  .week-btn {
+    background: rgba(255,255,255,0.15); border: 1.5px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7); font-size: 0.82em; padding: 5px 16px;
+    border-radius: 20px; cursor: pointer; font-weight: 600;
+  }
+  .week-btn.active { background: #FF7043; border-color: #FF7043; color: white; }
   .legend {
     display: flex; justify-content: center; gap: 14px; padding: 8px 16px;
     background: #ECEFF1; font-size: 0.78em; flex-wrap: wrap;
@@ -120,14 +128,18 @@
 
 <header>
   <h1>Japanese Study App <span>| Click to hear</span></h1>
+  <div class="week-bar">
+    <button class="week-btn active" onclick="switchWeek('w12',this)">Week 1+2</button>
+    <button class="week-btn" onclick="switchWeek('w3',this)">Week 3</button>
+  </div>
   <nav class="tabs">
-    <button class="tab-btn active" onclick="switchTab('age',this)">Age</button>
-    <button class="tab-btn" onclick="switchTab('school',this)">School Year</button>
-    <button class="tab-btn" onclick="switchTab('greeting',this)">Greeting</button>
-    <button class="tab-btn" onclick="switchTab('vocab',this)">Vocabularies</button>
-    <button class="tab-btn" onclick="switchTab('hiragana',this)">Hiragana</button>
-    <button class="tab-btn" onclick="switchTab('time',this)">Time</button>
-    <button class="tab-btn" onclick="switchTab('phone',this)">Phone</button>
+    <button class="tab-btn active" data-week="w12" onclick="switchTab('age',this)">Age</button>
+    <button class="tab-btn" data-week="w12" onclick="switchTab('school',this)">School Year</button>
+    <button class="tab-btn" data-week="w12" onclick="switchTab('greeting',this)">Greeting</button>
+    <button class="tab-btn" data-week="w12" onclick="switchTab('vocab',this)">Vocabularies</button>
+    <button class="tab-btn" data-week="w12" onclick="switchTab('hiragana',this)">Hiragana</button>
+    <button class="tab-btn" data-week="w12" onclick="switchTab('time',this)">Time</button>
+    <button class="tab-btn" data-week="w12" onclick="switchTab('phone',this)">Phone</button>
   </nav>
 </header>
 <div class="legend">
@@ -642,9 +654,30 @@ function switchTab(id,btn){
   var tabs=document.querySelectorAll('.tab-content');
   var btns=document.querySelectorAll('.tab-btn');
   for(var i=0;i<tabs.length;i++) tabs[i].className='tab-content';
-  for(var i=0;i<btns.length;i++) btns[i].className='tab-btn';
+  for(var i=0;i<btns.length;i++){
+    var hidden=btns[i].classList.contains('hidden');
+    btns[i].className='tab-btn'+(hidden?' hidden':'');
+  }
   document.getElementById(id).className='tab-content active';
   btn.className='tab-btn active';
+}
+function switchWeek(week,btn){
+  var wbtns=document.querySelectorAll('.week-btn');
+  for(var i=0;i<wbtns.length;i++) wbtns[i].className='week-btn';
+  btn.className='week-btn active';
+  var tbtns=document.querySelectorAll('.tab-btn');
+  var first=null;
+  for(var i=0;i<tbtns.length;i++){
+    var w=tbtns[i].getAttribute('data-week');
+    if(w===week){
+      tbtns[i].classList.remove('hidden');
+      if(!first) first=tbtns[i];
+    } else {
+      tbtns[i].classList.add('hidden');
+      tbtns[i].classList.remove('active');
+    }
+  }
+  if(first) first.click();
 }
 </script>
 </body>
