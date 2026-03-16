@@ -150,6 +150,8 @@
 
 <main>
 
+<div id="week-placeholder" style="display:none;text-align:center;padding:60px 20px;color:#999;font-size:1.1em;">Coming soon...</div>
+
 <!-- ==================== AGE ==================== -->
 <div id="age" class="tab-content active">
 <div class="section-header">Section 1: Ages 0 ~ 10</div>
@@ -677,7 +679,15 @@ function switchWeek(week,btn){
       tbtns[i].classList.remove('active');
     }
   }
-  if(first) first.click();
+  var tabs=document.querySelectorAll('.tab-content');
+  for(var i=0;i<tabs.length;i++) tabs[i].className='tab-content';
+  var ph=document.getElementById('week-placeholder');
+  if(first){
+    ph.style.display='none';
+    first.click();
+  } else {
+    ph.style.display='block';
+  }
 }
 </script>
 </body>
