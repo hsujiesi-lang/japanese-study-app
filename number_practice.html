@@ -175,8 +175,12 @@ body {
   margin-bottom: 8px;
 }
 
+.input-area {
+  display: flex;
+  gap: 10px;
+}
 .input-area input {
-  width: 100%;
+  flex: 1;
   padding: 16px 20px;
   background: #0f3460;
   border: 2px solid #333;
@@ -190,6 +194,17 @@ body {
 .input-area input:focus { border-color: #e94560; }
 .input-area input.correct { border-color: #4caf50; background: #1b3a1b; }
 .input-area input.wrong { border-color: #e94560; background: #3a1b1b; }
+.input-area button {
+  padding: 12px 20px;
+  background: #e94560;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.input-area button:hover { background: #c73650; }
 
 .answer-reveal {
   display: none;
@@ -333,6 +348,7 @@ body {
 
   <div class="input-area">
     <input type="text" id="answerInput" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button onclick="onSubmit()">OK</button>
   </div>
 
   <div class="answer-reveal" id="answerReveal">
@@ -636,6 +652,11 @@ function backToSetup() {
 // ===================================================================
 // INPUT
 // ===================================================================
+function onSubmit() {
+  if (isAnswered) nextQuestion();
+  else checkAnswer();
+}
+
 const input = document.getElementById("answerInput");
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {

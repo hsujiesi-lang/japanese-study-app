@@ -228,9 +228,11 @@ body {
 .input-area {
   position: relative;
   margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
 }
 .input-area input {
-  width: 100%;
+  flex: 1;
   padding: 16px 20px;
   font-size: 24px;
   background: #0f0f23;
@@ -245,6 +247,17 @@ body {
 .input-area input:focus { border-color: #e94560; }
 .input-area input.correct { border-color: #4caf50; background: #1b2e1b; }
 .input-area input.wrong { border-color: #f44336; background: #2e1b1b; }
+.input-area button {
+  padding: 12px 20px;
+  background: #e94560;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.input-area button:hover { background: #c73650; }
 
 .ime-hint {
   font-size: 11px;
@@ -460,6 +473,7 @@ body {
 
   <div class="input-area">
     <input type="text" id="answerInput" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer...">
+    <button onclick="onSubmit()">OK</button>
   </div>
 
   <div class="answer-reveal" id="answerReveal">
@@ -1291,6 +1305,11 @@ function clearMistakes() {
 // ===================================================================
 // INPUT HANDLING
 // ===================================================================
+function onSubmit() {
+  if (isAnswered) nextQuestion();
+  else checkAnswer();
+}
+
 const input = document.getElementById("answerInput");
 
 // Handle Enter key
