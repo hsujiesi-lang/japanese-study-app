@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日本語タイピング練習</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+/* ---- Header ---- */
+.header {
+  background: #16213e;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #0f3460;
+}
+.header h1 {
+  font-size: 28px;
+  color: #e94560;
+  margin-bottom: 4px;
+}
+.header .sub { font-size: 13px; color: #888; }
+
+/* ---- Setup Screen ---- */
+.setup {
+  max-width: 700px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+.setup h2 {
+  font-size: 20px;
+  color: #e94560;
+  margin-bottom: 16px;
+}
+
+.mode-select {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.mode-btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 16px;
+  background: #16213e;
+  border: 2px solid #0f3460;
+  border-radius: 12px;
+  color: #ccc;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.mode-btn:hover { border-color: #e94560; color: #fff; }
+.mode-btn.active { border-color: #e94560; background: #1a1a3e; color: #e94560; }
+.mode-btn .icon { font-size: 28px; display: block; margin-bottom: 6px; }
+.mode-btn .title { font-size: 15px; font-weight: bold; }
+.mode-btn .desc { font-size: 11px; color: #888; margin-top: 4px; }
+
+.cat-section { margin-bottom: 20px; }
+.cat-section h3 { font-size: 15px; color: #aaa; margin-bottom: 10px; }
+.cat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cat-chip {
+  padding: 8px 14px;
+  background: #16213e;
+  border: 1px solid #0f3460;
+  border-radius: 20px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.cat-chip:hover { border-color: #e94560; }
+.cat-chip.active { background: #e94560; border-color: #e94560; color: #fff; }
+.cat-chip .count { font-size: 11px; color: #888; margin-left: 4px; }
+.cat-chip.active .count { color: #ffcdd2; }
+
+.week-section { margin-bottom: 20px; }
+.week-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 2px solid #e94560;
+}
+.week-header h3 {
+  font-size: 16px; color: #e94560; margin: 0; white-space: nowrap;
+}
+.week-header .week-actions {
+  display: flex; gap: 6px;
+}
+.week-header .week-actions button {
+  padding: 3px 10px; background: none; border: 1px solid #555;
+  color: #aaa; border-radius: 4px; cursor: pointer; font-size: 11px;
+}
+.week-header .week-actions button:hover { border-color: #e94560; color: #e94560; }
+
+.select-actions {
+  display: flex; gap: 10px; margin-bottom: 16px;
+}
+.select-actions button {
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid #555;
+  color: #aaa;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.select-actions button:hover { border-color: #e94560; color: #e94560; }
+
+.start-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.2s;
+}
+.start-btn:hover { background: #c73650; }
+.start-btn:disabled { background: #555; cursor: not-allowed; }
+
+/* ---- Quiz Screen ---- */
+.quiz {
+  display: none;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid #444;
+  color: #aaa;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+.back-btn:hover { border-color: #e94560; color: #e94560; }
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #16213e;
+  border-radius: 3px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #e94560;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #888;
+}
+.stats .score { color: #4caf50; font-weight: bold; }
+.stats .total { color: #e94560; }
+
+.prompt-card {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 40px 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.prompt-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+.prompt-japanese {
+  font-size: 56px;
+  font-weight: bold;
+  color: #e94560;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.prompt-romaji {
+  font-size: 20px;
+  color: #64b5f6;
+  font-style: italic;
+  margin-bottom: 6px;
+}
+.prompt-english {
+  font-size: 22px;
+  color: #81c784;
+}
+.prompt-category {
+  font-size: 11px;
+  color: #555;
+  margin-top: 12px;
+}
+
+.input-area {
+  position: relative;
+  margin-bottom: 16px;
+}
+.input-area input {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 24px;
+  background: #0f0f23;
+  border: 2px solid #333;
+  border-radius: 12px;
+  color: #fff;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+.input-area input:focus { border-color: #e94560; }
+.input-area input.correct { border-color: #4caf50; background: #1b2e1b; }
+.input-area input.wrong { border-color: #f44336; background: #2e1b1b; }
+
+.ime-hint {
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.answer-reveal {
+  text-align: center;
+  padding: 12px;
+  background: #1a2a1a;
+  border: 1px solid #4caf50;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  display: none;
+}
+.answer-reveal .label { font-size: 12px; color: #888; margin-bottom: 4px; }
+.answer-reveal .answer { font-size: 28px; color: #4caf50; font-weight: bold; }
+
+.quiz-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.quiz-actions button {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #16213e;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-actions button:hover { border-color: #e94560; color: #fff; }
+.quiz-actions .next-btn {
+  background: #e94560;
+  border-color: #e94560;
+  color: #fff;
+  display: none;
+}
+.quiz-actions .next-btn:hover { background: #c73650; }
+
+/* ---- Result Screen ---- */
+.result {
+  display: none;
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  padding: 20px;
+}
+.result .emoji { font-size: 64px; margin-bottom: 16px; }
+.result h2 { font-size: 28px; color: #e94560; margin-bottom: 8px; }
+.result .final-score { font-size: 48px; color: #4caf50; font-weight: bold; margin: 16px 0; }
+.result .detail { font-size: 16px; color: #888; margin-bottom: 24px; }
+.result .retry-btn {
+  padding: 14px 40px;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.result .retry-btn:hover { background: #c73650; }
+
+/* ---- Mistakes List (Result Screen) ---- */
+.mistakes-list {
+  text-align: left;
+  margin: 24px auto;
+  max-width: 450px;
+}
+.mistakes-list h3 {
+  color: #e94560;
+  font-size: 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.mistake-item {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mistake-item .mistake-jp {
+  font-size: 22px;
+  color: #e94560;
+  font-weight: bold;
+}
+.mistake-item .mistake-answer {
+  font-size: 14px;
+  color: #4caf50;
+}
+.mistake-item .mistake-cat {
+  font-size: 11px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* ---- Recent Mistakes (Setup Screen) ---- */
+.recent-mistakes {
+  margin-top: 24px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #16213e;
+  border: 1px solid #0f3460;
+  border-radius: 12px;
+  text-align: center;
+}
+.recent-mistakes h3 {
+  color: #e94560;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.recent-mistakes .rm-count {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 12px;
+}
+.recent-mistakes .practice-mistakes-btn {
+  padding: 10px 20px;
+  background: #e94560;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.recent-mistakes .practice-mistakes-btn:hover { background: #c73650; }
+.recent-mistakes .clear-btn {
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid #555;
+  color: #aaa;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 8px;
+}
+.recent-mistakes .clear-btn:hover { border-color: #e94560; color: #e94560; }
+
+/* ---- Responsive ---- */
+@media (max-width: 500px) {
+  .prompt-japanese { font-size: 40px; }
+  .mode-btn { min-width: 140px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>日本語タイピング練習</h1>
+  <div class="sub">Japanese Typing Practice</div>
+</div>
+
+<!-- ===== SETUP SCREEN ===== -->
+<div class="setup" id="setup">
+  <h2>Mode</h2>
+  <div class="mode-select">
+    <div class="mode-btn active" data-mode="jp2romaji">
+      <span class="icon">🇯🇵→🔤</span>
+      <div class="title">日文 → Romaji</div>
+      <div class="desc">See hiragana, type romaji</div>
+    </div>
+    <div class="mode-btn" data-mode="eng2jp">
+      <span class="icon">🇬🇧→🇯🇵</span>
+      <div class="title">English → 日文</div>
+      <div class="desc">See English only, type hiragana</div>
+    </div>
+  </div>
+
+  <h2>Categories</h2>
+  <div class="select-actions">
+    <button onclick="selectAll()">Select All</button>
+    <button onclick="selectNone()">Deselect All</button>
+  </div>
+  <div class="cat-grid" id="catGrid"></div>
+
+  <div class="recent-mistakes" id="recentMistakes" style="display:none;">
+    <h3>📝 Recent Mistakes 最近の間違い</h3>
+    <div class="rm-count" id="mistakesCount"></div>
+    <button class="practice-mistakes-btn" onclick="startMistakesPractice()">Practice Mistakes</button>
+    <button class="clear-btn" onclick="clearMistakes()">Clear</button>
+  </div>
+
+  <button class="start-btn" id="startBtn" onclick="startQuiz()">Start Practice</button>
+</div>
+
+<!-- ===== QUIZ SCREEN ===== -->
+<div class="quiz" id="quiz">
+  <button class="back-btn" onclick="backToSetup()">← Back</button>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="stats">
+    <span>Question <span id="qNum">1</span> / <span id="qTotal">0</span></span>
+    <span>Score: <span class="score" id="scoreNum">0</span> / <span class="total" id="scoreDen">0</span></span>
+  </div>
+
+  <div class="prompt-card" id="promptCard">
+    <div class="prompt-label" id="promptLabel"></div>
+    <div class="prompt-japanese" id="promptJP"></div>
+    <div class="prompt-romaji" id="promptRomaji"></div>
+    <div class="prompt-english" id="promptEng"></div>
+    <div class="prompt-category" id="promptCat"></div>
+  </div>
+
+  <div class="ime-hint" id="imeHint"></div>
+
+  <div class="input-area">
+    <input type="text" id="answerInput" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer...">
+  </div>
+
+  <div class="answer-reveal" id="answerReveal">
+    <div class="label">Correct answer:</div>
+    <div class="answer" id="correctAnswer"></div>
+  </div>
+
+  <div class="quiz-actions">
+    <button onclick="showAnswer()" id="showBtn">Show Answer</button>
+    <button onclick="skipQuestion()" id="skipBtn">Skip</button>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<!-- ===== RESULT SCREEN ===== -->
+<div class="result" id="result">
+  <div class="emoji" id="resultEmoji"></div>
+  <h2>Practice Complete!</h2>
+  <div class="final-score" id="finalScore"></div>
+  <div class="detail" id="resultDetail"></div>
+  <div class="mistakes-list" id="mistakesList"></div>
+  <button class="retry-btn" onclick="backToSetup()">Practice Again</button>
+</div>
+
+<script>
+// ===================================================================
+// DATA
+// ===================================================================
+const DATA = {
+  // ==================== WEEK 1+2 ====================
+  "Greetings (挨拶)": [
+    ["おはよう", "Ohayoo", "Good morning"],
+    ["おはようございます", "Ohayoo gozaimasu", "Good morning (polite)"],
+    ["こんにちは", "Konnichiwa", "Good afternoon"],
+    ["こんばんは", "Konbanwa", "Good evening"],
+    ["さようなら", "Sayoonara", "Good-bye"],
+    ["おやすみなさい", "Oyasumi nasai", "Good night"],
+    ["ありがとう", "Arigatoo", "Thank you"],
+    ["ありがとうございます", "Arigatoo gozaimasu", "Thank you (polite)"],
+    ["すみません", "Sumimasen", "Excuse me / I'm sorry"],
+    ["いいえ", "Iie", "No / Not at all"],
+    ["いってきます", "Itte kimasu", "I'll go and come back"],
+    ["いってらっしゃい", "Itterasshai", "Please go and come back"],
+    ["ただいま", "Tadaima", "I'm home"],
+    ["おかえりなさい", "Okaeri nasai", "Welcome home"],
+    ["いただきます", "Itadakimasu", "Thank you for the meal (before eating)"],
+    ["ごちそうさまでした", "Gochisousama deshita", "Thank you for the meal (after eating)"],
+    ["はじめまして", "Hajimemashite", "How do you do?"],
+    ["よろしくおねがいします", "Yoroshiku onegai shimasu", "Nice to meet you"],
+  ],
+  "Age (年齢)": [
+    ["ゼロさい", "zerosai", "0 years old"],
+    ["いっさい", "issai", "1 year old"],
+    ["にさい", "nisai", "2 years old"],
+    ["さんさい", "sansai", "3 years old"],
+    ["よんさい", "yonsai", "4 years old"],
+    ["ごさい", "gosai", "5 years old"],
+    ["ろくさい", "rokusai", "6 years old"],
+    ["ななさい", "nanasai", "7 years old"],
+    ["はっさい", "hassai", "8 years old"],
+    ["きゅうさい", "kyuusai", "9 years old"],
+    ["じゅっさい", "jussai", "10 years old"],
+    ["じゅういっさい", "juuissai", "11 years old"],
+    ["じゅうにさい", "juunisai", "12 years old"],
+    ["じゅうさんさい", "juusansai", "13 years old"],
+    ["じゅうよんさい", "juuyonsai", "14 years old"],
+    ["じゅうごさい", "juugosai", "15 years old"],
+    ["じゅうろくさい", "juurokusai", "16 years old"],
+    ["じゅうななさい", "juunanasai", "17 years old"],
+    ["じゅうはっさい", "juuhassai", "18 years old"],
+    ["じゅうきゅうさい", "juukyuusai", "19 years old"],
+    ["はたち", "hatachi", "20 years old"],
+    ["にじゅういっさい", "nijuuissai", "21 years old"],
+  ],
+  "School Year (学年)": [
+    ["いちねんせい", "ichinensee", "1st year"],
+    ["にねんせい", "ninensee", "2nd year"],
+    ["さんねんせい", "sannensee", "3rd year"],
+    ["よねんせい", "yonensee", "4th year"],
+    ["ごねんせい", "gonensee", "5th year"],
+    ["ろくねんせい", "rokunensee", "6th year"],
+  ],
+  "School (学校)": [
+    ["だいがく", "daigaku", "college; university"],
+    ["こうこう", "kookoo", "high school"],
+    ["がくせい", "gakusee", "student"],
+    ["だいがくせい", "daigakusee", "college student"],
+    ["りゅうがくせい", "ryuugakusee", "international student"],
+    ["せんせい", "sensee", "professor; teacher"],
+    ["ねんせい", "nensee", "...year student"],
+    ["せんこう", "senkoo", "major"],
+  ],
+  "Person (人)": [
+    ["わたし", "watashi", "I"],
+    ["ともだち", "tomodachi", "friend"],
+    ["さん", "san", "Mr./Ms."],
+    ["じん", "jin", "...people"],
+    ["にほんじん", "nihonjin", "Japanese people"],
+    ["なに", "nani", "what"],
+    ["さい", "sai", "...years old"],
+  ],
+  "Time (時間)": [
+    ["いちじ", "ichiji", "1 o'clock"],
+    ["にじ", "niji", "2 o'clock"],
+    ["さんじ", "sanji", "3 o'clock"],
+    ["よじ", "yoji", "4 o'clock"],
+    ["ごじ", "goji", "5 o'clock"],
+    ["ろくじ", "rokuji", "6 o'clock"],
+    ["しちじ", "shichiji", "7 o'clock"],
+    ["はちじ", "hachiji", "8 o'clock"],
+    ["くじ", "kuji", "9 o'clock"],
+    ["じゅうじ", "juuji", "10 o'clock"],
+    ["じゅういちじ", "juuichiji", "11 o'clock"],
+    ["じゅうにじ", "juuniji", "12 o'clock"],
+    ["ごぜん", "gozen", "A.M."],
+    ["ごご", "gogo", "P.M."],
+    ["いま", "ima", "now"],
+    ["はん", "han", "half"],
+  ],
+  "Phone (電話)": [
+    ["ゼロ", "zero", "0"],
+    ["いち", "ichi", "1"],
+    ["に", "ni", "2"],
+    ["さん", "san", "3"],
+    ["よん", "yon", "4"],
+    ["ご", "go", "5"],
+    ["ろく", "roku", "6"],
+    ["なな", "nana", "7"],
+    ["はち", "hachi", "8"],
+    ["きゅう", "kyuu", "9"],
+    ["じゅう", "juu", "10"],
+    ["なんばん", "nanban", "what number"],
+  ],
+  "Numbers (数字)": [
+    ["ゼロ", "zero", "0"],
+    ["いち", "ichi", "1"],
+    ["に", "ni", "2"],
+    ["さん", "san", "3"],
+    ["よん", "yon", "4"],
+    ["ご", "go", "5"],
+    ["ろく", "roku", "6"],
+    ["なな", "nana", "7"],
+    ["はち", "hachi", "8"],
+    ["きゅう", "kyuu", "9"],
+    ["じゅう", "juu", "10"],
+    ["ひゃく", "hyaku", "100"],
+    ["にひゃく", "nihyaku", "200"],
+    ["さんびゃく", "sanbyaku", "300"],
+    ["よんひゃく", "yonhyaku", "400"],
+    ["ごひゃく", "gohyaku", "500"],
+    ["ろっぴゃく", "roppyaku", "600"],
+    ["ななひゃく", "nanahyaku", "700"],
+    ["はっぴゃく", "happyaku", "800"],
+    ["きゅうひゃく", "kyuuhyaku", "900"],
+    ["せん", "sen", "1000"],
+    ["にせん", "nisen", "2000"],
+    ["さんぜん", "sanzen", "3000"],
+    ["よんせん", "yonsen", "4000"],
+    ["ごせん", "gosen", "5000"],
+    ["ろくせん", "rokusen", "6000"],
+    ["ななせん", "nanasen", "7000"],
+    ["はっせん", "hassen", "8000"],
+    ["きゅうせん", "kyuusen", "9000"],
+    ["いちまん", "ichiman", "10000"],
+    ["にまん", "niman", "20000"],
+    ["さんまん", "sanman", "30000"],
+    ["よんまん", "yonman", "40000"],
+    ["ごまん", "goman", "50000"],
+    ["ろくまん", "rokuman", "60000"],
+    ["ななまん", "nanaman", "70000"],
+    ["はちまん", "hachiman", "80000"],
+    ["きゅうまん", "kyuuman", "90000"],
+    ["さんじゅうよん", "sanjuuyon", "34"],
+    ["ろくじゅうなな", "rokujuunana", "67"],
+    ["はちじゅうさん", "hachijuusan", "83"],
+    ["きゅうじゅうきゅう", "kyuujuukyuu", "99"],
+    ["ひゃくにじゅうご", "hyaku nijuugo", "125"],
+    ["ごひゃくじゅうご", "gohyaku juugo", "515"],
+    ["ろっぴゃくさん", "roppyaku san", "603"],
+    ["はっぴゃくごじゅう", "happyaku gojuu", "850"],
+    ["せんさんびゃく", "sen sanbyaku", "1,300"],
+    ["さんぜんよんひゃく", "sanzen yonhyaku", "3,400"],
+    ["はっせんきゅうひゃく", "hassen kyuuhyaku", "8,900"],
+    ["さんまんごせん", "sanman gosen", "35,000"],
+    ["ろくまんよんせんごひゃく", "rokuman yonsen gohyaku", "64,500"],
+    ["きゅうまんにせんさんびゃくよんじゅう", "kyuuman nisen sanbyaku yonjuu", "92,340"],
+  ],
+  "Others (その他)": [
+    ["にほん", "Nihon", "Japan"],
+    ["アメリカ", "Amerika", "U.S.A."],
+    ["にほんご", "nihongo", "Japanese language"],
+    ["でんわ", "denwa", "telephone"],
+    ["ばんごう", "bangoo", "number"],
+    ["なまえ", "namae", "name"],
+  ],
+  "Expressions (表現)": [
+    ["あのう", "anoo", "um..."],
+    ["はい", "hai", "yes"],
+    ["そうです", "soodesu", "that's right"],
+    ["そうですか", "soo desu ka", "I see. / Is that so?"],
+  ],
+  "Countries (国)": [
+    ["イギリス", "Igirisu", "Britain"],
+    ["オーストラリア", "Oosutoraria", "Australia"],
+    ["かんこく", "kankoku", "Korea"],
+    ["カナダ", "Kanada", "Canada"],
+    ["ちゅうごく", "Chuugoku", "China"],
+    ["インド", "Indo", "India"],
+    ["エジプト", "Ejiputo", "Egypt"],
+    ["フィリピン", "Firipin", "Philippines"],
+  ],
+  "Majors (専攻)": [
+    ["アジアけんきゅう", "ajia kenkyuu", "Asian studies"],
+    ["けいざい", "keezai", "economics"],
+    ["こうがく", "koogaku", "engineering"],
+    ["こくさいかんけい", "kokusai kankee", "international relations"],
+    ["コンピューター", "konpyuutaa", "computer"],
+    ["せいじ", "seeji", "politics"],
+    ["せいぶつがく", "seebutsugaku", "biology"],
+    ["ビジネス", "bijinesu", "business"],
+    ["ぶんがく", "bungaku", "literature"],
+  ],
+  "Occupations (職業)": [
+    ["いしゃ", "isha", "doctor"],
+    ["かいしゃいん", "kaishain", "office worker"],
+    ["かんごし", "kangoshi", "nurse"],
+    ["こうこうせい", "kookoosee", "high school student"],
+    ["しゅふ", "shufu", "housewife"],
+    ["だいがくいんせい", "daigakuinsee", "graduate student"],
+    ["べんごし", "bengoshi", "lawyer"],
+  ],
+  "Family (家族)": [
+    ["おとうさん", "otoosan", "father"],
+    ["おかあさん", "okaasan", "mother"],
+    ["おにいさん", "oniisan", "older brother"],
+    ["おねえさん", "oneesan", "older sister"],
+    ["おとうと", "otooto", "younger brother"],
+    ["いもうと", "imooto", "younger sister"],
+    ["おじいさん", "ojiisan", "grandfather"],
+    ["おばあさん", "obaasan", "grandmother"],
+    ["おじさん", "ojisan", "uncle"],
+    ["おばさん", "obasan", "aunt"],
+  ],
+  "あ行": [
+    ["あ","a","a"], ["い","i","i"], ["う","u","u"], ["え","e","e"], ["お","o","o"],
+  ],
+  "か行 (清音)": [
+    ["か","ka","ka"], ["き","ki","ki"], ["く","ku","ku"], ["け","ke","ke"], ["こ","ko","ko"],
+  ],
+  "さ行 (清音)": [
+    ["さ","sa","sa"], ["し","shi","shi"], ["す","su","su"], ["せ","se","se"], ["そ","so","so"],
+  ],
+  "た行 (清音)": [
+    ["た","ta","ta"], ["ち","chi","chi"], ["つ","tsu","tsu"], ["て","te","te"], ["と","to","to"],
+  ],
+  "な行": [
+    ["な","na","na"], ["に","ni","ni"], ["ぬ","nu","nu"], ["ね","ne","ne"], ["の","no","no"],
+  ],
+  "は行 (清音)": [
+    ["は","ha","ha"], ["ひ","hi","hi"], ["ふ","fu","fu"], ["へ","he","he"], ["ほ","ho","ho"],
+  ],
+  "ま行": [
+    ["ま","ma","ma"], ["み","mi","mi"], ["む","mu","mu"], ["め","me","me"], ["も","mo","mo"],
+  ],
+  "や行～ん": [
+    ["や","ya","ya"], ["ゆ","yu","yu"], ["よ","yo","yo"],
+    ["ら","ra","ra"], ["り","ri","ri"], ["る","ru","ru"], ["れ","re","re"], ["ろ","ro","ro"],
+    ["わ","wa","wa"], ["を","o","o"], ["ん","n","n"],
+  ],
+  "が行 (濁音)": [
+    ["が","ga","ga"], ["ぎ","gi","gi"], ["ぐ","gu","gu"], ["げ","ge","ge"], ["ご","go","go"],
+  ],
+  "ざ行 (濁音)": [
+    ["ざ","za","za"], ["じ","ji","ji"], ["ず","zu","zu"], ["ぜ","ze","ze"], ["ぞ","zo","zo"],
+  ],
+  "だ行 (濁音)": [
+    ["だ","da","da"], ["ぢ","di","di"], ["づ","du","du"], ["で","de","de"], ["ど","do","do"],
+  ],
+  "ば行 (濁音)": [
+    ["ば","ba","ba"], ["び","bi","bi"], ["ぶ","bu","bu"], ["べ","be","be"], ["ぼ","bo","bo"],
+  ],
+  "ぱ行 (半濁音)": [
+    ["ぱ","pa","pa"], ["ぴ","pi","pi"], ["ぷ","pu","pu"], ["ぺ","pe","pe"], ["ぽ","po","po"],
+  ],
+  "拗音 (Combo)": [
+    ["きゃ","kya","kya"], ["きゅ","kyu","kyu"], ["きょ","kyo","kyo"],
+    ["しゃ","sha","sha"], ["しゅ","shu","shu"], ["しょ","sho","sho"],
+    ["ちゃ","cha","cha"], ["ちゅ","chu","chu"], ["ちょ","cho","cho"],
+    ["にゃ","nya","nya"], ["にゅ","nyu","nyu"], ["にょ","nyo","nyo"],
+    ["ひゃ","hya","hya"], ["ひゅ","hyu","hyu"], ["ひょ","hyo","hyo"],
+    ["みゃ","mya","mya"], ["みゅ","myu","myu"], ["みょ","myo","myo"],
+    ["りゃ","rya","rya"], ["りゅ","ryu","ryu"], ["りょ","ryo","ryo"],
+    ["ぎゃ","gya","gya"], ["ぎゅ","gyu","gyu"], ["ぎょ","gyo","gyo"],
+    ["じゃ","ja","ja"],   ["じゅ","ju","ju"],   ["じょ","jo","jo"],
+    ["びゃ","bya","bya"], ["びゅ","byu","byu"], ["びょ","byo","byo"],
+    ["ぴゃ","pya","pya"], ["ぴゅ","pyu","pyu"], ["ぴょ","pyo","pyo"],
+  ],
+  // ==================== WEEK 3 ====================
+  "カタカナ ア行": [
+    ["ア","a","a"], ["イ","i","i"], ["ウ","u","u"], ["エ","e","e"], ["オ","o","o"],
+  ],
+  "カタカナ カ行": [
+    ["カ","ka","ka"], ["キ","ki","ki"], ["ク","ku","ku"], ["ケ","ke","ke"], ["コ","ko","ko"],
+  ],
+  "カタカナ サ行": [
+    ["サ","sa","sa"], ["シ","shi","shi"], ["ス","su","su"], ["セ","se","se"], ["ソ","so","so"],
+  ],
+  "カタカナ タ行": [
+    ["タ","ta","ta"], ["チ","chi","chi"], ["ツ","tsu","tsu"], ["テ","te","te"], ["ト","to","to"],
+  ],
+  "カタカナ ナ行": [
+    ["ナ","na","na"], ["ニ","ni","ni"], ["ヌ","nu","nu"], ["ネ","ne","ne"], ["ノ","no","no"],
+  ],
+  "カタカナ ハ行": [
+    ["ハ","ha","ha"], ["ヒ","hi","hi"], ["フ","fu","fu"], ["ヘ","he","he"], ["ホ","ho","ho"],
+  ],
+  "カタカナ マ行": [
+    ["マ","ma","ma"], ["ミ","mi","mi"], ["ム","mu","mu"], ["メ","me","me"], ["モ","mo","mo"],
+  ],
+  "カタカナ ヤ行～ン": [
+    ["ヤ","ya","ya"], ["ユ","yu","yu"], ["ヨ","yo","yo"],
+    ["ラ","ra","ra"], ["リ","ri","ri"], ["ル","ru","ru"], ["レ","re","re"], ["ロ","ro","ro"],
+    ["ワ","wa","wa"], ["ヲ","wo","wo"], ["ン","n","n"],
+  ],
+  "カタカナ ガ行 (濁音)": [
+    ["ガ","ga","ga"], ["ギ","gi","gi"], ["グ","gu","gu"], ["ゲ","ge","ge"], ["ゴ","go","go"],
+  ],
+  "カタカナ ザ行 (濁音)": [
+    ["ザ","za","za"], ["ジ","ji","ji"], ["ズ","zu","zu"], ["ゼ","ze","ze"], ["ゾ","zo","zo"],
+  ],
+  "カタカナ ダ行 (濁音)": [
+    ["ダ","da","da"], ["ヂ","di","di"], ["ヅ","du","du"], ["デ","de","de"], ["ド","do","do"],
+  ],
+  "カタカナ バ行 (濁音)": [
+    ["バ","ba","ba"], ["ビ","bi","bi"], ["ブ","bu","bu"], ["ベ","be","be"], ["ボ","bo","bo"],
+  ],
+  "カタカナ パ行 (半濁音)": [
+    ["パ","pa","pa"], ["ピ","pi","pi"], ["プ","pu","pu"], ["ペ","pe","pe"], ["ポ","po","po"],
+  ],
+  "カタカナ 拗音 (Combo)": [
+    ["キャ","kya","kya"], ["キュ","kyu","kyu"], ["キョ","kyo","kyo"],
+    ["シャ","sha","sha"], ["シュ","shu","shu"], ["ショ","sho","sho"],
+    ["チャ","cha","cha"], ["チュ","chu","chu"], ["チョ","cho","cho"],
+    ["ニャ","nya","nya"], ["ニュ","nyu","nyu"], ["ニョ","nyo","nyo"],
+    ["ヒャ","hya","hya"], ["ヒュ","hyu","hyu"], ["ヒョ","hyo","hyo"],
+    ["ミャ","mya","mya"], ["ミュ","myu","myu"], ["ミョ","myo","myo"],
+    ["リャ","rya","rya"], ["リュ","ryu","ryu"], ["リョ","ryo","ryo"],
+    ["ギャ","gya","gya"], ["ギュ","gyu","gyu"], ["ギョ","gyo","gyo"],
+    ["ジャ","ja","ja"],   ["ジュ","ju","ju"],   ["ジョ","jo","jo"],
+    ["ビャ","bya","bya"], ["ビュ","byu","byu"], ["ビョ","byo","byo"],
+    ["ピャ","pya","pya"], ["ピュ","pyu","pyu"], ["ピョ","pyo","pyo"],
+  ],
+  "Classroom Objects (教室)": [
+    ["カーテン", "kaaten", "curtain"],
+    ["でんき", "denki", "light"],
+    ["こくばん", "kokuban", "blackboard"],
+    ["えんぴつ", "enpitsu", "pencil"],
+    ["じしょ", "jisho", "dictionary"],
+    ["ほん", "hon", "book"],
+    ["ドア", "doa", "door"],
+    ["まど", "mado", "window"],
+    ["けしゴム", "keshigomu", "eraser"],
+    ["いす", "isu", "chair"],
+  ],
+  "Classroom Phrases (教室用語)": [
+    ["きいてください", "kiite kudasai", "Please listen"],
+    ["みてください", "mite kudasai", "Please look"],
+    ["わかりましたか", "wakarimashita ka", "Did you understand?"],
+    ["わかりました", "wakarimashita", "I understood"],
+    ["わかりません", "wakarimasen", "I don't understand"],
+    ["もういちどいってください", "moo ichido itte kudasai", "Please say it one more time"],
+    ["ゆっくりいってください", "yukkuri itte kudasai", "Please say it slowly"],
+    ["ちょっとまってください", "chotto matte kudasai", "Please wait a moment"],
+  ],
+  "Words That Point (指示詞)": [
+    ["これ", "kore", "this one"],
+    ["それ", "sore", "that one"],
+    ["あれ", "are", "that one (over there)"],
+    ["どれ", "dore", "which one"],
+    ["この", "kono", "this ..."],
+    ["その", "sono", "that ..."],
+    ["あの", "ano", "that ... (over there)"],
+    ["どの", "dono", "which ..."],
+    ["ここ", "koko", "here"],
+    ["そこ", "soko", "there"],
+    ["あそこ", "asoko", "over there"],
+    ["どこ", "doko", "where"],
+    ["だれ", "dare", "who"],
+  ],
+  "Food (食べ物)": [
+    ["おいしい", "oishii", "delicious"],
+    ["さかな", "sakana", "fish"],
+    ["とんかつ", "tonkatsu", "pork cutlet"],
+    ["にく", "niku", "meat"],
+    ["メニュー", "menyuu", "menu"],
+    ["やさい", "yasai", "vegetable"],
+  ],
+  "Things (物)": [
+    ["かさ", "kasa", "umbrella"],
+    ["かばん", "kaban", "bag"],
+    ["くつ", "kutsu", "shoes"],
+    ["さいふ", "saifu", "wallet"],
+    ["ジーンズ", "jiinzu", "jeans"],
+    ["じてんしゃ", "jitensha", "bicycle"],
+    ["しんぶん", "shinbun", "newspaper"],
+    ["スマホ", "sumaho", "smartphone"],
+    ["Tシャツ", "tiishatsu", "T-shirt"],
+    ["とけい", "tokei", "watch; clock"],
+    ["ノート", "nooto", "notebook"],
+    ["ペン", "pen", "pen"],
+    ["ぼうし", "boushi", "hat; cap"],
+    ["ほん", "hon", "book"],
+  ],
+  "Places (場所)": [
+    ["ぎんこう", "ginkoo", "bank"],
+    ["コンビニ", "konbini", "convenience store"],
+    ["トイレ", "toire", "toilet; restroom"],
+    ["としょかん", "toshokan", "library"],
+    ["ゆうびんきょく", "yuubinkyoku", "post office"],
+    ["えいご", "eigo", "English"],
+    ["けいざい", "keizai", "economics"],
+    ["れきし", "rekishi", "history"],
+  ],
+  "Money & Expressions (お金・表現)": [
+    ["いくら", "ikura", "how much"],
+    ["えん", "en", "...yen"],
+    ["たかい", "takai", "expensive; high"],
+    ["いらっしゃいませ", "irasshaimase", "Welcome (to our store)"],
+    ["おねがいします", "onegaishimasu", "..., please"],
+    ["ください", "kudasai", "Please give me ..."],
+    ["じゃあ", "jaa", "then; if that is the case"],
+    ["どうぞ", "douzo", "Please; Here it is"],
+    ["どうも", "doumo", "Thank you"],
+  ],
+};
+
+const WEEK_GROUPS = {
+  "Week 1+2": [
+    "Greetings (挨拶)", "Age (年齢)", "School Year (学年)", "School (学校)",
+    "Person (人)", "Time (時間)", "Phone (電話)", "Numbers (数字)", "Others (その他)",
+    "Expressions (表現)", "Countries (国)", "Majors (専攻)", "Occupations (職業)", "Family (家族)",
+    "あ行", "か行 (清音)", "さ行 (清音)", "た行 (清音)", "な行",
+    "は行 (清音)", "ま行", "や行～ん",
+    "が行 (濁音)", "ざ行 (濁音)", "だ行 (濁音)", "ば行 (濁音)",
+    "ぱ行 (半濁音)", "拗音 (Combo)",
+  ],
+  "Week 3": [
+    "カタカナ ア行", "カタカナ カ行", "カタカナ サ行", "カタカナ タ行", "カタカナ ナ行",
+    "カタカナ ハ行", "カタカナ マ行", "カタカナ ヤ行～ン",
+    "カタカナ ガ行 (濁音)", "カタカナ ザ行 (濁音)", "カタカナ ダ行 (濁音)", "カタカナ バ行 (濁音)",
+    "カタカナ パ行 (半濁音)", "カタカナ 拗音 (Combo)",
+    "Classroom Objects (教室)", "Classroom Phrases (教室用語)",
+    "Words That Point (指示詞)", "Food (食べ物)", "Things (物)",
+    "Places (場所)", "Money & Expressions (お金・表現)", "Numbers (数字)",
+  ],
+};
+
+// ===================================================================
+// STATE
+// ===================================================================
+let mode = "jp2romaji";
+let selectedCats = new Set();
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let answered = 0;
+let isAnswered = false;
+let wrongAnswers = [];
+
+// ===================================================================
+// LOCALSTORAGE MISTAKES
+// ===================================================================
+const MISTAKES_KEY = "jp_practice_mistakes";
+const MISTAKES_MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+
+function loadMistakes() {
+  try {
+    const raw = localStorage.getItem(MISTAKES_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    const now = Date.now();
+    const filtered = data.filter(m => (now - m.timestamp) < MISTAKES_MAX_AGE_MS);
+    if (filtered.length !== data.length) saveMistakes(filtered);
+    return filtered;
+  } catch (e) { return []; }
+}
+
+function saveMistakes(mistakes) {
+  localStorage.setItem(MISTAKES_KEY, JSON.stringify(mistakes));
+}
+
+function addMistakes(newMistakes, quizMode) {
+  let existing = loadMistakes();
+  const now = Date.now();
+  for (const m of newMistakes) {
+    existing = existing.filter(e => !(e.jp === m.jp && e.mode === quizMode));
+    existing.push({
+      jp: m.jp, romaji: m.romaji, english: m.english,
+      category: m.category, mode: quizMode, timestamp: now
+    });
+  }
+  saveMistakes(existing);
+}
+
+// ===================================================================
+// SETUP
+// ===================================================================
+function initSetup() {
+  const grid = document.getElementById("catGrid");
+  grid.innerHTML = "";
+
+  for (const [weekName, cats] of Object.entries(WEEK_GROUPS)) {
+    const section = document.createElement("div");
+    section.className = "week-section";
+
+    const header = document.createElement("div");
+    header.className = "week-header";
+    header.innerHTML = `<h3>${weekName}</h3>
+      <div class="week-actions">
+        <button onclick="selectWeek('${weekName}', true)">Select All</button>
+        <button onclick="selectWeek('${weekName}', false)">Deselect All</button>
+      </div>`;
+    section.appendChild(header);
+
+    const chipGrid = document.createElement("div");
+    chipGrid.className = "cat-grid";
+    chipGrid.dataset.week = weekName;
+
+    for (const cat of cats) {
+      const items = DATA[cat];
+      if (!items) continue;
+      const chip = document.createElement("div");
+      chip.className = "cat-chip";
+      chip.innerHTML = `${cat} <span class="count">(${items.length})</span>`;
+      chip.dataset.cat = cat;
+      chip.dataset.week = weekName;
+      chip.onclick = () => {
+        chip.classList.toggle("active");
+        if (selectedCats.has(cat)) selectedCats.delete(cat);
+        else selectedCats.add(cat);
+        updateStartBtn();
+      };
+      chipGrid.appendChild(chip);
+    }
+
+    section.appendChild(chipGrid);
+    grid.appendChild(section);
+  }
+
+  updateStartBtn();
+  updateRecentMistakesUI();
+
+  document.querySelectorAll(".mode-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      mode = btn.dataset.mode;
+    };
+  });
+}
+
+function selectWeek(weekName, on) {
+  document.querySelectorAll(`.cat-chip[data-week="${weekName}"]`).forEach(c => {
+    if (on) { c.classList.add("active"); selectedCats.add(c.dataset.cat); }
+    else { c.classList.remove("active"); selectedCats.delete(c.dataset.cat); }
+  });
+  updateStartBtn();
+}
+
+function selectAll() {
+  document.querySelectorAll(".cat-chip").forEach(c => { c.classList.add("active"); selectedCats.add(c.dataset.cat); });
+  updateStartBtn();
+}
+function selectNone() {
+  document.querySelectorAll(".cat-chip").forEach(c => { c.classList.remove("active"); selectedCats.delete(c.dataset.cat); });
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  const total = [...selectedCats].reduce((s, c) => s + DATA[c].length, 0);
+  const btn = document.getElementById("startBtn");
+  btn.disabled = total === 0;
+  btn.textContent = total > 0 ? `Start Practice (${total} questions)` : "Select categories first";
+}
+
+// ===================================================================
+// QUIZ
+// ===================================================================
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startQuiz() {
+  questions = [];
+  for (const cat of selectedCats) {
+    for (const [jp, rom, eng] of DATA[cat]) {
+      questions.push({ jp, romaji: rom, english: eng, category: cat });
+    }
+  }
+  shuffle(questions);
+  currentQ = 0;
+  score = 0;
+  answered = 0;
+  isAnswered = false;
+  wrongAnswers = [];
+
+  document.getElementById("setup").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  document.getElementById("result").style.display = "none";
+  document.getElementById("qTotal").textContent = questions.length;
+
+  showQuestion();
+}
+
+function showQuestion() {
+  if (currentQ >= questions.length) { showResult(); return; }
+  const q = questions[currentQ];
+  isAnswered = false;
+
+  const input = document.getElementById("answerInput");
+  input.value = "";
+  input.className = "";
+  input.readOnly = false;
+
+  document.getElementById("answerReveal").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("showBtn").style.display = "";
+  document.getElementById("skipBtn").style.display = "";
+  document.getElementById("qNum").textContent = currentQ + 1;
+  document.getElementById("scoreNum").textContent = score;
+  document.getElementById("scoreDen").textContent = answered;
+  document.getElementById("progressFill").style.width = ((currentQ / questions.length) * 100) + "%";
+
+  const pJP = document.getElementById("promptJP");
+  const pRom = document.getElementById("promptRomaji");
+  const pEng = document.getElementById("promptEng");
+  const pLabel = document.getElementById("promptLabel");
+  const pCat = document.getElementById("promptCat");
+  const hint = document.getElementById("imeHint");
+
+  pJP.textContent = "";
+  pRom.textContent = "";
+  pEng.textContent = "";
+  pCat.textContent = q.category;
+
+  if (mode === "jp2romaji") {
+    pLabel.textContent = "Type the romaji";
+    pJP.textContent = q.jp;
+    input.placeholder = "Type romaji here...";
+    hint.textContent = "💡 Switch to English keyboard (ABC)";
+  } else {
+    pLabel.textContent = "Type the hiragana";
+    pEng.textContent = q.english;
+    input.placeholder = "Type hiragana here...";
+    hint.textContent = "💡 Switch to Japanese keyboard (かな / Hiragana)";
+  }
+
+  input.focus();
+}
+
+function normalize(str) {
+  return str.toLowerCase().trim()
+    .replace(/\s+/g, " ")
+    .replace(/[。、．]/g, "")
+    .replace(/～/g, "~")
+    .replace(/（/g, "(").replace(/）/g, ")")
+    .replace(/\u3000/g, " ");
+}
+
+function checkAnswer() {
+  if (isAnswered) return;
+  const input = document.getElementById("answerInput");
+  const userAns = normalize(input.value);
+  if (!userAns) return;
+
+  const q = questions[currentQ];
+  let correctAns;
+
+  if (mode === "jp2romaji") {
+    correctAns = normalize(q.romaji);
+  } else {
+    correctAns = normalize(q.jp);
+  }
+
+  // Also accept without spaces for multi-word romaji
+  const altCorrect = correctAns.replace(/\s/g, "");
+  const userNoSpace = userAns.replace(/\s/g, "");
+
+  if (userAns === correctAns || userNoSpace === altCorrect) {
+    input.className = "correct";
+    score++;
+    markAnswered(true);
+  } else {
+    input.className = "wrong";
+    wrongAnswers.push({ jp: q.jp, romaji: q.romaji, english: q.english, category: q.category });
+    markAnswered(false);
+    document.getElementById("correctAnswer").textContent =
+      mode === "jp2romaji" ? q.romaji : q.jp;
+    document.getElementById("answerReveal").style.display = "block";
+  }
+}
+
+function markAnswered(correct) {
+  isAnswered = true;
+  answered++;
+  document.getElementById("answerInput").readOnly = true;
+  document.getElementById("showBtn").style.display = "none";
+  document.getElementById("skipBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "inline-block";
+  document.getElementById("scoreNum").textContent = score;
+  document.getElementById("scoreDen").textContent = answered;
+}
+
+function showAnswer() {
+  const q = questions[currentQ];
+  wrongAnswers.push({ jp: q.jp, romaji: q.romaji, english: q.english, category: q.category });
+  const ans = mode === "jp2romaji" ? q.romaji : q.jp;
+  document.getElementById("correctAnswer").textContent = ans;
+  document.getElementById("answerReveal").style.display = "block";
+  markAnswered(false);
+  document.getElementById("answerInput").value = "";
+  document.getElementById("answerInput").className = "wrong";
+}
+
+function skipQuestion() {
+  currentQ++;
+  showQuestion();
+}
+
+function nextQuestion() {
+  currentQ++;
+  showQuestion();
+}
+
+// ===================================================================
+// RESULT
+// ===================================================================
+function showResult() {
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result").style.display = "block";
+
+  const pct = answered > 0 ? Math.round((score / answered) * 100) : 0;
+  document.getElementById("finalScore").textContent = `${score} / ${answered}`;
+  document.getElementById("resultDetail").textContent =
+    `${pct}% correct — ${questions.length} questions total`;
+
+  const emoji = document.getElementById("resultEmoji");
+  if (pct >= 90) emoji.textContent = "🎉";
+  else if (pct >= 70) emoji.textContent = "👍";
+  else if (pct >= 50) emoji.textContent = "💪";
+  else emoji.textContent = "📚";
+
+  // Persist mistakes to localStorage
+  try {
+    if (wrongAnswers.length > 0) addMistakes(wrongAnswers, mode);
+  } catch(e) { console.error(e); }
+
+  // Render mistakes list
+  const ml = document.getElementById("mistakesList");
+  if (wrongAnswers.length > 0) {
+    let html = `<h3>間違えた問題 (${wrongAnswers.length})</h3>`;
+    for (const m of wrongAnswers) {
+      html += `<div class="mistake-item">
+        <div>
+          <div class="mistake-jp">${m.jp}</div>
+          <div class="mistake-cat">${m.category}</div>
+        </div>
+        <div class="mistake-answer">${mode === "jp2romaji" ? m.romaji : m.english}</div>
+      </div>`;
+    }
+    ml.innerHTML = html;
+  } else {
+    ml.innerHTML = '<h3 style="color:#4caf50;">Perfect! No mistakes! 🎉</h3>';
+  }
+}
+
+function backToSetup() {
+  document.getElementById("result").style.display = "none";
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("setup").style.display = "block";
+  try { updateRecentMistakesUI(); } catch(e) { console.error(e); }
+}
+
+// ===================================================================
+// RECENT MISTAKES UI
+// ===================================================================
+function updateRecentMistakesUI() {
+  const mistakes = loadMistakes();
+  const section = document.getElementById("recentMistakes");
+  if (mistakes.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
+  document.getElementById("mistakesCount").textContent =
+    `${mistakes.length} words from the last 3 days`;
+}
+
+function startMistakesPractice() {
+  const mistakes = loadMistakes();
+  if (mistakes.length === 0) return;
+
+  questions = mistakes.map(m => ({
+    jp: m.jp, romaji: m.romaji, english: m.english, category: m.category
+  }));
+  shuffle(questions);
+  currentQ = 0;
+  score = 0;
+  answered = 0;
+  isAnswered = false;
+  wrongAnswers = [];
+
+  document.getElementById("setup").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  document.getElementById("result").style.display = "none";
+  document.getElementById("qTotal").textContent = questions.length;
+  showQuestion();
+}
+
+function clearMistakes() {
+  localStorage.removeItem(MISTAKES_KEY);
+  updateRecentMistakesUI();
+}
+
+// ===================================================================
+// INPUT HANDLING
+// ===================================================================
+const input = document.getElementById("answerInput");
+
+// Handle Enter key
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    if (isAnswered) {
+      nextQuestion();
+    } else {
+      checkAnswer();
+    }
+  }
+});
+
+// Handle IME composition (for Japanese input)
+let composing = false;
+input.addEventListener("compositionstart", () => { composing = true; });
+input.addEventListener("compositionend", () => { composing = false; });
+
+// ===================================================================
+// INIT
+// ===================================================================
+initSetup();
+</script>
+</body>
+</html>

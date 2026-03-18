@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数字練習 — Number Practice</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.header {
+  background: #16213e;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #0f3460;
+}
+.header h1 { font-size: 28px; color: #e94560; margin-bottom: 4px; }
+.header .sub { font-size: 13px; color: #888; }
+
+/* ---- Setup ---- */
+.setup {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+.setup h2 {
+  font-size: 18px;
+  color: #e94560;
+  margin-bottom: 12px;
+}
+.option-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.opt-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 14px 10px;
+  background: #16213e;
+  border: 2px solid #333;
+  border-radius: 12px;
+  color: #ccc;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.opt-btn:hover { border-color: #e94560; }
+.opt-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+.opt-btn .icon { font-size: 24px; display: block; margin-bottom: 6px; }
+.opt-btn .title { font-size: 14px; font-weight: bold; }
+.opt-btn .desc { font-size: 11px; color: #aaa; margin-top: 4px; }
+.opt-btn.active .desc { color: #ffcdd2; }
+
+.range-btn {
+  padding: 10px 18px;
+  background: #16213e;
+  border: 2px solid #333;
+  border-radius: 10px;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.range-btn:hover { border-color: #e94560; }
+.range-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+
+.start-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background 0.2s;
+}
+.start-btn:hover { background: #c73650; }
+
+/* ---- Quiz ---- */
+.quiz {
+  display: none;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: none;
+  border: 1px solid #444;
+  color: #aaa;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+.back-btn:hover { border-color: #e94560; color: #e94560; }
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #16213e;
+  border-radius: 3px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: #e94560;
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #888;
+}
+.stats .score { color: #4caf50; font-weight: bold; }
+.stats .total { color: #e94560; }
+
+.prompt-card {
+  background: #16213e;
+  border-radius: 16px;
+  padding: 40px 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.prompt-label {
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #888;
+  margin-bottom: 16px;
+}
+.prompt-main {
+  font-size: 48px;
+  font-weight: bold;
+  color: #e94560;
+  line-height: 1.3;
+  word-break: break-all;
+}
+.prompt-number {
+  font-size: 64px;
+  font-weight: bold;
+  color: #e94560;
+}
+
+.ime-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.input-area input {
+  width: 100%;
+  padding: 16px 20px;
+  background: #0f3460;
+  border: 2px solid #333;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-area input:focus { border-color: #e94560; }
+.input-area input.correct { border-color: #4caf50; background: #1b3a1b; }
+.input-area input.wrong { border-color: #e94560; background: #3a1b1b; }
+
+.answer-reveal {
+  display: none;
+  margin-top: 12px;
+  padding: 16px;
+  background: #1b3a1b;
+  border: 1px solid #4caf50;
+  border-radius: 10px;
+  text-align: center;
+}
+.answer-reveal .label { font-size: 13px; color: #888; margin-bottom: 4px; }
+.answer-reveal .answer { font-size: 28px; color: #4caf50; font-weight: bold; }
+
+.quiz-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+.quiz-actions button {
+  padding: 10px 24px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #16213e;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-actions button:hover { border-color: #e94560; color: #fff; }
+.quiz-actions .next-btn {
+  background: #e94560;
+  border-color: #e94560;
+  color: #fff;
+  display: none;
+}
+.quiz-actions .next-btn:hover { background: #c73650; }
+
+/* ---- Result ---- */
+.result {
+  display: none;
+  max-width: 500px;
+  margin: 60px auto;
+  text-align: center;
+  padding: 20px;
+}
+.result .emoji { font-size: 64px; margin-bottom: 16px; }
+.result h2 { font-size: 28px; color: #e94560; margin-bottom: 8px; }
+.result .final-score { font-size: 48px; color: #4caf50; font-weight: bold; margin: 16px 0; }
+.result .detail { font-size: 16px; color: #888; margin-bottom: 24px; }
+.result .retry-btn {
+  padding: 14px 40px;
+  background: #e94560;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.result .retry-btn:hover { background: #c73650; }
+
+.mistakes-list { margin-top: 24px; text-align: left; }
+.mistakes-list h3 { color: #e94560; margin-bottom: 12px; text-align: center; }
+.mistake-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #16213e;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.mistake-jp { color: #e94560; font-size: 18px; font-weight: bold; }
+.mistake-num { color: #888; font-size: 13px; }
+.mistake-answer { color: #4caf50; font-size: 16px; font-weight: bold; }
+
+@media (max-width: 500px) {
+  .prompt-main { font-size: 32px; }
+  .prompt-number { font-size: 48px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>数字練習</h1>
+  <div class="sub">Japanese Number Practice (1 – 100,000)</div>
+</div>
+
+<!-- ===== SETUP ===== -->
+<div class="setup" id="setup">
+  <h2>Mode</h2>
+  <div class="option-group" id="modeGroup">
+    <div class="opt-btn active" data-mode="jp2num">
+      <span class="icon">🇯🇵→🔢</span>
+      <div class="title">日文 → 数字</div>
+      <div class="desc">See hiragana, type the number</div>
+    </div>
+    <div class="opt-btn" data-mode="num2romaji">
+      <span class="icon">🔢→🔤</span>
+      <div class="title">数字 → Romaji</div>
+      <div class="desc">See number, type romaji</div>
+    </div>
+  </div>
+
+  <h2>Range</h2>
+  <div class="option-group" id="rangeGroup">
+    <div class="range-btn" data-max="10">1–10</div>
+    <div class="range-btn active" data-max="100">1–100</div>
+    <div class="range-btn" data-max="1000">1–1,000</div>
+    <div class="range-btn" data-max="10000">1–10,000</div>
+    <div class="range-btn" data-max="100000">1–100,000</div>
+  </div>
+
+  <h2>Questions</h2>
+  <div class="option-group" id="countGroup">
+    <div class="range-btn active" data-count="10">10</div>
+    <div class="range-btn" data-count="20">20</div>
+    <div class="range-btn" data-count="50">50</div>
+  </div>
+
+  <button class="start-btn" onclick="startQuiz()">Start Practice</button>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="quiz" id="quiz">
+  <button class="back-btn" onclick="backToSetup()">← Back</button>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="stats">
+    <span>Question <span id="qNum">1</span> / <span id="qTotal">0</span></span>
+    <span>Score: <span class="score" id="scoreNum">0</span> / <span class="total" id="scoreDen">0</span></span>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-label" id="promptLabel"></div>
+    <div class="prompt-main" id="promptMain"></div>
+    <div class="prompt-number" id="promptNumber"></div>
+  </div>
+
+  <div class="ime-hint" id="imeHint"></div>
+
+  <div class="input-area">
+    <input type="text" id="answerInput" autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>
+
+  <div class="answer-reveal" id="answerReveal">
+    <div class="label">Correct answer:</div>
+    <div class="answer" id="correctAnswer"></div>
+  </div>
+
+  <div class="quiz-actions">
+    <button onclick="showAnswer()" id="showBtn">Show Answer</button>
+    <button onclick="skipQuestion()" id="skipBtn">Skip</button>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+  </div>
+</div>
+
+<!-- ===== RESULT ===== -->
+<div class="result" id="result">
+  <div class="emoji" id="resultEmoji"></div>
+  <h2>Practice Complete!</h2>
+  <div class="final-score" id="finalScore"></div>
+  <div class="detail" id="resultDetail"></div>
+  <div class="mistakes-list" id="mistakesList"></div>
+  <button class="retry-btn" onclick="backToSetup()">Practice Again</button>
+</div>
+
+<script>
+// ===================================================================
+// NUMBER ↔ JAPANESE CONVERTER
+// ===================================================================
+const ONES_H = ["","いち","に","さん","よん","ご","ろく","なな","はち","きゅう"];
+const ONES_R = ["","ichi","ni","san","yon","go","roku","nana","hachi","kyuu"];
+
+const HYAKU_H = ["","ひゃく","にひゃく","さんびゃく","よんひゃく","ごひゃく","ろっぴゃく","ななひゃく","はっぴゃく","きゅうひゃく"];
+const HYAKU_R = ["","hyaku","nihyaku","sanbyaku","yonhyaku","gohyaku","roppyaku","nanahyaku","happyaku","kyuuhyaku"];
+
+const SEN_H = ["","せん","にせん","さんぜん","よんせん","ごせん","ろくせん","ななせん","はっせん","きゅうせん"];
+const SEN_R = ["","sen","nisen","sanzen","yonsen","gosen","rokusen","nanasen","hassen","kyuusen"];
+
+const MAN_H = ["","いちまん","にまん","さんまん","よんまん","ごまん","ろくまん","ななまん","はちまん","きゅうまん"];
+const MAN_R = ["","ichiman","niman","sanman","yonman","goman","rokuman","nanaman","hachiman","kyuuman"];
+
+const JUU_H = ["","じゅう","にじゅう","さんじゅう","よんじゅう","ごじゅう","ろくじゅう","ななじゅう","はちじゅう","きゅうじゅう"];
+const JUU_R = ["","juu","nijuu","sanjuu","yonjuu","gojuu","rokujuu","nanajuu","hachijuu","kyuujuu"];
+
+function numberToJapanese(n) {
+  if (n === 0) return { hiragana: "ゼロ", romaji: "zero" };
+  if (n === 100000) return { hiragana: "じゅうまん", romaji: "juuman" };
+
+  let h = "", r = "";
+
+  const man = Math.floor(n / 10000);
+  const sen = Math.floor((n % 10000) / 1000);
+  const hyaku = Math.floor((n % 1000) / 100);
+  const juu = Math.floor((n % 100) / 10);
+  const ichi = n % 10;
+
+  if (man > 0) { h += MAN_H[man]; r += MAN_R[man]; }
+  if (sen > 0) { h += SEN_H[sen]; r += (r ? " " : "") + SEN_R[sen]; }
+  if (hyaku > 0) { h += HYAKU_H[hyaku]; r += (r ? " " : "") + HYAKU_R[hyaku]; }
+  if (juu > 0) { h += JUU_H[juu]; r += (r ? " " : "") + JUU_R[juu]; }
+  if (ichi > 0) { h += ONES_H[ichi]; r += (r ? " " : "") + ONES_R[ichi]; }
+
+  return { hiragana: h, romaji: r };
+}
+
+// ===================================================================
+// STATE
+// ===================================================================
+let mode = "jp2num";
+let maxRange = 100;
+let questionCount = 10;
+let questions = [];
+let currentQ = 0;
+let score = 0;
+let answered = 0;
+let isAnswered = false;
+let wrongAnswers = [];
+
+// ===================================================================
+// SETUP
+// ===================================================================
+function initSetup() {
+  document.querySelectorAll("#modeGroup .opt-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("#modeGroup .opt-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      mode = btn.dataset.mode;
+    };
+  });
+  document.querySelectorAll("#rangeGroup .range-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("#rangeGroup .range-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      maxRange = parseInt(btn.dataset.max);
+    };
+  });
+  document.querySelectorAll("#countGroup .range-btn").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll("#countGroup .range-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      questionCount = parseInt(btn.dataset.count);
+    };
+  });
+}
+
+// ===================================================================
+// QUIZ
+// ===================================================================
+function generateQuestions() {
+  const nums = new Set();
+  while (nums.size < questionCount) {
+    nums.add(Math.floor(Math.random() * maxRange) + 1);
+  }
+  questions = [...nums].map(n => {
+    const jp = numberToJapanese(n);
+    return { number: n, hiragana: jp.hiragana, romaji: jp.romaji };
+  });
+  // Shuffle
+  for (let i = questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [questions[i], questions[j]] = [questions[j], questions[i]];
+  }
+}
+
+function startQuiz() {
+  generateQuestions();
+  currentQ = 0;
+  score = 0;
+  answered = 0;
+  isAnswered = false;
+  wrongAnswers = [];
+
+  document.getElementById("setup").style.display = "none";
+  document.getElementById("quiz").style.display = "block";
+  document.getElementById("result").style.display = "none";
+  document.getElementById("qTotal").textContent = questions.length;
+
+  showQuestion();
+}
+
+function showQuestion() {
+  if (currentQ >= questions.length) { showResult(); return; }
+  const q = questions[currentQ];
+  isAnswered = false;
+
+  const input = document.getElementById("answerInput");
+  input.value = "";
+  input.className = "";
+  input.readOnly = false;
+
+  document.getElementById("answerReveal").style.display = "none";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("showBtn").style.display = "";
+  document.getElementById("skipBtn").style.display = "";
+  document.getElementById("qNum").textContent = currentQ + 1;
+  document.getElementById("scoreNum").textContent = score;
+  document.getElementById("scoreDen").textContent = answered;
+  document.getElementById("progressFill").style.width = ((currentQ / questions.length) * 100) + "%";
+
+  const pMain = document.getElementById("promptMain");
+  const pNum = document.getElementById("promptNumber");
+  const pLabel = document.getElementById("promptLabel");
+  const hint = document.getElementById("imeHint");
+
+  pMain.textContent = "";
+  pNum.textContent = "";
+  pMain.style.display = "none";
+  pNum.style.display = "none";
+
+  if (mode === "jp2num") {
+    pLabel.textContent = "Type the number";
+    pMain.textContent = q.hiragana;
+    pMain.style.display = "";
+    input.placeholder = "Type number here...";
+    hint.textContent = "💡 Switch to English keyboard (ABC)";
+    input.inputMode = "numeric";
+  } else {
+    pLabel.textContent = "Type the romaji";
+    pNum.textContent = q.number.toLocaleString();
+    pNum.style.display = "";
+    input.placeholder = "Type romaji here...";
+    hint.textContent = "💡 Switch to English keyboard (ABC)";
+    input.inputMode = "text";
+  }
+
+  input.focus();
+}
+
+function normalize(str) {
+  return str.toLowerCase().trim().replace(/\s+/g, " ").replace(/,/g, "");
+}
+
+function checkAnswer() {
+  if (isAnswered) return;
+  const input = document.getElementById("answerInput");
+  const userAns = normalize(input.value);
+  if (!userAns) return;
+
+  const q = questions[currentQ];
+  let correct = false;
+
+  if (mode === "jp2num") {
+    const userNum = parseInt(userAns.replace(/[^0-9]/g, ""), 10);
+    correct = (userNum === q.number);
+  } else {
+    const correctAns = normalize(q.romaji);
+    const altCorrect = correctAns.replace(/\s/g, "");
+    const userNoSpace = userAns.replace(/\s/g, "");
+    correct = (userAns === correctAns || userNoSpace === altCorrect);
+  }
+
+  if (correct) {
+    input.className = "correct";
+    score++;
+    markAnswered();
+  } else {
+    input.className = "wrong";
+    wrongAnswers.push(q);
+    markAnswered();
+    const correctText = mode === "jp2num"
+      ? q.number.toLocaleString()
+      : q.romaji;
+    document.getElementById("correctAnswer").textContent = correctText;
+    document.getElementById("answerReveal").style.display = "block";
+  }
+}
+
+function markAnswered() {
+  isAnswered = true;
+  answered++;
+  document.getElementById("answerInput").readOnly = true;
+  document.getElementById("showBtn").style.display = "none";
+  document.getElementById("skipBtn").style.display = "none";
+  document.getElementById("nextBtn").style.display = "inline-block";
+  document.getElementById("scoreNum").textContent = score;
+  document.getElementById("scoreDen").textContent = answered;
+}
+
+function showAnswer() {
+  const q = questions[currentQ];
+  const ans = mode === "jp2num" ? q.number.toLocaleString() : q.romaji;
+  document.getElementById("correctAnswer").textContent = ans;
+  document.getElementById("answerReveal").style.display = "block";
+  wrongAnswers.push(q);
+  markAnswered();
+  document.getElementById("answerInput").value = "";
+  document.getElementById("answerInput").className = "wrong";
+}
+
+function skipQuestion() {
+  currentQ++;
+  showQuestion();
+}
+
+function nextQuestion() {
+  currentQ++;
+  showQuestion();
+}
+
+// ===================================================================
+// RESULT
+// ===================================================================
+function showResult() {
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("result").style.display = "block";
+
+  const pct = answered > 0 ? Math.round((score / answered) * 100) : 0;
+  document.getElementById("finalScore").textContent = score + " / " + answered;
+  document.getElementById("resultDetail").textContent =
+    pct + "% correct — " + questions.length + " questions total";
+
+  const emoji = document.getElementById("resultEmoji");
+  if (pct >= 90) emoji.textContent = "🎉";
+  else if (pct >= 70) emoji.textContent = "👍";
+  else if (pct >= 50) emoji.textContent = "💪";
+  else emoji.textContent = "📚";
+
+  const ml = document.getElementById("mistakesList");
+  if (wrongAnswers.length > 0) {
+    let html = '<h3>間違えた問題 (' + wrongAnswers.length + ')</h3>';
+    for (const m of wrongAnswers) {
+      html += '<div class="mistake-item">' +
+        '<div>' +
+          '<div class="mistake-jp">' + m.hiragana + '</div>' +
+          '<div class="mistake-num">' + m.number.toLocaleString() + '</div>' +
+        '</div>' +
+        '<div class="mistake-answer">' + m.romaji + '</div>' +
+      '</div>';
+    }
+    ml.innerHTML = html;
+  } else {
+    ml.innerHTML = '<h3 style="color:#4caf50;">Perfect! No mistakes! 🎉</h3>';
+  }
+}
+
+function backToSetup() {
+  document.getElementById("result").style.display = "none";
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("setup").style.display = "block";
+}
+
+// ===================================================================
+// INPUT
+// ===================================================================
+const input = document.getElementById("answerInput");
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    if (isAnswered) {
+      nextQuestion();
+    } else {
+      checkAnswer();
+    }
+  }
+});
+
+// ===================================================================
+// INIT
+// ===================================================================
+initSetup();
+</script>
+</body>
+</html>
