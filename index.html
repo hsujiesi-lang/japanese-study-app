@@ -188,6 +188,19 @@
     padding:10px 14px; background:#16213e; border-radius:8px; margin-bottom:6px; }
   .po-mi .jp { color:#e94560; font-size:18px; font-weight:bold; }
   .po-mi .a { color:#4caf50; font-size:16px; }
+  /* Number practice options */
+  .po-num { text-align:center; padding:40px 20px; }
+  .po-num h2 { color:#e94560; margin-bottom:20px; font-size:22px; }
+  .po-num h3 { color:#888; font-size:14px; margin:20px 0 10px; text-transform:uppercase; letter-spacing:1px; }
+  .po-opt-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:8px; }
+  .po-range-btn, .po-count-btn {
+    padding:10px 18px; background:#16213e; border:2px solid #333; border-radius:10px;
+    color:#ccc; font-size:14px; cursor:pointer; transition:all .2s;
+  }
+  .po-range-btn:hover, .po-count-btn:hover { border-color:#e94560; color:#fff; }
+  .po-range-btn.active, .po-count-btn.active { background:#e94560; border-color:#e94560; color:#fff; }
+  .po-num-start { margin-top:24px; }
+  .po-num-start .po-mode-btn { max-width:300px; padding:14px; font-size:15px; }
 </style>
 </head>
 <body>
@@ -1175,12 +1188,43 @@ document.querySelectorAll('.tab-content').forEach(function(sec){
   }
 });
 
+// ===== NUMBER CONVERTER (from App C) =====
+var N_ONES_H=["","いち","に","さん","よん","ご","ろく","なな","はち","きゅう"];
+var N_ONES_R=["","ichi","ni","san","yon","go","roku","nana","hachi","kyuu"];
+var N_HYAKU_H=["","ひゃく","にひゃく","さんびゃく","よんひゃく","ごひゃく","ろっぴゃく","ななひゃく","はっぴゃく","きゅうひゃく"];
+var N_HYAKU_R=["","hyaku","nihyaku","sanbyaku","yonhyaku","gohyaku","roppyaku","nanahyaku","happyaku","kyuuhyaku"];
+var N_SEN_H=["","せん","にせん","さんぜん","よんせん","ごせん","ろくせん","ななせん","はっせん","きゅうせん"];
+var N_SEN_R=["","sen","nisen","sanzen","yonsen","gosen","rokusen","nanasen","hassen","kyuusen"];
+var N_MAN_H=["","いちまん","にまん","さんまん","よんまん","ごまん","ろくまん","ななまん","はちまん","きゅうまん"];
+var N_MAN_R=["","ichiman","niman","sanman","yonman","goman","rokuman","nanaman","hachiman","kyuuman"];
+var N_JUU_H=["","じゅう","にじゅう","さんじゅう","よんじゅう","ごじゅう","ろくじゅう","ななじゅう","はちじゅう","きゅうじゅう"];
+var N_JUU_R=["","juu","nijuu","sanjuu","yonjuu","gojuu","rokujuu","nanajuu","hachijuu","kyuujuu"];
+
+function numToJP(n){
+  if(n===0) return {hiragana:"ゼロ",romaji:"zero"};
+  if(n===100000) return {hiragana:"じゅうまん",romaji:"juuman"};
+  var h="",r="";
+  var man=Math.floor(n/10000), sen=Math.floor((n%10000)/1000);
+  var hyaku=Math.floor((n%1000)/100), juu=Math.floor((n%100)/10), ichi=n%10;
+  if(man>0){h+=N_MAN_H[man];r+=N_MAN_R[man];}
+  if(sen>0){h+=N_SEN_H[sen];r+=(r?" ":"")+N_SEN_R[sen];}
+  if(hyaku>0){h+=N_HYAKU_H[hyaku];r+=(r?" ":"")+N_HYAKU_R[hyaku];}
+  if(juu>0){h+=N_JUU_H[juu];r+=(r?" ":"")+N_JUU_R[juu];}
+  if(ichi>0){h+=N_ONES_H[ichi];r+=(r?" ":"")+N_ONES_R[ichi];}
+  return {hiragana:h,romaji:r};
+}
+
 // ===== PRACTICE OVERLAY =====
 var poQ=[],poI=0,poSc=0,poAns=0,poMode='jp2r',poIsAns=false,poWrong=[];
+var poIsNumTab=false, poNumRange=100, poNumCount=10;
 
 function startPractice(){
   var sec=document.querySelector('.tab-content.active');
   if(!sec) return;
+  // Detect if this is a number tab
+  poIsNumTab=(sec.id==='numbers3'||sec.id==='time'||sec.id==='phone');
+
+  // Scrape cards for vocab practice
   var cards=sec.querySelectorAll('.card');
   poQ=[];
   cards.forEach(function(c){
@@ -1194,7 +1238,6 @@ function startPractice(){
       if(jp&&rm) poQ.push({jp:jp,romaji:rm,english:en});
     }
   });
-  // Also scrape .sc and .pc (sentence/pattern cards)
   sec.querySelectorAll('.sc,.pc').forEach(function(c){
     var jpEl=c.querySelector('.jp');
     var rmEl=c.querySelector('.rm');
@@ -1206,12 +1249,57 @@ function startPractice(){
       if(jp&&rm) poQ.push({jp:jp,romaji:rm,english:en});
     }
   });
-  if(poQ.length===0) return;
+
   document.getElementById('poOverlay').style.display='block';
-  document.getElementById('poModeScreen').style.display='block';
   document.getElementById('poQuizScreen').style.display='none';
   document.getElementById('poResultScreen').style.display='none';
-  document.getElementById('poModeCount').textContent=poQ.length;
+
+  if(poIsNumTab){
+    // Show number mode picker with range
+    document.getElementById('poModeScreen').style.display='none';
+    document.getElementById('poNumScreen').style.display='block';
+    // Reset range button active states
+    document.querySelectorAll('.po-range-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelector('.po-range-btn[data-max="100"]').classList.add('active');
+    document.querySelectorAll('.po-count-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelector('.po-count-btn[data-count="10"]').classList.add('active');
+    poNumRange=100; poNumCount=10;
+  } else {
+    if(poQ.length===0) { document.getElementById('poOverlay').style.display='none'; return; }
+    document.getElementById('poNumScreen').style.display='none';
+    document.getElementById('poModeScreen').style.display='block';
+    document.getElementById('poModeCount').textContent=poQ.length;
+  }
+}
+
+function poSelectRange(btn,val){
+  document.querySelectorAll('.po-range-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  poNumRange=val;
+}
+function poSelectCount(btn,val){
+  document.querySelectorAll('.po-count-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  poNumCount=val;
+}
+
+function poStartNum(m){
+  poMode=m;
+  // Generate random numbers
+  var nums=new Set();
+  var maxQ=Math.min(poNumCount,poNumRange);
+  while(nums.size<maxQ) nums.add(Math.floor(Math.random()*poNumRange)+1);
+  poQ=[];
+  nums.forEach(function(n){
+    var jp=numToJP(n);
+    poQ.push({jp:jp.hiragana,romaji:jp.romaji,english:String(n),number:n});
+  });
+  poShuffle(poQ);
+  poI=0; poSc=0; poAns=0; poWrong=[]; poIsAns=false;
+  document.getElementById('poNumScreen').style.display='none';
+  document.getElementById('poQuizScreen').style.display='block';
+  document.getElementById('poTotal').textContent=poQ.length;
+  poShow();
 }
 
 function poStartMode(m){
@@ -1248,12 +1336,28 @@ function poShow(){
     sub.textContent=q.english||'';
     hint.textContent='Switch to English keyboard (ABC)';
     inp.placeholder='Type romaji...';
+    inp.inputMode='text';
+  } else if(poMode==='jp2num'){
+    label.textContent='TYPE THE NUMBER';
+    main.textContent=q.jp;
+    sub.textContent='';
+    hint.textContent='Switch to number keyboard';
+    inp.placeholder='Type number...';
+    inp.inputMode='numeric';
+  } else if(poMode==='num2r'){
+    label.textContent='TYPE THE ROMAJI';
+    main.textContent=q.number||q.english;
+    sub.textContent='';
+    hint.textContent='Switch to English keyboard (ABC)';
+    inp.placeholder='Type romaji...';
+    inp.inputMode='text';
   } else {
     label.textContent='TYPE IN JAPANESE';
     main.textContent=q.english||q.romaji;
     sub.textContent='';
     hint.textContent='Switch to Japanese keyboard';
     inp.placeholder='Type hiragana...';
+    inp.inputMode='text';
   }
   inp.focus();
 }
@@ -1271,7 +1375,29 @@ function poCheck(){
   var u=poNorm(inp.value);
   if(!u) return;
   var q=poQ[poI];
-  var correct=poMode==='jp2r'?poNorm(q.romaji):poNorm(q.jp);
+  var correct, displayCorrect;
+  if(poMode==='jp2num'){
+    // Compare as numbers
+    var userNum=parseInt(u.replace(/,/g,''));
+    if(userNum===q.number){
+      inp.className='ok'; poSc++;
+      poMarkDone(); return;
+    } else {
+      inp.className='ng'; poWrong.push(q);
+      document.getElementById('poCorrectAns').textContent=String(q.number);
+      document.getElementById('poReveal').style.display='block';
+      poMarkDone(); return;
+    }
+  } else if(poMode==='num2r'){
+    correct=poNorm(q.romaji);
+    displayCorrect=q.romaji;
+  } else if(poMode==='jp2r'){
+    correct=poNorm(q.romaji);
+    displayCorrect=q.romaji;
+  } else {
+    correct=poNorm(q.jp);
+    displayCorrect=q.jp;
+  }
   var uNs=u.replace(/\s/g,'');
   var cNs=correct.replace(/\s/g,'');
   if(u===correct||uNs===cNs){
@@ -1280,7 +1406,7 @@ function poCheck(){
   } else {
     inp.className='ng';
     poWrong.push(q);
-    document.getElementById('poCorrectAns').textContent=poMode==='jp2r'?q.romaji:q.jp;
+    document.getElementById('poCorrectAns').textContent=displayCorrect;
     document.getElementById('poReveal').style.display='block';
     poMarkDone();
   }
@@ -1312,7 +1438,11 @@ function poShowResult(){
   if(poWrong.length>0){
     var h='<h3>Mistakes ('+poWrong.length+')</h3>';
     poWrong.forEach(function(m){
-      h+='<div class="po-mi"><div class="jp">'+m.jp+'</div><div class="a">'+(poMode==='jp2r'?m.romaji:m.english)+'</div></div>';
+      var left=m.jp, right=m.romaji;
+      if(poMode==='jp2num') right=String(m.number||m.english);
+      else if(poMode==='num2r'){ left=String(m.number||m.english); right=m.romaji; }
+      else if(poMode==='en2jp'){ right=m.jp; }
+      h+='<div class="po-mi"><div class="jp">'+left+'</div><div class="a">'+right+'</div></div>';
     });
     ml.innerHTML=h;
   } else {
@@ -1326,7 +1456,11 @@ function closePractice(){
 
 function poRetry(){
   document.getElementById('poResultScreen').style.display='none';
-  document.getElementById('poModeScreen').style.display='block';
+  if(poIsNumTab){
+    document.getElementById('poNumScreen').style.display='block';
+  } else {
+    document.getElementById('poModeScreen').style.display='block';
+  }
 }
 
 // Enter key in overlay
@@ -1347,8 +1481,8 @@ document.addEventListener('keydown',function(e){
     </div>
   </div>
   <div class="po-body">
-    <!-- Mode picker -->
-    <div id="poModeScreen" class="po-mode">
+    <!-- Mode picker (vocab) -->
+    <div id="poModeScreen" class="po-mode" style="display:none">
       <h2>Practice Mode (<span id="poModeCount">0</span> words)</h2>
       <button class="po-mode-btn" onclick="poStartMode('jp2r')">
         <span class="icon">🇯🇵 → 🔤</span>
@@ -1358,6 +1492,35 @@ document.addEventListener('keydown',function(e){
         <span class="icon">🔤 → 🇯🇵</span>
         See English → Type Japanese
       </button>
+    </div>
+    <!-- Number practice picker -->
+    <div id="poNumScreen" class="po-num" style="display:none">
+      <h2>🔢 Number Practice</h2>
+      <h3>Range</h3>
+      <div class="po-opt-row">
+        <button class="po-range-btn" data-max="10" onclick="poSelectRange(this,10)">1 ~ 10</button>
+        <button class="po-range-btn active" data-max="100" onclick="poSelectRange(this,100)">1 ~ 100</button>
+        <button class="po-range-btn" data-max="1000" onclick="poSelectRange(this,1000)">1 ~ 1,000</button>
+        <button class="po-range-btn" data-max="10000" onclick="poSelectRange(this,10000)">1 ~ 10,000</button>
+        <button class="po-range-btn" data-max="100000" onclick="poSelectRange(this,100000)">1 ~ 100,000</button>
+      </div>
+      <h3>Questions</h3>
+      <div class="po-opt-row">
+        <button class="po-count-btn active" data-count="10" onclick="poSelectCount(this,10)">10</button>
+        <button class="po-count-btn" data-count="20" onclick="poSelectCount(this,20)">20</button>
+        <button class="po-count-btn" data-count="50" onclick="poSelectCount(this,50)">50</button>
+      </div>
+      <h3>Mode</h3>
+      <div class="po-num-start">
+        <button class="po-mode-btn" onclick="poStartNum('jp2num')">
+          <span class="icon">🇯🇵 → 🔢</span>
+          See Japanese → Type Number
+        </button>
+        <button class="po-mode-btn" onclick="poStartNum('num2r')">
+          <span class="icon">🔢 → 🔤</span>
+          See Number → Type Romaji
+        </button>
+      </div>
     </div>
     <!-- Quiz -->
     <div id="poQuizScreen" style="display:none">
