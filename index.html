@@ -122,10 +122,80 @@
     .card .jp { font-size: 1.1em; }
     main { padding: 10px; }
   }
+  /* App links */
+  .app-links { text-align:center; padding:6px 0; background:#16213e; }
+  .app-links a { color:#e94560; text-decoration:none; font-size:13px; margin:0 12px; }
+  .app-links a:hover { text-decoration:underline; }
+  /* Practice FAB */
+  .practice-fab {
+    display:block; width:calc(100% - 20px); max-width:500px; margin:24px auto 10px;
+    padding:14px; background:#e94560; color:#fff; border:none; border-radius:12px;
+    font-size:16px; font-weight:bold; cursor:pointer; letter-spacing:1px;
+  }
+  .practice-fab:hover { background:#c73650; }
+  /* Practice Overlay */
+  .po { position:fixed; inset:0; z-index:200; background:#1a1a2e; color:#e0e0e0;
+    overflow-y:auto; font-family:inherit; display:none; }
+  .po-top { background:#16213e; padding:14px 16px; border-bottom:2px solid #0f3460;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .po-back { background:none; border:1px solid #444; color:#aaa; border-radius:8px;
+    padding:8px 14px; font-size:13px; cursor:pointer; }
+  .po-back:hover { border-color:#e94560; color:#e94560; }
+  .po-stats { font-size:13px; color:#888; }
+  .po-stats .sc { color:#4caf50; font-weight:bold; }
+  .po-stats .tot { color:#e94560; }
+  .po-body { max-width:550px; margin:0 auto; padding:20px; }
+  .po-progress { width:100%; height:6px; background:#16213e; border-radius:3px; margin-bottom:20px; overflow:hidden; }
+  .po-progress-fill { height:100%; background:#e94560; border-radius:3px; transition:width .3s; }
+  .po-card { background:#16213e; border-radius:16px; padding:36px 24px; text-align:center;
+    margin-bottom:16px; min-height:160px; display:flex; flex-direction:column; justify-content:center; }
+  .po-label { text-transform:uppercase; letter-spacing:2px; font-size:12px; color:#888; margin-bottom:12px; }
+  .po-main { font-size:42px; font-weight:bold; color:#e94560; margin-bottom:8px; word-break:break-all; }
+  .po-sub { font-size:14px; color:#666; }
+  .po-hint { font-size:11px; color:#666; text-align:center; margin-bottom:8px; }
+  .po-input { display:flex; gap:10px; margin-bottom:12px; }
+  .po-input input { flex:1; padding:14px 16px; background:#0f3460; border:2px solid #333;
+    border-radius:12px; color:#fff; font-size:22px; text-align:center; outline:none;
+    font-family:inherit; transition:border-color .2s; }
+  .po-input input:focus { border-color:#e94560; }
+  .po-input input.ok { border-color:#4caf50; background:#1b3a1b; }
+  .po-input input.ng { border-color:#e94560; background:#3a1b1b; }
+  .po-input button { padding:12px 20px; background:#e94560; border:none; border-radius:12px;
+    color:#fff; font-size:18px; font-weight:bold; cursor:pointer; }
+  .po-input button:hover { background:#c73650; }
+  .po-reveal { display:none; padding:14px; background:#1b3a1b; border:1px solid #4caf50;
+    border-radius:10px; text-align:center; margin-bottom:12px; }
+  .po-reveal .lbl { font-size:12px; color:#888; }
+  .po-reveal .ans { font-size:26px; color:#4caf50; font-weight:bold; }
+  .po-mode { text-align:center; padding:60px 20px; }
+  .po-mode h2 { color:#e94560; margin-bottom:24px; font-size:22px; }
+  .po-mode-btn { display:block; width:100%; max-width:340px; margin:10px auto;
+    padding:18px; background:#16213e; border:2px solid #333; border-radius:14px;
+    color:#ccc; font-size:16px; cursor:pointer; text-align:center; transition:all .2s; }
+  .po-mode-btn:hover { border-color:#e94560; color:#fff; }
+  .po-mode-btn .icon { font-size:24px; margin-bottom:4px; display:block; }
+  .po-result { display:none; text-align:center; padding:30px 0; }
+  .po-result .emoji { font-size:56px; margin-bottom:12px; }
+  .po-result h2 { color:#e94560; font-size:24px; margin-bottom:6px; }
+  .po-result .fscore { font-size:44px; color:#4caf50; font-weight:bold; margin:12px 0; }
+  .po-result .det { font-size:14px; color:#888; margin-bottom:20px; }
+  .po-result .retry { padding:12px 36px; background:#e94560; color:#fff; border:none;
+    border-radius:10px; font-size:15px; cursor:pointer; margin:6px; }
+  .po-result .retry:hover { background:#c73650; }
+  .po-mistakes { text-align:left; margin-top:20px; }
+  .po-mistakes h3 { color:#e94560; font-size:16px; margin-bottom:10px; text-align:center; }
+  .po-mi { display:flex; justify-content:space-between; align-items:center;
+    padding:10px 14px; background:#16213e; border-radius:8px; margin-bottom:6px; }
+  .po-mi .jp { color:#e94560; font-size:18px; font-weight:bold; }
+  .po-mi .a { color:#4caf50; font-size:16px; }
 </style>
 </head>
 <body>
 
+<div class="app-links">
+  <a href="practice.html">Full Typing Practice</a>
+  <a href="number_practice.html">Number Practice</a>
+</div>
 <header>
   <h1>Japanese Study App <span>| Click to hear</span></h1>
   <div class="week-bar">
@@ -1093,6 +1163,232 @@ function switchWeek(week,btn){
     ph.style.display='block';
   }
 }
+// Add Practice buttons to all tab-content sections
+document.querySelectorAll('.tab-content').forEach(function(sec){
+  var cards=sec.querySelectorAll('.card,.hc');
+  if(cards.length>0){
+    var btn=document.createElement('button');
+    btn.className='practice-fab';
+    btn.textContent='✏️ Practice This Topic';
+    btn.onclick=startPractice;
+    sec.appendChild(btn);
+  }
+});
+
+// ===== PRACTICE OVERLAY =====
+var poQ=[],poI=0,poSc=0,poAns=0,poMode='jp2r',poIsAns=false,poWrong=[];
+
+function startPractice(){
+  var sec=document.querySelector('.tab-content.active');
+  if(!sec) return;
+  var cards=sec.querySelectorAll('.card');
+  poQ=[];
+  cards.forEach(function(c){
+    var jpEl=c.querySelector('.jp')||c.querySelector('.h');
+    var rmEl=c.querySelector('.rm');
+    var enEl=c.querySelector('.en');
+    if(jpEl&&rmEl){
+      var jp=jpEl.textContent.trim();
+      var rm=rmEl.textContent.trim();
+      var en=enEl?enEl.textContent.trim():'';
+      if(jp&&rm) poQ.push({jp:jp,romaji:rm,english:en});
+    }
+  });
+  // Also scrape .sc and .pc (sentence/pattern cards)
+  sec.querySelectorAll('.sc,.pc').forEach(function(c){
+    var jpEl=c.querySelector('.jp');
+    var rmEl=c.querySelector('.rm');
+    var enEl=c.querySelector('.en');
+    if(jpEl&&rmEl){
+      var jp=jpEl.textContent.trim();
+      var rm=rmEl.textContent.trim();
+      var en=enEl?enEl.textContent.trim():'';
+      if(jp&&rm) poQ.push({jp:jp,romaji:rm,english:en});
+    }
+  });
+  if(poQ.length===0) return;
+  document.getElementById('poOverlay').style.display='block';
+  document.getElementById('poModeScreen').style.display='block';
+  document.getElementById('poQuizScreen').style.display='none';
+  document.getElementById('poResultScreen').style.display='none';
+  document.getElementById('poModeCount').textContent=poQ.length;
+}
+
+function poStartMode(m){
+  poMode=m; poI=0; poSc=0; poAns=0; poWrong=[]; poIsAns=false;
+  poShuffle(poQ);
+  document.getElementById('poModeScreen').style.display='none';
+  document.getElementById('poQuizScreen').style.display='block';
+  document.getElementById('poTotal').textContent=poQ.length;
+  poShow();
+}
+
+function poShuffle(a){
+  for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+}
+
+function poShow(){
+  if(poI>=poQ.length){poShowResult();return;}
+  var q=poQ[poI];
+  poIsAns=false;
+  var inp=document.getElementById('poInp');
+  inp.value=''; inp.className=''; inp.readOnly=false;
+  document.getElementById('poReveal').style.display='none';
+  document.getElementById('poNum').textContent=poI+1;
+  document.getElementById('poScoreV').textContent=poSc;
+  document.getElementById('poAnsV').textContent=poAns;
+  document.getElementById('poProg').style.width=((poI/poQ.length)*100)+'%';
+  var label=document.getElementById('poLbl');
+  var main=document.getElementById('poMain');
+  var sub=document.getElementById('poSub');
+  var hint=document.getElementById('poHint');
+  if(poMode==='jp2r'){
+    label.textContent='TYPE THE ROMAJI';
+    main.textContent=q.jp;
+    sub.textContent=q.english||'';
+    hint.textContent='Switch to English keyboard (ABC)';
+    inp.placeholder='Type romaji...';
+  } else {
+    label.textContent='TYPE IN JAPANESE';
+    main.textContent=q.english||q.romaji;
+    sub.textContent='';
+    hint.textContent='Switch to Japanese keyboard';
+    inp.placeholder='Type hiragana...';
+  }
+  inp.focus();
+}
+
+function poNorm(s){
+  return s.toLowerCase().trim().replace(/\s+/g,' ')
+    .replace(/[。、．]/g,'').replace(/～/g,'~')
+    .replace(/（/g,'(').replace(/）/g,')')
+    .replace(/\u3000/g,' ');
+}
+
+function poCheck(){
+  if(poIsAns) return;
+  var inp=document.getElementById('poInp');
+  var u=poNorm(inp.value);
+  if(!u) return;
+  var q=poQ[poI];
+  var correct=poMode==='jp2r'?poNorm(q.romaji):poNorm(q.jp);
+  var uNs=u.replace(/\s/g,'');
+  var cNs=correct.replace(/\s/g,'');
+  if(u===correct||uNs===cNs){
+    inp.className='ok'; poSc++;
+    poMarkDone();
+  } else {
+    inp.className='ng';
+    poWrong.push(q);
+    document.getElementById('poCorrectAns').textContent=poMode==='jp2r'?q.romaji:q.jp;
+    document.getElementById('poReveal').style.display='block';
+    poMarkDone();
+  }
+}
+
+function poMarkDone(){
+  poIsAns=true; poAns++;
+  document.getElementById('poInp').readOnly=true;
+  document.getElementById('poScoreV').textContent=poSc;
+  document.getElementById('poAnsV').textContent=poAns;
+}
+
+function poNext(){ poI++; poShow(); }
+function poSubmit(){ if(poIsAns) poNext(); else poCheck(); }
+
+function poShowResult(){
+  document.getElementById('poQuizScreen').style.display='none';
+  var r=document.getElementById('poResultScreen');
+  r.style.display='block';
+  var pct=poAns>0?Math.round((poSc/poAns)*100):0;
+  document.getElementById('poFScore').textContent=poSc+' / '+poAns;
+  document.getElementById('poDet').textContent=pct+'% correct — '+poQ.length+' questions total';
+  var em=document.getElementById('poEmoji');
+  if(pct>=90) em.textContent='🎉';
+  else if(pct>=70) em.textContent='👍';
+  else if(pct>=50) em.textContent='💪';
+  else em.textContent='📚';
+  var ml=document.getElementById('poMistakes');
+  if(poWrong.length>0){
+    var h='<h3>Mistakes ('+poWrong.length+')</h3>';
+    poWrong.forEach(function(m){
+      h+='<div class="po-mi"><div class="jp">'+m.jp+'</div><div class="a">'+(poMode==='jp2r'?m.romaji:m.english)+'</div></div>';
+    });
+    ml.innerHTML=h;
+  } else {
+    ml.innerHTML='<h3 style="color:#4caf50">Perfect! No mistakes! 🎉</h3>';
+  }
+}
+
+function closePractice(){
+  document.getElementById('poOverlay').style.display='none';
+}
+
+function poRetry(){
+  document.getElementById('poResultScreen').style.display='none';
+  document.getElementById('poModeScreen').style.display='block';
+}
+
+// Enter key in overlay
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('poOverlay').style.display!=='block') return;
+  if(document.getElementById('poQuizScreen').style.display!=='block') return;
+  if(e.key==='Enter') poSubmit();
+});
 </script>
+
+<!-- Practice Overlay -->
+<div id="poOverlay" class="po" style="display:none">
+  <div class="po-top">
+    <button class="po-back" onclick="closePractice()">← Back to Cards</button>
+    <div class="po-stats">
+      Question <span id="poNum">1</span> / <span id="poTotal">0</span>
+      &nbsp; Score: <span class="sc" id="poScoreV">0</span> / <span class="tot" id="poAnsV">0</span>
+    </div>
+  </div>
+  <div class="po-body">
+    <!-- Mode picker -->
+    <div id="poModeScreen" class="po-mode">
+      <h2>Practice Mode (<span id="poModeCount">0</span> words)</h2>
+      <button class="po-mode-btn" onclick="poStartMode('jp2r')">
+        <span class="icon">🇯🇵 → 🔤</span>
+        See Japanese → Type Romaji
+      </button>
+      <button class="po-mode-btn" onclick="poStartMode('en2jp')">
+        <span class="icon">🔤 → 🇯🇵</span>
+        See English → Type Japanese
+      </button>
+    </div>
+    <!-- Quiz -->
+    <div id="poQuizScreen" style="display:none">
+      <div class="po-progress"><div class="po-progress-fill" id="poProg"></div></div>
+      <div class="po-card">
+        <div class="po-label" id="poLbl"></div>
+        <div class="po-main" id="poMain"></div>
+        <div class="po-sub" id="poSub"></div>
+      </div>
+      <div class="po-hint" id="poHint"></div>
+      <div class="po-input">
+        <input type="text" id="poInp" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type here...">
+        <button onclick="poSubmit()">OK</button>
+      </div>
+      <div class="po-reveal" id="poReveal">
+        <div class="lbl">Correct answer:</div>
+        <div class="ans" id="poCorrectAns"></div>
+      </div>
+    </div>
+    <!-- Result -->
+    <div id="poResultScreen" class="po-result" style="display:none">
+      <div class="emoji" id="poEmoji"></div>
+      <h2>Practice Complete!</h2>
+      <div class="fscore" id="poFScore"></div>
+      <div class="det" id="poDet"></div>
+      <button class="retry" onclick="poRetry()">Practice Again</button>
+      <button class="retry" onclick="closePractice()">Back to Cards</button>
+      <div class="po-mistakes" id="poMistakes"></div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
