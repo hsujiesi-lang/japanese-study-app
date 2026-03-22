@@ -423,15 +423,10 @@ body {
 <div class="setup" id="setup">
   <h2>Mode</h2>
   <div class="mode-select">
-    <div class="mode-btn active" data-mode="jp2romaji">
-      <span class="icon">🇯🇵→🔤</span>
-      <div class="title">日文 → Romaji</div>
-      <div class="desc">See hiragana, type romaji</div>
-    </div>
-    <div class="mode-btn" data-mode="eng2jp">
-      <span class="icon">🇬🇧→🇯🇵</span>
+    <div class="mode-btn active" data-mode="eng2jp">
+      <span class="icon">🔤→🇯🇵</span>
       <div class="title">English → 日文</div>
-      <div class="desc">See English only, type hiragana</div>
+      <div class="desc">See English meaning, type hiragana</div>
     </div>
   </div>
 
@@ -934,7 +929,7 @@ const WEEK_GROUPS = {
 // ===================================================================
 // STATE
 // ===================================================================
-let mode = "jp2romaji";
+let mode = "eng2jp";
 let selectedCats = new Set();
 let questions = [];
 let currentQ = 0;
@@ -1123,17 +1118,10 @@ function showQuestion() {
   pEng.textContent = "";
   pCat.textContent = q.category;
 
-  if (mode === "jp2romaji") {
-    pLabel.textContent = "Type the romaji";
-    pJP.textContent = q.jp;
-    input.placeholder = "Type romaji here...";
-    hint.textContent = "💡 Switch to English keyboard (ABC)";
-  } else {
-    pLabel.textContent = "Type the hiragana";
-    pEng.textContent = q.english;
-    input.placeholder = "Type hiragana here...";
-    hint.textContent = "💡 Switch to Japanese keyboard (かな / Hiragana)";
-  }
+  pLabel.textContent = "Type the hiragana";
+  pEng.textContent = q.english;
+  input.placeholder = "Type hiragana here...";
+  hint.textContent = "💡 Switch to Japanese keyboard (かな / Hiragana)";
 
   input.focus();
 }
@@ -1156,11 +1144,7 @@ function checkAnswer() {
   const q = questions[currentQ];
   let correctAns;
 
-  if (mode === "jp2romaji") {
-    correctAns = normalize(q.romaji);
-  } else {
-    correctAns = normalize(q.jp);
-  }
+  correctAns = normalize(q.jp);
 
   // Also accept without spaces for multi-word romaji
   const altCorrect = correctAns.replace(/\s/g, "");
@@ -1175,7 +1159,7 @@ function checkAnswer() {
     wrongAnswers.push({ jp: q.jp, romaji: q.romaji, english: q.english, category: q.category });
     markAnswered(false);
     document.getElementById("correctAnswer").textContent =
-      mode === "jp2romaji" ? q.romaji : q.jp;
+      q.jp;
     document.getElementById("answerReveal").style.display = "block";
   }
 }
@@ -1194,7 +1178,7 @@ function markAnswered(correct) {
 function showAnswer() {
   const q = questions[currentQ];
   wrongAnswers.push({ jp: q.jp, romaji: q.romaji, english: q.english, category: q.category });
-  const ans = mode === "jp2romaji" ? q.romaji : q.jp;
+  const ans = q.jp;
   document.getElementById("correctAnswer").textContent = ans;
   document.getElementById("answerReveal").style.display = "block";
   markAnswered(false);
@@ -1245,7 +1229,7 @@ function showResult() {
           <div class="mistake-jp">${m.jp}</div>
           <div class="mistake-cat">${m.category}</div>
         </div>
-        <div class="mistake-answer">${mode === "jp2romaji" ? m.romaji : m.english}</div>
+        <div class="mistake-answer">${m.english} → ${m.jp}</div>
       </div>`;
     }
     ml.innerHTML = html;

@@ -1330,12 +1330,12 @@ function poShow(){
   var main=document.getElementById('poMain');
   var sub=document.getElementById('poSub');
   var hint=document.getElementById('poHint');
-  if(poMode==='jp2r'){
-    label.textContent='TYPE THE ROMAJI';
-    main.textContent=q.jp;
-    sub.textContent=q.english||'';
-    hint.textContent='Switch to English keyboard (ABC)';
-    inp.placeholder='Type romaji...';
+  if(poMode==='en2jp'){
+    label.textContent='TYPE IN JAPANESE';
+    main.textContent=q.english||q.romaji;
+    sub.textContent='';
+    hint.textContent='💡 Switch to Japanese keyboard (かな)';
+    inp.placeholder='Type hiragana...';
     inp.inputMode='text';
   } else if(poMode==='jp2num'){
     label.textContent='TYPE THE NUMBER';
@@ -1344,18 +1344,11 @@ function poShow(){
     hint.textContent='Switch to number keyboard';
     inp.placeholder='Type number...';
     inp.inputMode='numeric';
-  } else if(poMode==='num2r'){
-    label.textContent='TYPE THE ROMAJI';
+  } else if(poMode==='num2jp'){
+    label.textContent='TYPE IN JAPANESE';
     main.textContent=q.number||q.english;
     sub.textContent='';
-    hint.textContent='Switch to English keyboard (ABC)';
-    inp.placeholder='Type romaji...';
-    inp.inputMode='text';
-  } else {
-    label.textContent='TYPE IN JAPANESE';
-    main.textContent=q.english||q.romaji;
-    sub.textContent='';
-    hint.textContent='Switch to Japanese keyboard';
+    hint.textContent='💡 Switch to Japanese keyboard (かな)';
     inp.placeholder='Type hiragana...';
     inp.inputMode='text';
   }
@@ -1388,13 +1381,8 @@ function poCheck(){
       document.getElementById('poReveal').style.display='block';
       poMarkDone(); return;
     }
-  } else if(poMode==='num2r'){
-    correct=poNorm(q.romaji);
-    displayCorrect=q.romaji;
-  } else if(poMode==='jp2r'){
-    correct=poNorm(q.romaji);
-    displayCorrect=q.romaji;
   } else {
+    // en2jp and num2jp — always compare against Japanese text
     correct=poNorm(q.jp);
     displayCorrect=q.jp;
   }
@@ -1438,10 +1426,10 @@ function poShowResult(){
   if(poWrong.length>0){
     var h='<h3>Mistakes ('+poWrong.length+')</h3>';
     poWrong.forEach(function(m){
-      var left=m.jp, right=m.romaji;
-      if(poMode==='jp2num') right=String(m.number||m.english);
-      else if(poMode==='num2r'){ left=String(m.number||m.english); right=m.romaji; }
-      else if(poMode==='en2jp'){ right=m.jp; }
+      var left=m.jp, right=m.jp;
+      if(poMode==='jp2num'){ right=String(m.number||m.english); }
+      else if(poMode==='num2jp'){ left=String(m.number||m.english); right=m.jp; }
+      else if(poMode==='en2jp'){ left=m.english||m.romaji; right=m.jp; }
       h+='<div class="po-mi"><div class="jp">'+left+'</div><div class="a">'+right+'</div></div>';
     });
     ml.innerHTML=h;
@@ -1484,10 +1472,6 @@ document.addEventListener('keydown',function(e){
     <!-- Mode picker (vocab) -->
     <div id="poModeScreen" class="po-mode" style="display:none">
       <h2>Practice Mode (<span id="poModeCount">0</span> words)</h2>
-      <button class="po-mode-btn" onclick="poStartMode('jp2r')">
-        <span class="icon">🇯🇵 → 🔤</span>
-        See Japanese → Type Romaji
-      </button>
       <button class="po-mode-btn" onclick="poStartMode('en2jp')">
         <span class="icon">🔤 → 🇯🇵</span>
         See English → Type Japanese
@@ -1516,9 +1500,9 @@ document.addEventListener('keydown',function(e){
           <span class="icon">🇯🇵 → 🔢</span>
           See Japanese → Type Number
         </button>
-        <button class="po-mode-btn" onclick="poStartNum('num2r')">
-          <span class="icon">🔢 → 🔤</span>
-          See Number → Type Romaji
+        <button class="po-mode-btn" onclick="poStartNum('num2jp')">
+          <span class="icon">🔢 → 🇯🇵</span>
+          See Number → Type Japanese
         </button>
       </div>
     </div>

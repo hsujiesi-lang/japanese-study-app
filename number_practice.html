@@ -303,10 +303,10 @@ body {
       <div class="title">日文 → 数字</div>
       <div class="desc">See hiragana, type the number</div>
     </div>
-    <div class="opt-btn" data-mode="num2romaji">
-      <span class="icon">🔢→🔤</span>
-      <div class="title">数字 → Romaji</div>
-      <div class="desc">See number, type romaji</div>
+    <div class="opt-btn" data-mode="num2jp">
+      <span class="icon">🔢→🇯🇵</span>
+      <div class="title">数字 → 日文</div>
+      <div class="desc">See number, type hiragana</div>
     </div>
   </div>
 
@@ -525,11 +525,11 @@ function showQuestion() {
     hint.textContent = "💡 Switch to English keyboard (ABC)";
     input.inputMode = "numeric";
   } else {
-    pLabel.textContent = "Type the romaji";
+    pLabel.textContent = "Type in Japanese";
     pNum.textContent = q.number.toLocaleString();
     pNum.style.display = "";
-    input.placeholder = "Type romaji here...";
-    hint.textContent = "💡 Switch to English keyboard (ABC)";
+    input.placeholder = "Type hiragana here...";
+    hint.textContent = "💡 Switch to Japanese keyboard (かな)";
     input.inputMode = "text";
   }
 
@@ -553,7 +553,8 @@ function checkAnswer() {
     const userNum = parseInt(userAns.replace(/[^0-9]/g, ""), 10);
     correct = (userNum === q.number);
   } else {
-    const correctAns = normalize(q.romaji);
+    // num2jp: compare against hiragana
+    const correctAns = normalize(q.hiragana);
     const altCorrect = correctAns.replace(/\s/g, "");
     const userNoSpace = userAns.replace(/\s/g, "");
     correct = (userAns === correctAns || userNoSpace === altCorrect);
@@ -569,7 +570,7 @@ function checkAnswer() {
     markAnswered();
     const correctText = mode === "jp2num"
       ? q.number.toLocaleString()
-      : q.romaji;
+      : q.hiragana;
     document.getElementById("correctAnswer").textContent = correctText;
     document.getElementById("answerReveal").style.display = "block";
   }
@@ -588,7 +589,7 @@ function markAnswered() {
 
 function showAnswer() {
   const q = questions[currentQ];
-  const ans = mode === "jp2num" ? q.number.toLocaleString() : q.romaji;
+  const ans = mode === "jp2num" ? q.number.toLocaleString() : q.hiragana;
   document.getElementById("correctAnswer").textContent = ans;
   document.getElementById("answerReveal").style.display = "block";
   wrongAnswers.push(q);
