@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>げんき 総合練習</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:linear-gradient(135deg,#fdf6ec 0%,#fce4c7 100%);min-height:100vh;color:#333}
+  .container{max-width:740px;margin:0 auto;padding:16px}
+  header{text-align:center;padding:24px 0 8px}
+  header h1{font-size:1.7rem;color:#e67e22}
+  header p{color:#888;font-size:.9rem;margin-top:2px}
+
+  /* Lesson Picker */
+  .lesson-picker{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap;justify-content:center}
+  .lesson-card{flex:1;min-width:140px;max-width:220px;background:#fff;border:2.5px solid #f0d9b5;border-radius:16px;padding:20px 14px;cursor:pointer;text-align:center;transition:all .25s}
+  .lesson-card:hover{border-color:#e67e22;transform:translateY(-3px);box-shadow:0 6px 16px rgba(230,126,34,.18)}
+  .lesson-card.active{border-color:#e67e22;background:#fff8ee;box-shadow:0 4px 14px rgba(230,126,34,.15)}
+  .lesson-card .lnum{font-size:2rem;font-weight:700;color:#e67e22}
+  .lesson-card .ltitle{display:block;font-size:.85rem;color:#666;margin-top:4px}
+  .lesson-card .lsub{display:block;font-size:.72rem;color:#aaa;margin-top:2px}
+  .back-lessons{background:none;border:1.5px solid #ccc;border-radius:8px;padding:5px 14px;cursor:pointer;font-size:.82rem;color:#888;margin-bottom:12px}
+  .back-lessons:hover{border-color:#e67e22;color:#e67e22}
+
+  /* Menu */
+  .menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0}
+  .menu-btn{background:#fff;border:2px solid #f0d9b5;border-radius:14px;padding:16px 10px;cursor:pointer;text-align:center;transition:all .2s}
+  .menu-btn:hover{border-color:#e67e22;transform:translateY(-2px);box-shadow:0 4px 12px rgba(230,126,34,.15)}
+  .menu-btn .icon{font-size:1.5rem;margin-bottom:4px}
+  .menu-btn .t1{display:block;font-weight:700;font-size:.95rem}
+  .menu-btn .t2{display:block;font-size:.75rem;color:#999;margin-top:2px}
+  .menu-btn.full{grid-column:1/-1}
+  .menu-btn.exam{border-color:#e74c3c;background:#fff5f5}
+  .menu-btn.exam:hover{border-color:#c0392b}
+  .section-label{grid-column:1/-1;font-size:.8rem;color:#e67e22;font-weight:700;margin-top:8px;padding-left:4px;letter-spacing:2px}
+
+  /* Quiz */
+  .quiz{display:none}.quiz.active{display:block}
+  .quiz-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .quiz-top h2{font-size:1.1rem;color:#e67e22}
+  .back{background:none;border:1.5px solid #ccc;border-radius:8px;padding:5px 12px;cursor:pointer;font-size:.82rem;color:#888}
+  .back:hover{border-color:#e67e22;color:#e67e22}
+  .pbar{background:#eee;border-radius:10px;height:7px;margin-bottom:16px;overflow:hidden}
+  .pfill{background:linear-gradient(90deg,#f39c12,#e67e22);height:100%;border-radius:10px;transition:width .4s}
+
+  .card{background:#fff;border-radius:14px;padding:22px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+  .qnum{display:inline-block;background:#e67e22;color:#fff;padding:2px 10px;border-radius:16px;font-size:.78rem;font-weight:700;margin-bottom:10px}
+  .qtext{font-size:1.05rem;line-height:1.7;margin-bottom:4px}
+  .qhint{font-size:.83rem;color:#999;margin-bottom:12px;font-style:italic}
+  .qsentence{font-size:1.2rem;background:#fdf6ec;padding:12px 16px;border-radius:10px;margin-bottom:14px;text-align:center;line-height:1.7;letter-spacing:1px}
+  .blank{display:inline-block;border-bottom:2.5px solid #e67e22;min-width:60px;color:#e67e22;font-weight:700}
+
+  .irow{display:flex;gap:8px}
+  .irow input{flex:1;padding:11px 14px;border:2px solid #eee;border-radius:10px;font-size:1.05rem;font-family:'Noto Sans JP',sans-serif;outline:none;transition:border .2s}
+  .irow input:focus{border-color:#e67e22}
+  .irow button{background:#e67e22;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:.95rem;font-weight:700;cursor:pointer;white-space:nowrap}
+  .irow button:hover{background:#d35400}
+
+  .fb{margin-top:12px;padding:12px 16px;border-radius:10px;display:none;font-size:.9rem;line-height:1.6}
+  .fb.ok{display:block;background:#e8f8e8;border:1.5px solid #6fcf6f;color:#2e7d32}
+  .fb.ng{display:block;background:#fde8e8;border:1.5px solid #ef5350;color:#c62828}
+  .nxt{display:none;margin-top:12px;width:100%;background:#f39c12;color:#fff;border:none;border-radius:10px;padding:12px;font-size:.95rem;font-weight:700;cursor:pointer}
+  .nxt:hover{background:#e67e22}
+
+  /* Score */
+  .sc{background:#fff;border-radius:14px;padding:28px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05);display:none}
+  .sc.show{display:block}
+  .sc .big{font-size:2.8rem;font-weight:700;color:#e67e22;margin:8px 0}
+  .sc .msg{font-size:1.1rem;margin-bottom:16px}
+  .scbar{background:#eee;border-radius:10px;height:12px;margin:14px 0;overflow:hidden}
+  .scfill{height:100%;border-radius:10px;transition:width 1s}
+  .sc button{margin-top:10px;background:#e67e22;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:.95rem;font-weight:700;cursor:pointer}
+  .sc button:hover{background:#d35400}
+
+  /* Grammar ref */
+  .gbox{background:#fff;border-radius:14px;padding:20px;margin:14px 0;box-shadow:0 2px 10px rgba(0,0,0,.05);display:none}
+  .gbox.show{display:block}
+  .gbox h3{color:#e67e22;margin-bottom:10px;font-size:1rem}
+  .gtable{width:100%;border-collapse:collapse;font-size:.88rem;margin:8px 0}
+  .gtable th{background:#e67e22;color:#fff;padding:8px;text-align:center}
+  .gtable td{padding:8px;border-bottom:1px solid #eee;text-align:center}
+  .gtable tr:nth-child(even) td{background:#fdf6ec}
+  .note{background:#fff8ee;border-left:3px solid #e67e22;padding:10px 14px;margin:10px 0;border-radius:0 8px 8px 0;font-size:.85rem;line-height:1.6}
+
+  @media(max-width:500px){.menu-grid{grid-template-columns:1fr}header h1{font-size:1.3rem}.qsentence{font-size:1.05rem}.lesson-picker{flex-direction:column;align-items:center}.lesson-card{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>げんき 総合練習</h1>
+    <p>Genki 1 (3rd Edition)</p>
+  </header>
+
+  <!-- ===== LESSON PICKER ===== -->
+  <div id="lessonPicker">
+    <div class="lesson-picker">
+      <div class="lesson-card" onclick="selectLesson(2)">
+        <div class="lnum">L2</div>
+        <span class="ltitle">かいもの</span>
+        <span class="lsub">Shopping</span>
+      </div>
+      <div class="lesson-card" onclick="selectLesson(3)">
+        <div class="lnum">L3</div>
+        <span class="ltitle">デートの やくそく</span>
+        <span class="lsub">Making a Date</span>
+      </div>
+    </div>
+    <!-- Global wrong bank -->
+    <div style="text-align:center;margin-top:8px">
+      <div class="menu-btn full" onclick="startWrongBank()" style="background:#fff0f0;border-color:#e74c3c;max-width:400px;margin:0 auto">
+        <div class="icon">🔁</div>
+        <span class="t1">常錯題庫 (Weak Point Review)</span>
+        <span class="t2" id="wrongBadge" style="color:#e74c3c">(0題)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON MENU (dynamic) ===== -->
+  <div id="menuScreen" style="display:none">
+    <button class="back-lessons" onclick="backToLessons()">← レッスン選択</button>
+    <div id="menuContent"></div>
+  </div>
+
+  <!-- ===== QUIZ AREA ===== -->
+  <div class="quiz" id="quizArea">
+    <div class="quiz-top">
+      <h2 id="quizTitle"></h2>
+      <button class="back" onclick="backToMenu()">メニューへ</button>
+    </div>
+    <div class="pbar"><div class="pfill" id="pf"></div></div>
+    <div id="qc"></div>
+    <div class="sc" id="scoreCard">
+      <p style="font-size:.85rem;color:#999">結果</p>
+      <div class="big" id="sBig"></div>
+      <div class="scbar"><div class="scfill" id="sFill"></div></div>
+      <div class="msg" id="sMsg"></div>
+      <div id="wrongList"></div>
+      <button onclick="backToMenu()" style="margin-top:14px">メニューに戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== SHARED UTILITIES ==========
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function clean(s){return s.replace(/[\s\u3000]/g,"").toLowerCase()}
+function matchAny(input,answers){const c=clean(input);return answers.some(a=>c===clean(a))}
+
+let quiz=[],qi=0,score=0,wrongs=[],enterReady=false,answeredAt=0;
+let currentLesson=null;
+
+// ===== WRONG BANK (localStorage) =====
+const WB_KEY="genki_wrong_bank";
+function wbLoad(){try{return JSON.parse(localStorage.getItem(WB_KEY))||{}}catch(e){return{}}}
+function wbSave(bank){localStorage.setItem(WB_KEY,JSON.stringify(bank))}
+function wbRecord(q,userAns){
+  const bank=wbLoad();
+  const key=q.explain||q.answers[0];
+  if(!bank[key]){
+    bank[key]={count:0,q:{qtext:q.qtext||"",hint:q.hint||"",sentence:q.sentence||"",answers:q.answers,explain:q.explain,isTranslation:q.isTranslation||false},history:[]};
+  }
+  bank[key].count++;
+  bank[key].lastWrong=Date.now();
+  bank[key].history.push({date:new Date().toLocaleDateString(),yourAns:userAns});
+  if(bank[key].history.length>5)bank[key].history=bank[key].history.slice(-5);
+  wbSave(bank);
+  updateWrongBadge();
+}
+function wbClearOne(key){const bank=wbLoad();delete bank[key];wbSave(bank);updateWrongBadge();}
+function wbClearAll(){localStorage.removeItem(WB_KEY);updateWrongBadge();}
+function updateWrongBadge(){
+  const bank=wbLoad();
+  const count=Object.keys(bank).length;
+  const badge=document.getElementById("wrongBadge");
+  if(badge){badge.textContent=count>0?`(${count}題)`:"(0題)";badge.style.color=count>0?"#e74c3c":"#999";}
+}
+
+// Also migrate old key
+(function(){
+  try{
+    const old=localStorage.getItem("genki2_wrong_bank");
+    if(old&&!localStorage.getItem(WB_KEY)){localStorage.setItem(WB_KEY,old);localStorage.removeItem("genki2_wrong_bank");}
+  }catch(e){}
+})();
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&answeredAt>0&&(Date.now()-answeredAt>200)){
+    e.preventDefault();
+    answeredAt=0;
+    next();
+  }
+});
+
+// ============================================================
+//  LESSON 2 DATA & GENERATORS
+// ============================================================
+const L2_VOCAB = {
+  "これ":"this one","それ":"that one","あれ":"that one (over there)","どれ":"which one",
+  "この":"this ...","その":"that ...","あの":"that ... (over there)","どの":"which ...",
+  "ここ":"here","そこ":"there","あそこ":"over there","どこ":"where","だれ":"who",
+  "おいしい":"delicious","さかな":"fish","とんかつ":"pork cutlet","にく":"meat",
+  "メニュー":"menu","やさい":"vegetable",
+  "かさ":"umbrella","かばん":"bag","くつ":"shoes","さいふ":"wallet",
+  "ジーンズ":"jeans","じてんしゃ":"bicycle","しんぶん":"newspaper",
+  "スマホ":"smartphone","Tシャツ":"T-shirt","とけい":"watch; clock",
+  "ノート":"notebook","ペン":"pen","ぼうし":"hat; cap","ほん":"book",
+  "ぎんこう":"bank","コンビニ":"convenience store","トイレ":"restroom",
+  "としょかん":"library","ゆうびんきょく":"post office",
+  "イギリス":"Britain","かんこく":"Korea","ちゅうごく":"China",
+  "えいご":"English (language)","けいざい":"economics","コンピューター":"computer",
+  "ビジネス":"business","れきし":"history",
+  "おかあさん":"mother","おとうさん":"father",
+  "いくら":"how much","えん":"yen","たかい":"expensive",
+  "いらっしゃいませ":"Welcome (to our store)","おねがいします":"please",
+  "ください":"please give me","じゃあ":"then; well then",
+  "どうぞ":"please; here you are","どうも":"thank you"
+};
+
+const L2_ITEMS={"かさ":"umbrella","かばん":"bag","くつ":"shoes","さいふ":"wallet","ジーンズ":"jeans","じてんしゃ":"bicycle","しんぶん":"newspaper","スマホ":"smartphone","Tシャツ":"T-shirt","とけい":"watch/clock","ノート":"notebook","ペン":"pen","ぼうし":"hat/cap","ほん":"book","メニュー":"menu"};
+const L2_PLACES={"ぎんこう":"bank","コンビニ":"convenience store","トイレ":"restroom","としょかん":"library","ゆうびんきょく":"post office"};
+const PEOPLE_NAMES=["メアリーさん","たけしさん","ソラさん","ロバートさん","やまださん"];
+const DIST=[
+  {key:"sp",re:"これ",no:"この",ko:"ここ",lJP:"你身邊",lEN:"close to speaker"},
+  {key:"li",re:"それ",no:"その",ko:"そこ",lJP:"對方身邊",lEN:"close to listener"},
+  {key:"fa",re:"あれ",no:"あの",ko:"あそこ",lJP:"遠處",lEN:"far from both"}
+];
+
+const l2vk=Object.keys(L2_VOCAB), l2ik=Object.keys(L2_ITEMS), l2pk=Object.keys(L2_PLACES);
+
+function genL2VocabEn2Jp(n=12){
+  return shuffle([...l2vk]).slice(0,n).map(k=>({
+    qtext:`<span style="font-size:1.3rem;font-weight:700">${L2_VOCAB[k]}</span>`,
+    hint:"日本語で入力してください",answers:[k],explain:k
+  }));
+}
+function genL2VocabJp2En(n=12){
+  return shuffle([...l2vk]).slice(0,n).map(k=>{
+    const alts=L2_VOCAB[k].split(";").map(s=>s.trim());
+    alts.push(...L2_VOCAB[k].split("/").map(s=>s.trim()));
+    const base=L2_VOCAB[k].replace(/\s*\(.*?\)\s*/g,"").trim();
+    if(base)alts.push(base);
+    return {qtext:`<span style="font-size:1.6rem;font-weight:700">${k}</span>`,hint:"Type the English meaning",answers:[...new Set(alts)],explain:L2_VOCAB[k]};
+  });
+}
+function genL2Kosoado(n=8){
+  const qs=[];
+  for(let i=0;i<n;i++){
+    const item=pick(l2ik),d=pick(DIST);
+    if(Math.random()>.5){
+      qs.push({qtext:`（${d.lJP}的${item}）`,sentence:`<span class="blank">?</span>は ${item} です。`,hint:`${d.lEN} — standalone pronoun`,answers:[d.re],explain:`${d.lEN} → ${d.re}`});
+    }else{
+      qs.push({qtext:`（${d.lJP}的${item}）`,sentence:`<span class="blank">?</span>${item}は いくらですか。`,hint:`${d.lEN} — modifier + noun`,answers:[d.no],explain:`${d.lEN} + noun → ${d.no}`});
+    }
+  }
+  const item2=pick(l2ik);
+  qs.push({qtext:"",sentence:`あなたの${item2}は <span class="blank">?</span>ですか。`,hint:`Which one is your ${L2_ITEMS[item2]}?`,answers:["どれ"],explain:"standalone question → どれ"});
+  qs.push({qtext:"",sentence:`<span class="blank">?</span>${pick(l2ik)}が あなたのですか。`,hint:"Which ... is yours? (+ noun)",answers:["どの"],explain:"before noun → どの"});
+  return shuffle(qs);
+}
+function genL2Place(n=6){
+  const qs=[],scenes=[{dist:"sp",scene:"（你身旁）",en:"near you"},{dist:"li",scene:"（對方身旁）",en:"near the listener"},{dist:"fa",scene:"（遠處）",en:"far from both"}];
+  for(let i=0;i<n;i++){
+    const place=pick(l2pk),s=pick(scenes),d=DIST.find(x=>x.key===s.dist);
+    if(Math.random()>.5){
+      qs.push({qtext:`${place} (${L2_PLACES[place]}) は ${s.scene} にあります。`,sentence:`${place}は <span class="blank">?</span>です。`,hint:`The ${L2_PLACES[place]} is ${s.en}. Where?`,answers:[d.ko],explain:`${s.en} → ${d.ko}`});
+    }else{
+      qs.push({qtext:`Ask where the ${L2_PLACES[place]} is.`,sentence:`${place}は <span class="blank">?</span>ですか。`,hint:`Ask where the ${L2_PLACES[place]} is.`,answers:["どこ"],explain:"asking where → どこ"});
+    }
+  }
+  return shuffle(qs);
+}
+function genL2Dare(n=5){
+  return shuffle(Array.from({length:n},()=>{
+    const item=pick(l2ik),person=pick(PEOPLE_NAMES);
+    if(Math.random()>.4){
+      return {qtext:`You found a ${L2_ITEMS[item]}. Ask whose it is.`,hint:"「これは ＿＿＿ ですか。」の＿を埋めてください",sentence:`これは <span class="blank">?</span> ${item}ですか。`,answers:["だれの"],explain:"whose → だれの"};
+    }else{
+      return {qtext:`Answer: It is ${person}'s ${L2_ITEMS[item]}.`,hint:"完整に答えてください",answers:[`それは${person}の${item}です。`,`${person}の${item}です。`],explain:`それは ${person}の ${item}です。`};
+    }
+  }));
+}
+function genL2Mo(n=5){
+  const nationalities=[["にほんじん","Japanese"],["アメリカじん","American"],["がくせい","student"]];
+  return shuffle(Array.from({length:n},()=>{
+    const item=pick(l2ik),[natJP,natEN]=pick(nationalities);
+    const p1=pick(PEOPLE_NAMES);let p2=pick(PEOPLE_NAMES);while(p2===p1)p2=pick(PEOPLE_NAMES);
+    if(Math.random()<.5){
+      return {qtext:`${p1}は ${natJP}です。${p2}___${natJP}です。`,hint:`${p1} is ${natEN}. ${p2} is ${natEN} TOO. Fill in the particle.`,sentence:`${p2}<span class="blank">?</span>${natJP}です。`,answers:["も"],explain:"also/too → も (replaces は)"};
+    }else{
+      return {qtext:`「${L2_ITEMS[item]}も たかいです。」を日本語で書いてください。`,hint:`The ${L2_ITEMS[item]} is ALSO expensive. Write the full sentence.`,answers:[`${item}もたかいです。`],explain:`${item}も たかいです。`};
+    }
+  }));
+}
+function genL2Janai(n=5){
+  const pairs=[["さかな","fish","にく","meat"],["にく","meat","さかな","fish"],["がくせい","student","せんせい","teacher"],["せんせい","teacher","がくせい","student"]];
+  return shuffle(Array.from({length:n},()=>{
+    const[wrongJP,wrongEN,rightJP,rightEN]=pick(pairs);
+    const type=Math.random();
+    if(type<.4){
+      return {qtext:`It is not ${wrongEN}. It is ${rightEN}.`,hint:"否定の文を書いてください",answers:[`${wrongJP}じゃないです。${rightJP}です。`,`${wrongJP}じゃないです。`],explain:`${wrongJP}じゃないです。${rightJP}です。`};
+    }else if(type<.7){
+      const item=pick(l2ik);
+      return {qtext:`Say: This is not a ${L2_ITEMS[item]}.`,hint:"これは ＿＿＿。",answers:[`これは${item}じゃないです。`],explain:`これは ${item}じゃないです。`};
+    }else{
+      return {qtext:`これは さかな______。にくです。`,hint:"Fill in the negative ending. (It's not fish. It's meat.)",sentence:`これは さかな<span class="blank">?</span>。にくです。`,answers:["じゃないです","じゃありません","ではありません"],explain:"negation → じゃないです"};
+    }
+  }));
+}
+function genL2NeYo(n=6){
+  const neScenes=[
+    {jp:"たかいです",en:"It's expensive, isn't it?",particle:"ね",hint:"seeking confirmation / agreement"},
+    {jp:"おいしいです",en:"It's delicious, right?",particle:"ね",hint:"seeking confirmation"},
+    {jp:"にほんじんです",en:"(You're) Japanese, right?",particle:"ね",hint:"confirming"},
+    {jp:"いいです",en:"That's nice, isn't it?",particle:"ね",hint:"seeking agreement"},
+  ];
+  const yoScenes=[
+    {jp:"おいしいです",en:"It IS delicious! (asserting)",particle:"よ",hint:"informing / asserting new info"},
+    {jp:"さかなじゃないです",en:"It is NOT fish, you know.",particle:"よ",hint:"correcting / informing"},
+    {jp:"にくです",en:"It's meat! (telling the listener)",particle:"よ",hint:"telling / new info for listener"},
+    {jp:"やすいです",en:"It's cheap! (informing)",particle:"よ",hint:"giving new info"},
+  ];
+  return shuffle([...neScenes,...yoScenes]).slice(0,n).map(s=>({
+    qtext:`${s.en}`,sentence:`${s.jp}<span class="blank">?</span>。`,hint:s.hint,answers:[s.particle],explain:`${s.hint} → ～${s.particle}`
+  }));
+}
+function genL2Translate(n=8){
+  return shuffle([
+    {en:"Excuse me. How much is this?",ja:"すみません。これは いくらですか。"},
+    {en:"That is 3,000 yen. (near listener)",ja:"それは さんぜんえんです。"},
+    {en:"It's expensive. Well then, how much is that watch over there?",ja:"たかいですね。じゃあ、あのとけいは いくらですか。"},
+    {en:"This is 1,800 yen.",ja:"これは せんはっぴゃくえんです。"},
+    {en:"Then, please give me that watch. (near listener)",ja:"じゃあ、そのとけいを ください。"},
+    {en:"Whose wallet is this?",ja:"これは だれの さいふですか。"},
+    {en:"It is my wallet.",ja:"わたしの さいふです。"},
+    {en:"Welcome. Here is the menu.",ja:"いらっしゃいませ。メニューを どうぞ。"},
+    {en:"What is this?",ja:"これは なんですか。"},
+    {en:"It is tonkatsu (pork cutlet).",ja:"とんかつです。"},
+    {en:"Is it fish?",ja:"さかなですか。"},
+    {en:"No, it is not fish. It is meat.",ja:"いいえ、さかなじゃないです。にくです。"},
+    {en:"It is delicious!",ja:"おいしいですよ。"},
+    {en:"Then, I'll have this please.",ja:"じゃあ、これを おねがいします。"},
+    {en:"Excuse me. Where is the restroom?",ja:"すみません。トイレは どこですか。"},
+    {en:"It is over there.",ja:"あそこです。"},
+    {en:"This bag is also expensive.",ja:"このかばんも たかいです。"},
+    {en:"Which one is your pen?",ja:"どれが あなたの ペンですか。"},
+    {en:"That umbrella (near listener) is not mine.",ja:"そのかさは わたしのじゃないです。"},
+    {en:"The library is over there.",ja:"としょかんは あそこです。"},
+  ]).slice(0,n).map(t=>({qtext:t.en,hint:"日本語で書いてください（完整句子）",answers:[t.ja],explain:t.ja,isTranslation:true}));
+}
+function genL2Exam(){
+  return shuffle([...genL2VocabEn2Jp(8),...genL2VocabJp2En(4),...genL2Kosoado(4),...genL2Place(3),...genL2Dare(2),...genL2Mo(2),...genL2Janai(2),...genL2NeYo(2),...genL2Translate(3)]).slice(0,30);
+}
+
+const L2_GENERATORS={
+  v_en2jp:{title:"English → 日本語",gen:()=>genL2VocabEn2Jp(15)},
+  v_jp2en:{title:"日本語 → English",gen:()=>genL2VocabJp2En(15)},
+  g_kosoad:{title:"こそあど",gen:()=>genL2Kosoado(10)},
+  g_place:{title:"ここ/そこ/あそこ/どこ",gen:()=>genL2Place(8)},
+  g_dare:{title:"だれの + 名詞",gen:()=>genL2Dare(6)},
+  g_mo:{title:"Noun も",gen:()=>genL2Mo(6)},
+  g_janai:{title:"じゃないです",gen:()=>genL2Janai(6)},
+  g_neyo:{title:"～ね / ～よ",gen:()=>genL2NeYo(8)},
+  translate:{title:"翻訳チャレンジ",gen:()=>genL2Translate(10)},
+  exam:{title:"模擬考試",gen:genL2Exam},
+};
+
+// ============================================================
+//  LESSON 3 DATA & GENERATORS
+// ============================================================
+const L3_VOCAB = {
+  // Verbs (u-verbs)
+  "いく":"to go","かえる":"to go back; to return","きく":"to listen; to hear",
+  "のむ":"to drink","はなす":"to speak; to talk","よむ":"to read",
+  "おわる":"to end","はいる":"to enter",
+  // Verbs (ru-verbs)
+  "おきる":"to get up","たべる":"to eat","ねる":"to sleep; to go to sleep",
+  "みる":"to see; to look at; to watch",
+  // Irregular verbs
+  "くる":"to come","する":"to do",
+  "べんきょうする":"to study",
+  // Time of day
+  "あさ":"morning","ひる":"noon","よる":"evening; night",
+  // Relative time
+  "きのう":"yesterday","きょう":"today","あした":"tomorrow",
+  "こんばん":"tonight","しゅうまつ":"weekend",
+  "まいにち":"every day","まいばん":"every night",
+  // Months
+  "せんげつ":"last month","こんげつ":"this month","らいげつ":"next month",
+  // Days of the week
+  "げつようび":"Monday","かようび":"Tuesday","すいようび":"Wednesday",
+  "もくようび":"Thursday","きんようび":"Friday",
+  "どようび":"Saturday","にちようび":"Sunday",
+  // Time question
+  "いつ":"when","なんじ":"what time",
+  // Places
+  "うち":"home; house","がっこう":"school","カフェ":"cafe",
+  // Food / Drink
+  "あさごはん":"breakfast","ひるごはん":"lunch","ばんごはん":"dinner",
+  "みず":"water","コーヒー":"coffee","おちゃ":"tea",
+  // Entertainment / Media
+  "テレビ":"TV","えいが":"movie","おんがく":"music","ざっし":"magazine",
+  // Frequency
+  "よく":"often","ときどき":"sometimes","たいてい":"usually",
+  "ぜんぜん":"not at all","あまり":"not much",
+  // Other
+  "それから":"and then","でも":"but","どうですか":"how about ...?",
+};
+
+const L3_VERBS = {
+  // u-verbs: dictionary → masu / masen
+  "いく":     {type:"u", masu:"いきます",   masen:"いきません",   en:"to go"},
+  "かえる":   {type:"u", masu:"かえります", masen:"かえりません", en:"to go back"},
+  "きく":     {type:"u", masu:"ききます",   masen:"ききません",   en:"to listen"},
+  "のむ":     {type:"u", masu:"のみます",   masen:"のみません",   en:"to drink"},
+  "はなす":   {type:"u", masu:"はなします", masen:"はなしません", en:"to speak"},
+  "よむ":     {type:"u", masu:"よみます",   masen:"よみません",   en:"to read"},
+  "おわる":   {type:"u", masu:"おわります", masen:"おわりません", en:"to end"},
+  "はいる":   {type:"u", masu:"はいります", masen:"はいりません", en:"to enter"},
+  // ru-verbs
+  "おきる":   {type:"ru",masu:"おきます",   masen:"おきません",   en:"to get up"},
+  "たべる":   {type:"ru",masu:"たべます",   masen:"たべません",   en:"to eat"},
+  "ねる":     {type:"ru",masu:"ねます",     masen:"ねません",     en:"to sleep"},
+  "みる":     {type:"ru",masu:"みます",     masen:"みません",     en:"to see; to watch"},
+  // irregular
+  "くる":     {type:"irr",masu:"きます",    masen:"きません",     en:"to come"},
+  "する":     {type:"irr",masu:"します",    masen:"しません",     en:"to do"},
+  "べんきょうする":{type:"irr",masu:"べんきょうします",masen:"べんきょうしません",en:"to study"},
+};
+
+const L3_PARTICLES_DATA = [
+  // を (object)
+  {sentence:"コーヒー<span class='blank'>?</span>のみます。",ans:"を",hint:"I drink coffee. (object marker)",explain:"object → を"},
+  {sentence:"あさごはん<span class='blank'>?</span>たべます。",ans:"を",hint:"I eat breakfast. (object marker)",explain:"object → を"},
+  {sentence:"おんがく<span class='blank'>?</span>ききます。",ans:"を",hint:"I listen to music. (object marker)",explain:"object → を"},
+  {sentence:"テレビ<span class='blank'>?</span>みます。",ans:"を",hint:"I watch TV. (object marker)",explain:"object → を"},
+  {sentence:"ざっし<span class='blank'>?</span>よみます。",ans:"を",hint:"I read a magazine. (object marker)",explain:"object → を"},
+  {sentence:"にほんご<span class='blank'>?</span>はなします。",ans:"を",hint:"I speak Japanese. (object marker)",explain:"object → を"},
+  // に (time)
+  {sentence:"くじ<span class='blank'>?</span>おきます。",ans:"に",hint:"I get up at 9. (time marker)",explain:"specific time → に"},
+  {sentence:"にちようび<span class='blank'>?</span>いきます。",ans:"に",hint:"I go on Sunday. (time marker)",explain:"specific time → に"},
+  {sentence:"じゅういちじ<span class='blank'>?</span>ねます。",ans:"に",hint:"I sleep at 11. (time marker)",explain:"specific time → に"},
+  // に (destination with かえる)
+  {sentence:"うち<span class='blank'>?</span>かえります。",ans:"に",hint:"I return home. (destination)",explain:"destination (return) → に"},
+  // で (place of action)
+  {sentence:"カフェ<span class='blank'>?</span>コーヒーを のみます。",ans:"で",hint:"I drink coffee at a cafe. (place of action)",explain:"place of action → で"},
+  {sentence:"がっこう<span class='blank'>?</span>べんきょうします。",ans:"で",hint:"I study at school. (place of action)",explain:"place of action → で"},
+  {sentence:"うち<span class='blank'>?</span>テレビを みます。",ans:"で",hint:"I watch TV at home. (place of action)",explain:"place of action → で"},
+  // へ (direction)
+  {sentence:"がっこう<span class='blank'>?</span>いきます。",ans:"へ",hint:"I go to school. (direction)",explain:"direction → へ",altAns:["に"]},
+  {sentence:"うち<span class='blank'>?</span>かえります。",ans:"へ",hint:"I go back home. (direction)",explain:"direction → へ",altAns:["に"]},
+];
+
+const l3vk=Object.keys(L3_VOCAB), l3verbk=Object.keys(L3_VERBS);
+
+function genL3VocabEn2Jp(n=15){
+  return shuffle([...l3vk]).slice(0,n).map(k=>({
+    qtext:`<span style="font-size:1.3rem;font-weight:700">${L3_VOCAB[k]}</span>`,
+    hint:"日本語で入力してください",answers:[k],explain:k
+  }));
+}
+function genL3VocabJp2En(n=15){
+  return shuffle([...l3vk]).slice(0,n).map(k=>{
+    const alts=L3_VOCAB[k].split(";").map(s=>s.trim());
+    alts.push(...L3_VOCAB[k].split("/").map(s=>s.trim()));
+    const base=L3_VOCAB[k].replace(/\s*\(.*?\)\s*/g,"").trim();
+    if(base)alts.push(base);
+    return {qtext:`<span style="font-size:1.6rem;font-weight:700">${k}</span>`,hint:"Type the English meaning",answers:[...new Set(alts)],explain:L3_VOCAB[k]};
+  });
+}
+
+function genL3VerbConj(n=12){
+  const qs=[];
+  const keys=shuffle([...l3verbk]).slice(0,Math.min(n,l3verbk.length));
+  keys.forEach(k=>{
+    const v=L3_VERBS[k];
+    if(Math.random()<.6){
+      // dictionary → ます
+      qs.push({
+        qtext:`<span style="font-size:1.3rem">${k}</span> → ます形`,
+        hint:`${v.en} — convert to polite affirmative (${v.type}-verb)`,
+        answers:[v.masu],explain:`${k} → ${v.masu}`
+      });
+    }else{
+      // dictionary → ません
+      qs.push({
+        qtext:`<span style="font-size:1.3rem">${k}</span> → ません形`,
+        hint:`${v.en} — convert to polite negative (${v.type}-verb)`,
+        answers:[v.masen],explain:`${k} → ${v.masen}`
+      });
+    }
+  });
+  return shuffle(qs);
+}
+
+function genL3Particles(n=10){
+  const selected=shuffle([...L3_PARTICLES_DATA]).slice(0,n);
+  return selected.map(p=>{
+    const answers=[p.ans];
+    if(p.altAns)answers.push(...p.altAns);
+    return {qtext:"正しい助詞を入れてください",sentence:p.sentence,hint:p.hint,answers:answers,explain:p.explain};
+  });
+}
+
+function genL3Time(n=8){
+  const qs=[];
+  const timeSlots=[
+    {jp:"くじ",en:"9:00"},{jp:"しちじ",en:"7:00"},{jp:"はちじ",en:"8:00"},
+    {jp:"ろくじ",en:"6:00"},{jp:"じゅうじ",en:"10:00"},{jp:"じゅういちじ",en:"11:00"},
+    {jp:"じゅうにじ",en:"12:00"},{jp:"ごじ",en:"5:00"},
+  ];
+  const actions=[
+    {jp:"おきます",en:"get up"},{jp:"ねます",en:"go to sleep"},
+    {jp:"がっこうに いきます",en:"go to school"},{jp:"うちに かえります",en:"go home"},
+    {jp:"ひるごはんを たべます",en:"eat lunch"},{jp:"べんきょうします",en:"study"},
+  ];
+  // Time with に questions
+  for(let i=0;i<Math.min(n-2,6);i++){
+    const t=pick(timeSlots),a=pick(actions);
+    if(Math.random()<.5){
+      // Fill in に
+      qs.push({
+        qtext:`I ${a.en} at ${t.en}.`,
+        sentence:`${t.jp}<span class="blank">?</span>${a.jp}。`,
+        hint:"What particle marks the time?",
+        answers:["に"],explain:`specific time + に → ${t.jp}に ${a.jp}`
+      });
+    }else{
+      // Write full sentence
+      qs.push({
+        qtext:`I ${a.en} at ${t.en}.`,
+        hint:"日本語で書いてください",
+        answers:[`${t.jp}に${a.jp}。`],
+        explain:`${t.jp}に ${a.jp}。`
+      });
+    }
+  }
+  // なんじ questions
+  qs.push({
+    qtext:"What time do you get up tomorrow?",
+    hint:"日本語で書いてください",
+    answers:["あしたなんじにおきますか。","なんじにおきますか。"],
+    explain:"あした なんじに おきますか。"
+  });
+  qs.push({
+    qtext:"What time do you go to sleep?",
+    hint:"日本語で書いてください",
+    answers:["なんじにねますか。"],
+    explain:"なんじに ねますか。"
+  });
+  return shuffle(qs);
+}
+
+function genL3Masenka(n=6){
+  const invitations=[
+    {en:"Shall we eat lunch together?",ja:"いっしょに ひるごはんを たべませんか。",answers:["いっしょにひるごはんをたべませんか。"]},
+    {en:"Shall we watch a movie?",ja:"えいがを みませんか。",answers:["えいがをみませんか。"]},
+    {en:"Shall we drink coffee?",ja:"コーヒーを のみませんか。",answers:["コーヒーをのみませんか。"]},
+    {en:"Shall we go to school?",ja:"がっこうに いきませんか。",answers:["がっこうにいきませんか。"]},
+    {en:"Shall we study together?",ja:"いっしょに べんきょうしませんか。",answers:["いっしょにべんきょうしませんか。"]},
+    {en:"Shall we listen to music?",ja:"おんがくを ききませんか。",answers:["おんがくをききませんか。"]},
+    {en:"Shall we read a magazine?",ja:"ざっしを よみませんか。",answers:["ざっしをよみませんか。"]},
+    {en:"Shall we go to a cafe?",ja:"カフェに いきませんか。",answers:["カフェにいきませんか。"]},
+  ];
+  return shuffle(invitations).slice(0,n).map(inv=>({
+    qtext:inv.en,hint:"～ませんか (invitation) を使ってください",answers:inv.answers,explain:inv.ja,isTranslation:true
+  }));
+}
+
+function genL3Frequency(n=6){
+  const qs=[];
+  const freqs=[
+    {jp:"よく",en:"often",neg:false},{jp:"ときどき",en:"sometimes",neg:false},
+    {jp:"たいてい",en:"usually",neg:false},{jp:"ぜんぜん",en:"not at all",neg:true},
+    {jp:"あまり",en:"not much",neg:true},
+  ];
+  const acts=[
+    {jp:"コーヒーを のみます",neg:"コーヒーを のみません",en:"drink coffee"},
+    {jp:"テレビを みます",neg:"テレビを みません",en:"watch TV"},
+    {jp:"ざっしを よみます",neg:"ざっしを よみません",en:"read magazines"},
+    {jp:"えいがを みます",neg:"えいがを みません",en:"watch movies"},
+    {jp:"べんきょうします",neg:"べんきょうしません",en:"study"},
+  ];
+  for(let i=0;i<n;i++){
+    const f=pick(freqs),a=pick(acts);
+    if(Math.random()<.5){
+      // en → jp: fill in frequency word
+      const verb=f.neg?a.neg:a.jp;
+      qs.push({
+        qtext:`I ${f.en} ${a.en}.`,
+        sentence:`<span class="blank">?</span> ${verb}。`,
+        hint:`frequency adverb: ${f.en}`,
+        answers:[f.jp],explain:`${f.en} → ${f.jp}`
+      });
+    }else{
+      // jp → en: identify frequency word
+      const verb=f.neg?a.neg:a.jp;
+      qs.push({
+        qtext:`<span style="font-size:1.2rem">${f.jp} ${verb}。</span>`,
+        hint:"What does the frequency word mean? (Type in English)",
+        answers:[f.en],explain:`${f.jp} → ${f.en}`
+      });
+    }
+  }
+  return shuffle(qs);
+}
+
+function genL3Translate(n=8){
+  return shuffle([
+    {en:"I eat breakfast every day.",ja:"まいにち あさごはんを たべます。"},
+    {en:"I go to school at 8 o'clock.",ja:"はちじに がっこうに いきます。"},
+    {en:"I often drink coffee at a cafe.",ja:"よく カフェで コーヒーを のみます。"},
+    {en:"I don't watch TV at all.",ja:"ぜんぜん テレビを みません。"},
+    {en:"I usually get up at 7 o'clock.",ja:"たいてい しちじに おきます。"},
+    {en:"I go home at 5 o'clock.",ja:"ごじに うちに かえります。"},
+    {en:"I sometimes read magazines.",ja:"ときどき ざっしを よみます。"},
+    {en:"I study at the library.",ja:"としょかんで べんきょうします。"},
+    {en:"I listen to music every night.",ja:"まいばん おんがくを ききます。"},
+    {en:"I go to sleep at 11 o'clock.",ja:"じゅういちじに ねます。"},
+    {en:"Shall we eat lunch together?",ja:"いっしょに ひるごはんを たべませんか。"},
+    {en:"Mary comes to school on Monday.",ja:"メアリーさんは げつようびに がっこうに きます。"},
+    {en:"Shall we watch a movie on the weekend?",ja:"しゅうまつに えいがを みませんか。"},
+    {en:"What time do you get up tomorrow?",ja:"あした なんじに おきますか。"},
+    {en:"I don't drink water much.",ja:"あまり みずを のみません。"},
+  ]).slice(0,n).map(t=>({qtext:t.en,hint:"日本語で書いてください（完整句子）",answers:[t.ja],explain:t.ja,isTranslation:true}));
+}
+
+function genL3Exam(){
+  return shuffle([
+    ...genL3VocabEn2Jp(6),...genL3VocabJp2En(4),
+    ...genL3VerbConj(6),...genL3Particles(4),
+    ...genL3Time(3),...genL3Masenka(2),
+    ...genL3Frequency(2),...genL3Translate(3),
+  ]).slice(0,30);
+}
+
+const L3_GENERATORS={
+  v_en2jp:{title:"English → 日本語",gen:()=>genL3VocabEn2Jp(15)},
+  v_jp2en:{title:"日本語 → English",gen:()=>genL3VocabJp2En(15)},
+  g_verb:{title:"動詞の活用 (ます形)",gen:()=>genL3VerbConj(15)},
+  g_particle:{title:"助詞 を/に/で/へ",gen:()=>genL3Particles(12)},
+  g_time:{title:"時間 + に",gen:()=>genL3Time(10)},
+  g_masenka:{title:"～ませんか",gen:()=>genL3Masenka(8)},
+  g_freq:{title:"頻度の副詞",gen:()=>genL3Frequency(8)},
+  translate:{title:"翻訳チャレンジ",gen:()=>genL3Translate(10)},
+  exam:{title:"模擬考試",gen:genL3Exam},
+};
+
+// ============================================================
+//  MENU BUILDERS
+// ============================================================
+function buildL2Menu(){
+  return `
+    <div class="menu-grid">
+      <div class="section-label">単語 VOCABULARY</div>
+      <div class="menu-btn" onclick="startQuiz(2,'v_en2jp')"><div class="icon">🇬🇧→🇯🇵</div><span class="t1">English → 日本語</span><span class="t2">See English, type Japanese</span></div>
+      <div class="menu-btn" onclick="startQuiz(2,'v_jp2en')"><div class="icon">🇯🇵→🇬🇧</div><span class="t1">日本語 → English</span><span class="t2">See Japanese, type English</span></div>
+
+      <div class="section-label">文法 GRAMMAR</div>
+      <div class="menu-btn" onclick="startQuiz(2,'g_kosoad')"><div class="icon">👉</div><span class="t1">こそあど</span><span class="t2">これ/それ/あれ/どれ + この/その/あの/どの</span></div>
+      <div class="menu-btn" onclick="startQuiz(2,'g_place')"><div class="icon">📍</div><span class="t1">ここ/そこ/あそこ/どこ</span><span class="t2">Place words</span></div>
+      <div class="menu-btn" onclick="startQuiz(2,'g_dare')"><div class="icon">❓</div><span class="t1">だれの + 名詞</span><span class="t2">Whose ...?</span></div>
+      <div class="menu-btn" onclick="startQuiz(2,'g_mo')"><div class="icon">➕</div><span class="t1">Noun も</span><span class="t2">... too / also</span></div>
+      <div class="menu-btn" onclick="startQuiz(2,'g_janai')"><div class="icon">✕</div><span class="t1">じゃないです</span><span class="t2">Negation</span></div>
+      <div class="menu-btn" onclick="startQuiz(2,'g_neyo')"><div class="icon">💬</div><span class="t1">～ね / ～よ</span><span class="t2">Sentence-ending particles</span></div>
+
+      <div class="section-label">総合 COMPREHENSIVE</div>
+      <div class="menu-btn" onclick="startQuiz(2,'translate')"><div class="icon">📝</div><span class="t1">翻訳チャレンジ</span><span class="t2">Translate full sentences</span></div>
+      <div class="menu-btn exam full" onclick="startQuiz(2,'exam')"><div class="icon">🏆</div><span class="t1">模擬考試 (Mock Exam)</span><span class="t2">30 questions — all vocab & grammar mixed!</span></div>
+
+      <div class="menu-btn full" onclick="toggleGrammar(2)" style="background:#fdf6ec;border-color:#e67e22"><span class="t1">📖 文法のまとめ (Grammar Reference)</span></div>
+      <div style="grid-column:1/-1;text-align:right;margin-top:-4px">
+        <button onclick="if(confirm('確定要清除所有常錯題記錄嗎？'))wbClearAll()" style="background:none;border:none;font-size:.75rem;color:#ccc;cursor:pointer;text-decoration:underline">清除常錯題記錄</button>
+      </div>
+    </div>
+    <div class="gbox" id="grammarBox2">
+      <h3>1. こそあど系統</h3>
+      <table class="gtable">
+        <tr><th></th><th>単独</th><th>+名詞</th><th>場所</th><th>意味</th></tr>
+        <tr><td style="font-weight:700;color:#e67e22">こ</td><td>これ</td><td>この</td><td>ここ</td><td>close to speaker</td></tr>
+        <tr><td style="font-weight:700;color:#e67e22">そ</td><td>それ</td><td>その</td><td>そこ</td><td>close to listener</td></tr>
+        <tr><td style="font-weight:700;color:#e67e22">あ</td><td>あれ</td><td>あの</td><td>あそこ</td><td>far from both</td></tr>
+        <tr><td style="font-weight:700;color:#e67e22">ど</td><td>どれ</td><td>どの</td><td>どこ</td><td>which / where</td></tr>
+      </table>
+      <h3 style="margin-top:16px">2. だれの Noun</h3>
+      <div class="note">これは <b>だれの</b> かばんですか。 — Whose bag is this?</div>
+      <h3 style="margin-top:16px">3. Noun も (too/also)</h3>
+      <div class="note">A は X です。 → B <b>も</b> X です。<br>たけしさんは にほんじんです。ゆいさん<b>も</b> にほんじんです。</div>
+      <h3 style="margin-top:16px">4. じゃないです (negation)</h3>
+      <div class="note">X は Y <b>じゃないです</b>。 = X is not Y.<br>これは さかな<b>じゃないです</b>。にくです。</div>
+      <h3 style="margin-top:16px">5. ～ね / ～よ</h3>
+      <div class="note"><b>～ね</b>: seeking confirmation (right?)<br>たかいです<b>ね</b>。 — It's expensive, isn't it?<br><b>～よ</b>: asserting / informing<br>おいしいです<b>よ</b>。 — It IS delicious, I tell you.</div>
+    </div>`;
+}
+
+function buildL3Menu(){
+  return `
+    <div class="menu-grid">
+      <div class="section-label">単語 VOCABULARY</div>
+      <div class="menu-btn" onclick="startQuiz(3,'v_en2jp')"><div class="icon">🇬🇧→🇯🇵</div><span class="t1">English → 日本語</span><span class="t2">See English, type Japanese</span></div>
+      <div class="menu-btn" onclick="startQuiz(3,'v_jp2en')"><div class="icon">🇯🇵→🇬🇧</div><span class="t1">日本語 → English</span><span class="t2">See Japanese, type English</span></div>
+
+      <div class="section-label">文法 GRAMMAR</div>
+      <div class="menu-btn" onclick="startQuiz(3,'g_verb')"><div class="icon">📐</div><span class="t1">動詞の活用</span><span class="t2">Verb conjugation (ます form)</span></div>
+      <div class="menu-btn" onclick="startQuiz(3,'g_particle')"><div class="icon">🔤</div><span class="t1">助詞 を/に/で/へ</span><span class="t2">Particle fill-in</span></div>
+      <div class="menu-btn" onclick="startQuiz(3,'g_time')"><div class="icon">🕐</div><span class="t1">時間 + に</span><span class="t2">Time expressions</span></div>
+      <div class="menu-btn" onclick="startQuiz(3,'g_masenka')"><div class="icon">🤝</div><span class="t1">～ませんか</span><span class="t2">Invitations</span></div>
+      <div class="menu-btn" onclick="startQuiz(3,'g_freq')"><div class="icon">📊</div><span class="t1">頻度の副詞</span><span class="t2">よく / ときどき / たいてい / ぜんぜん</span></div>
+
+      <div class="section-label">総合 COMPREHENSIVE</div>
+      <div class="menu-btn" onclick="startQuiz(3,'translate')"><div class="icon">📝</div><span class="t1">翻訳チャレンジ</span><span class="t2">Translate full sentences</span></div>
+      <div class="menu-btn exam full" onclick="startQuiz(3,'exam')"><div class="icon">🏆</div><span class="t1">模擬考試 (Mock Exam)</span><span class="t2">30 questions — all vocab & grammar mixed!</span></div>
+
+      <div class="menu-btn full" onclick="toggleGrammar(3)" style="background:#fdf6ec;border-color:#e67e22"><span class="t1">📖 文法のまとめ (Grammar Reference)</span></div>
+    </div>
+    <div class="gbox" id="grammarBox3">
+      <h3>1. 動詞の活用 (Verb Conjugation)</h3>
+      <table class="gtable">
+        <tr><th>Type</th><th>辞書形</th><th>ます</th><th>ません</th></tr>
+        <tr><td style="font-weight:700;color:#27ae60">る-verb</td><td>たべる</td><td>たべます</td><td>たべません</td></tr>
+        <tr><td style="font-weight:700;color:#27ae60">る-verb</td><td>みる</td><td>みます</td><td>みません</td></tr>
+        <tr><td style="font-weight:700;color:#2980b9">う-verb</td><td>いく</td><td>いきます</td><td>いきません</td></tr>
+        <tr><td style="font-weight:700;color:#2980b9">う-verb</td><td>のむ</td><td>のみます</td><td>のみません</td></tr>
+        <tr><td style="font-weight:700;color:#2980b9">う-verb</td><td>はなす</td><td>はなします</td><td>はなしません</td></tr>
+        <tr><td style="font-weight:700;color:#e74c3c">irregular</td><td>くる</td><td>きます</td><td>きません</td></tr>
+        <tr><td style="font-weight:700;color:#e74c3c">irregular</td><td>する</td><td>します</td><td>しません</td></tr>
+      </table>
+      <div class="note"><b>る-verb</b>: drop る → ます<br><b>う-verb</b>: final う-sound → い-sound + ます<br><b>irregular</b>: くる→きます, する→します</div>
+
+      <h3 style="margin-top:16px">2. 助詞 (Particles)</h3>
+      <div class="note">
+        <b>を</b> — object marker: コーヒー<b>を</b> のみます。<br>
+        <b>に</b> — time / destination: くじ<b>に</b> おきます。/ うち<b>に</b> かえります。<br>
+        <b>で</b> — place of action: カフェ<b>で</b> たべます。<br>
+        <b>へ</b> — direction: がっこう<b>へ</b> いきます。
+      </div>
+
+      <h3 style="margin-top:16px">3. 時間 + に (Time)</h3>
+      <div class="note">
+        <b>に</b> marks definite time (clock time, days of week, months, dates).<br>
+        No に with: きょう, あした, きのう, まいにち, いつ, しゅうまつ<br>
+        <b>なんじに</b> = at what time?<br>
+        あした <b>なんじに</b> おきますか。
+      </div>
+
+      <h3 style="margin-top:16px">4. ～ませんか (Invitation)</h3>
+      <div class="note">
+        Verb ません + か = Shall we ...? / Would you like to ...?<br>
+        いっしょに ひるごはんを <b>たべませんか</b>。<br>
+        = Shall we eat lunch together?
+      </div>
+
+      <h3 style="margin-top:16px">5. 頻度の副詞 (Frequency)</h3>
+      <table class="gtable">
+        <tr><th>日本語</th><th>English</th><th>Note</th></tr>
+        <tr><td>よく</td><td>often</td><td>+ affirmative</td></tr>
+        <tr><td>たいてい</td><td>usually</td><td>+ affirmative</td></tr>
+        <tr><td>ときどき</td><td>sometimes</td><td>+ affirmative</td></tr>
+        <tr><td>あまり</td><td>not much</td><td>+ <b>negative</b></td></tr>
+        <tr><td>ぜんぜん</td><td>not at all</td><td>+ <b>negative</b></td></tr>
+      </table>
+      <div class="note"><b>あまり</b> and <b>ぜんぜん</b> MUST be used with negative verbs!<br>ぜんぜん テレビを み<b>ません</b>。</div>
+
+      <h3 style="margin-top:16px">6. Time References</h3>
+      <table class="gtable">
+        <tr><th>Days</th><th></th><th>Month</th><th></th></tr>
+        <tr><td>きのう</td><td>yesterday</td><td>せんげつ</td><td>last month</td></tr>
+        <tr><td>きょう</td><td>today</td><td>こんげつ</td><td>this month</td></tr>
+        <tr><td>あした</td><td>tomorrow</td><td>らいげつ</td><td>next month</td></tr>
+      </table>
+      <table class="gtable" style="margin-top:8px">
+        <tr><th>Time of Day</th><th></th><th>Frequency</th><th></th></tr>
+        <tr><td>あさ</td><td>morning</td><td>まいにち</td><td>every day</td></tr>
+        <tr><td>ひる</td><td>noon</td><td>まいばん</td><td>every night</td></tr>
+        <tr><td>よる</td><td>evening</td><td></td><td></td></tr>
+      </table>
+    </div>`;
+}
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function selectLesson(num){
+  currentLesson=num;
+  document.getElementById("lessonPicker").style.display="none";
+  const mc=document.getElementById("menuContent");
+  mc.innerHTML=num===2?buildL2Menu():buildL3Menu();
+  document.getElementById("menuScreen").style.display="block";
+}
+
+function backToLessons(){
+  document.getElementById("menuScreen").style.display="none";
+  document.getElementById("lessonPicker").style.display="block";
+  currentLesson=null;
+  updateWrongBadge();
+}
+
+function backToMenu(){
+  document.getElementById("quizArea").classList.remove("active");
+  if(currentLesson){
+    document.getElementById("menuScreen").style.display="block";
+  }else{
+    document.getElementById("lessonPicker").style.display="block";
+  }
+  document.getElementById("qc").innerHTML="";
+  document.getElementById("scoreCard").classList.remove("show");
+  document.getElementById("wrongList").innerHTML="";
+  updateWrongBadge();
+}
+
+function toggleGrammar(lesson){
+  const id="grammarBox"+lesson;
+  document.getElementById(id).classList.toggle("show");
+}
+
+// ========== WRONG BANK QUIZ ==========
+function startWrongBank(){
+  const bank=wbLoad();
+  const keys=Object.keys(bank);
+  if(keys.length===0){
+    alert("常錯題庫裡還沒有題目！\n先去做其他練習，答錯的題目會自動記錄到這裡。");
+    return;
+  }
+  keys.sort((a,b)=>{
+    if(bank[b].count!==bank[a].count)return bank[b].count-bank[a].count;
+    return (bank[b].lastWrong||0)-(bank[a].lastWrong||0);
+  });
+  const selected=keys.slice(0,20);
+  quiz=shuffle(selected.map(key=>{
+    const entry=bank[key];
+    const q={...entry.q};
+    q._wbKey=key;q._wrongCount=entry.count;q._history=entry.history||[];
+    return q;
+  }));
+  qi=0;score=0;wrongs=[];enterReady=false;answeredAt=0;
+  document.getElementById("lessonPicker").style.display="none";
+  document.getElementById("menuScreen").style.display="none";
+  document.getElementById("quizArea").classList.add("active");
+  document.getElementById("quizTitle").textContent="常錯題庫";
+  document.getElementById("scoreCard").classList.remove("show");
+  showQ();
+}
+
+// ========== ENGINE ==========
+function startQuiz(lesson,type){
+  const gens=lesson===2?L2_GENERATORS:L3_GENERATORS;
+  const g=gens[type];
+  quiz=g.gen();qi=0;score=0;wrongs=[];enterReady=false;answeredAt=0;
+  document.getElementById("menuScreen").style.display="none";
+  document.getElementById("quizArea").classList.add("active");
+  document.getElementById("quizTitle").textContent=g.title;
+  document.getElementById("scoreCard").classList.remove("show");
+  showQ();
+}
+
+function showQ(){
+  const c=document.getElementById("qc"),q=quiz[qi],t=quiz.length;
+  document.getElementById("pf").style.width=(qi/t*100)+"%";
+  let h=`<div class="card"><span class="qnum">Q${qi+1} / ${t}</span>`;
+  if(q._wrongCount)h+=`<span style="float:right;background:#fde8e8;color:#e74c3c;font-size:.75rem;padding:2px 8px;border-radius:10px;font-weight:700">錯${q._wrongCount}回</span>`;
+  if(q.qtext)h+=`<div class="qtext">${q.qtext}</div>`;
+  if(q.sentence)h+=`<div class="qsentence">${q.sentence}</div>`;
+  if(q.hint)h+=`<div class="qhint">${q.hint}</div>`;
+  if(q.isTranslation)h+=`<div style="font-size:.82rem;color:#bbb;margin-bottom:6px">日本語で書いてください：</div>`;
+  h+=`<div class="irow"><input type="text" id="ai" placeholder="ここに入力..." autocomplete="off" autocapitalize="off" spellcheck="false"><button onclick="handleBtn()">確認</button></div>`;
+  h+=`<div class="confirm-hint" id="ch" style="display:none;margin-top:6px;padding:6px 12px;background:#fff8ee;border:1.5px dashed #f39c12;border-radius:8px;font-size:.88rem;color:#e67e22;text-align:center">Enter をもう一度押して送出 (Press Enter again to submit)</div>`;
+  h+=`<div class="fb" id="fb"></div><button class="nxt" id="nb" onclick="next()">${qi===t-1?"結果を見る":"次へ →"}</button></div>`;
+  c.innerHTML=h;
+  enterReady=false;answeredAt=0;
+  const inp=document.getElementById("ai");
+  inp.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      e.preventDefault();
+      if(answeredAt>0)return;
+      if(!inp.value.trim())return;
+      if(!enterReady){
+        enterReady=true;
+        document.getElementById("ch").style.display="block";
+        inp.style.borderColor="#f39c12";
+      }else{
+        submit();
+      }
+    }else{
+      enterReady=false;
+      const ch=document.getElementById("ch");
+      if(ch)ch.style.display="none";
+      inp.style.borderColor="#eee";
+    }
+  });
+  inp.addEventListener("input",()=>{enterReady=false;const ch=document.getElementById("ch");if(ch)ch.style.display="none";inp.style.borderColor="#eee"});
+  setTimeout(()=>inp.focus(),80);
+}
+
+function handleBtn(){
+  const inp=document.getElementById("ai");
+  if(!inp.value.trim())return;
+  if(!enterReady){
+    enterReady=true;
+    document.getElementById("ch").style.display="block";
+    inp.style.borderColor="#f39c12";
+  }else{
+    submit();
+  }
+}
+
+function submit(){
+  const inp=document.getElementById("ai"),fb=document.getElementById("fb"),nb=document.getElementById("nb"),q=quiz[qi];
+  if(!inp.value.trim())return;
+  inp.disabled=true;
+  document.getElementById("ch").style.display="none";
+  if(matchAny(inp.value,q.answers)){
+    score++;fb.className="fb ok";fb.innerHTML=`&#10004; <b>正解！</b> → ${q.explain}`;
+    if(q._wbKey){
+      const bank=wbLoad();
+      if(bank[q._wbKey]){bank[q._wbKey].count--;if(bank[q._wbKey].count<=0)delete bank[q._wbKey];wbSave(bank);}
+    }
+  }else{
+    fb.className="fb ng";fb.innerHTML=`&#10008; <b>不正解</b><br>正しい答え: <b>${q.explain}</b>`;
+    wrongs.push({num:qi+1,qtext:q.qtext||"",hint:q.hint||"",yourAns:inp.value.trim(),correct:q.explain});
+    wbRecord(q,inp.value.trim());
+  }
+  nb.style.display="block";
+  answeredAt=Date.now();
+}
+
+function next(){
+  qi++;
+  if(qi>=quiz.length)showScore();else showQ();
+}
+
+function showScore(){
+  document.getElementById("qc").innerHTML="";
+  document.getElementById("pf").style.width="100%";
+  const t=quiz.length,pct=Math.round(score/t*100);
+  let msg,col;
+  if(pct===100){msg="完璧！ Perfect!";col="#27ae60"}
+  else if(pct>=80){msg="すごい！ Great!";col="#27ae60"}
+  else if(pct>=60){msg="いいですね！ Good!";col="#f39c12"}
+  else{msg="もう一度がんばりましょう！";col="#e74c3c"}
+  document.getElementById("sBig").textContent=`${score} / ${t}`;
+  document.getElementById("sMsg").textContent=msg;
+  const bar=document.getElementById("sFill");bar.style.background=col;
+  setTimeout(()=>bar.style.width=pct+"%",100);
+
+  const wr=document.getElementById("wrongList");
+  if(wrongs.length>0){
+    let h=`<div style="text-align:left;margin-top:18px"><h3 style="color:#e74c3c;font-size:.95rem;margin-bottom:10px">間違えた問題 (${wrongs.length})</h3>`;
+    wrongs.forEach((w,i)=>{
+      h+=`<div style="background:#fff5f5;border:1px solid #f5c6c6;border-radius:10px;padding:12px;margin-bottom:8px">`;
+      h+=`<div style="font-size:.82rem;color:#999;margin-bottom:4px">Q${w.num}</div>`;
+      if(w.qtext)h+=`<div style="font-size:.9rem;margin-bottom:4px">${w.qtext}</div>`;
+      if(w.hint)h+=`<div style="font-size:.82rem;color:#888;margin-bottom:6px;font-style:italic">${w.hint}</div>`;
+      h+=`<div style="font-size:.88rem"><span style="color:#e74c3c">你的答案:</span> ${w.yourAns}</div>`;
+      h+=`<div style="font-size:.88rem"><span style="color:#27ae60">正解:</span> <b>${w.correct}</b></div>`;
+      h+=`</div>`;
+    });
+    h+=`<button onclick="retryWrongs()" style="margin-top:8px;width:100%;background:#e74c3c;color:#fff;border:none;border-radius:10px;padding:10px;font-size:.9rem;font-weight:700;cursor:pointer">間違えた問題をもう一度 (Retry wrong ones)</button>`;
+    h+=`</div>`;
+    wr.innerHTML=h;
+  }else{
+    wr.innerHTML="";
+  }
+  document.getElementById("scoreCard").classList.add("show");
+}
+
+function retryWrongs(){
+  const oldWrongs=wrongs.map(w=>quiz[w.num-1]);
+  quiz=shuffle(oldWrongs);qi=0;score=0;wrongs=[];enterReady=false;
+  document.getElementById("scoreCard").classList.remove("show");
+  document.getElementById("wrongList").innerHTML="";
+  showQ();
+}
+
+// Init
+updateWrongBadge();
+</script>
+</body>
+</html>
