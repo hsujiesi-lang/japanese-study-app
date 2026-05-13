@@ -71,6 +71,15 @@
   .done { text-align:center; padding:24px; font-size:1.25rem; color:#2f7a3f; font-weight:700;}
   .warn { background:#fff6e0; border:1px solid #f0d68a; color:#8a6d1a; font-size:.85rem; padding:10px 12px; border-radius:8px; margin-bottom:10px;}
   .hidden { display:none !important;}
+  .voicecfg {
+    background:#fff; border:1px solid #e3ddcf; border-radius:12px; padding:12px;
+    margin-bottom:12px; font-size:.9rem;
+  }
+  .vc-row { display:flex; align-items:center; gap:8px; margin:6px 0; flex-wrap:wrap;}
+  .vc-row label { min-width:120px; font-weight:600; color:#555; font-size:.85rem;}
+  .vc-row select, .vc-row input[type=range] { flex:1; min-width:160px; padding:6px; font-size:.85rem;}
+  .vc-buttons { justify-content:center; gap:10px;}
+  .vc-note { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:8px; border-radius:6px; margin-top:8px;}
   .live-dot { display:inline-block; width:10px; height:10px; background:#c0392b; border-radius:50%; margin-right:6px; animation:pulse 1s infinite;}
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;}}
 </style>
@@ -87,6 +96,35 @@
     <button class="toggle" id="tTrans">顯示中文翻譯</button>
     <button class="ghost" id="tReset">重新開始</button>
     <button class="ghost" id="btnListenAll">🎧 聽完整對話</button>
+    <button class="toggle" id="tVoiceCfg">🔧 語音設定</button>
+  </div>
+
+  <div id="voiceCfg" class="voicecfg hidden">
+    <div class="vc-row">
+      <label>Stacy 的聲音：</label>
+      <select id="selStacy"></select>
+    </div>
+    <div class="vc-row">
+      <label>Stacy 音調：<span id="pStacyVal">1.0</span></label>
+      <input type="range" id="pStacy" min="0.5" max="1.8" step="0.05" value="1.0">
+    </div>
+    <div class="vc-row">
+      <label>Jessie 的聲音：</label>
+      <select id="selJessie"></select>
+    </div>
+    <div class="vc-row">
+      <label>Jessie 音調：<span id="pJessieVal">1.0</span></label>
+      <input type="range" id="pJessie" min="0.5" max="1.8" step="0.05" value="1.0">
+    </div>
+    <div class="vc-row">
+      <label>語速：<span id="rVal">0.75</span>x</label>
+      <input type="range" id="rRate" min="0.5" max="1.2" step="0.05" value="0.75">
+    </div>
+    <div class="vc-row vc-buttons">
+      <button class="ghost" id="btnTryStacy">🔊 試聽 Stacy</button>
+      <button class="ghost" id="btnTryJessie">🔊 試聽 Jessie</button>
+    </div>
+    <div class="vc-note" id="vcNote"></div>
   </div>
 
   <div id="warn" class="warn hidden"></div>
@@ -174,36 +212,57 @@ const MAX_TRY = 1;          // retry once if mishear, then move on
 const NO_SPEECH_MS = 9000;  // give up listening after 9s of silence
 
 let jpVoice = null, maleVoice = null, femaleVoice = null;
+let allJaVoices = [];
+
+// user-configurable preferences (stored in localStorage)
+const PREF = {
+  stacyVoiceURI: localStorage.getItem('kaiwa.stacyVoiceURI') || '',
+  jessieVoiceURI: localStorage.getItem('kaiwa.jessieVoiceURI') || '',
+  stacyPitch: parseFloat(localStorage.getItem('kaiwa.stacyPitch')) || null,
+  jessiePitch: parseFloat(localStorage.getItem('kaiwa.jessiePitch')) || null,
+  rate: parseFloat(localStorage.getItem('kaiwa.rate')) || 0.75,
+};
+function savePref(k, v){ PREF[k] = v; localStorage.setItem('kaiwa.'+k, String(v)); }
+
 function loadVoices(){
   const vs = speechSynthesis.getVoices();
   const ja = vs.filter(v => /^ja/i.test(v.lang));
 
-  // Prefer premium / natural-sounding voices first
   const score = v => {
     let s = 0;
     if (/premium|enhanced|neural|natural/i.test(v.name)) s += 10;
-    if (/Google/i.test(v.name)) s += 6;        // Google 日本語 sounds natural
-    if (/Microsoft.*(Nanami|Keita|Aoi|Daichi|Mayu|Naoki|Shiori)/i.test(v.name)) s += 8; // Edge neural
-    if (/Kyoko|Otoya|O-ren|Hattori/i.test(v.name)) s += 4; // Apple
-    if (v.localService === false) s += 2;     // cloud voices usually better
+    if (/Google/i.test(v.name)) s += 6;
+    if (/Microsoft.*(Nanami|Keita|Aoi|Daichi|Mayu|Naoki|Shiori)/i.test(v.name)) s += 8;
+    if (/Kyoko|Otoya|O-ren|Hattori/i.test(v.name)) s += 4;
+    if (v.localService === false) s += 2;
     return s;
   };
   ja.sort((a,b)=>score(b)-score(a));
+  allJaVoices = ja;
 
-  // Identify male / female by known name patterns
   const isMale   = v => /Otoya|Ichiro|Hattori|Daichi|Keita|Naoki|男|Male/i.test(v.name);
   const isFemale = v => /Kyoko|Haruka|Ayumi|Nanami|Sayaka|Mizuki|O-ren|Aoi|Mayu|Shiori|女|Female/i.test(v.name);
 
   maleVoice   = ja.find(isMale)   || null;
   femaleVoice = ja.find(isFemale) || null;
-
-  // Fallback: any Japanese voice (highest-scored first)
   jpVoice = ja[0] || null;
   if (!maleVoice)   maleVoice   = jpVoice;
   if (!femaleVoice) femaleVoice = jpVoice;
+
+  refreshVoiceUI();
 }
 loadVoices();
 if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+// resolve a voice from a saved URI
+function findVoiceByURI(uri){
+  if (!uri) return null;
+  return allJaVoices.find(v => v.voiceURI === uri) || null;
+}
+
+// what voice is actually being used (user pref OR auto)
+function effectiveStacyVoice(){ return findVoiceByURI(PREF.stacyVoiceURI) || femaleVoice; }
+function effectiveJessieVoice(){ return findVoiceByURI(PREF.jessieVoiceURI) || maleVoice; }
 
 function speak(text, opts){
   opts = opts || {};
@@ -220,14 +279,18 @@ function speak(text, opts){
   });
 }
 
-// Stacy = female voice, Jessie = male voice (swapped per user preference).
-// Keep pitch close to 1.0 so it doesn't sound robotic. Rate slowed to 0.75x.
+// Stacy = female (default), Jessie = male (default). User can override in 語音設定.
 function voiceFor(who){
-  const sameVoice = (maleVoice === femaleVoice);
+  const sv = effectiveStacyVoice();
+  const jv = effectiveJessieVoice();
+  const sameVoice = (sv && jv && sv.voiceURI === jv.voiceURI);
+  const rate = PREF.rate || 0.75;
   if (who === 'stacy'){
-    return { voice: femaleVoice, pitch: sameVoice ? 1.15 : 1.0, rate: 0.75 };
+    const p = PREF.stacyPitch != null ? PREF.stacyPitch : (sameVoice ? 1.15 : 1.0);
+    return { voice: sv, pitch: p, rate };
   } else {
-    return { voice: maleVoice,   pitch: sameVoice ? 0.85 : 1.0, rate: 0.75 };
+    const p = PREF.jessiePitch != null ? PREF.jessiePitch : (sameVoice ? 0.85 : 1.0);
+    return { voice: jv, pitch: p, rate };
   }
 }
 
@@ -541,9 +604,66 @@ $('tReset').onclick = ()=>{
   setStatus('按「開始」就會自動進行整段對話','');
 };
 
+// ---------- voice settings UI ----------
+function refreshVoiceUI(){
+  const selS = $('selStacy'), selJ = $('selJessie');
+  if (!selS || !selJ) return;
+  const opts = allJaVoices.map(v =>
+    `<option value="${v.voiceURI}">${v.name} (${v.lang})${v.localService===false?' ☁︎':''}</option>`
+  ).join('');
+  const fallback = '<option value="">（自動）</option>';
+  selS.innerHTML = fallback + opts;
+  selJ.innerHTML = fallback + opts;
+  // restore saved selections
+  selS.value = PREF.stacyVoiceURI || '';
+  selJ.value = PREF.jessieVoiceURI || '';
+  // restore pitch/rate
+  if (PREF.stacyPitch != null) { $('pStacy').value = PREF.stacyPitch; $('pStacyVal').textContent = (+PREF.stacyPitch).toFixed(2); }
+  if (PREF.jessiePitch != null){ $('pJessie').value = PREF.jessiePitch; $('pJessieVal').textContent = (+PREF.jessiePitch).toFixed(2); }
+  $('rRate').value = PREF.rate; $('rVal').textContent = (+PREF.rate).toFixed(2);
+
+  // diagnostic note
+  const note = $('vcNote');
+  if (allJaVoices.length === 0){
+    note.innerHTML = '⚠️ 找不到日文語音。請到系統設定下載日文語音。';
+  } else if (allJaVoices.length === 1){
+    const v = allJaVoices[0];
+    note.innerHTML = `⚠️ 你的裝置上只有 1 種日文語音（<b>${v.name}</b>），所以兩個角色聽起來會像同一個人。<br>`
+      + `<b>iPhone 增加男聲</b>：設定 → 輔助使用 → 朗讀內容 → 語音 → 日文 → 點 <b>Otoya</b> 或 <b>Hattori</b>（增強版） → 下載 → 回來重新整理頁面。<br>`
+      + `<b>Android</b>：設定 → 系統 → 語言與輸入 → 文字轉語音 → 安裝語音資料 → 日文，選不同性別的語音。`;
+  } else {
+    note.innerHTML = `✅ 找到 <b>${allJaVoices.length}</b> 種日文語音。可以在上面下拉選單指定 Stacy / Jessie 各用哪一個。`;
+  }
+}
+
+$('tVoiceCfg').onclick = (e)=>{
+  const cfg = $('voiceCfg');
+  cfg.classList.toggle('hidden');
+  e.target.classList.toggle('on');
+  if (!cfg.classList.contains('hidden')) refreshVoiceUI();
+};
+
+$('selStacy').onchange = e => savePref('stacyVoiceURI', e.target.value);
+$('selJessie').onchange = e => savePref('jessieVoiceURI', e.target.value);
+$('pStacy').oninput = e => {
+  savePref('stacyPitch', parseFloat(e.target.value));
+  $('pStacyVal').textContent = (+e.target.value).toFixed(2);
+};
+$('pJessie').oninput = e => {
+  savePref('jessiePitch', parseFloat(e.target.value));
+  $('pJessieVal').textContent = (+e.target.value).toFixed(2);
+};
+$('rRate').oninput = e => {
+  savePref('rate', parseFloat(e.target.value));
+  $('rVal').textContent = (+e.target.value).toFixed(2);
+};
+$('btnTryStacy').onclick = () => speak('こんにちは、ステイシーです。よろしくおねがいします。', voiceFor('stacy'));
+$('btnTryJessie').onclick = () => speak('こんにちは、ジェシーです。よろしくおねがいします。', voiceFor('me'));
+
 // defaults
 document.body.classList.add('showhint'); $('tHint').classList.add('on');
 setStatus('按「開始」就會自動進行整段對話','');
+refreshVoiceUI();
 </script>
 </body>
 </html>
