@@ -207,6 +207,10 @@ let idx = 0;
 let running = false;
 let recognizing = false;
 let attempt = 0;
+let pausedMode = null;      // 'practice' | 'listenAll' | null
+let lastRenderedIdx = -1;   // last script index for which a bubble was rendered (practice mode)
+let listenAllPos = 0;       // current position when in listenAll mode
+let listenAllRenderedIdx = -1;
 const PASS = 0.45;
 const MAX_TRY = 1;          // retry once if mishear, then move on
 const NO_SPEECH_MS = 9000;  // give up listening after 9s of silence
@@ -350,14 +354,21 @@ function showHint(item){
 
 async function advance(){
   if (!running) return;
-  while (idx < SCRIPT.length && SCRIPT[idx].part){ renderPart(SCRIPT[idx].part); idx++; }
+  while (idx < SCRIPT.length && SCRIPT[idx].part){
+    if (lastRenderedIdx !== idx) renderPart(SCRIPT[idx].part);
+    lastRenderedIdx = idx;
+    idx++;
+  }
   if (idx >= SCRIPT.length){ finish(); return; }
   const item = SCRIPT[idx];
 
   btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
 
   if (item.who === 'stacy'){
-    renderBubble(item);
+    if (lastRenderedIdx !== idx){
+      renderBubble(item);
+      lastRenderedIdx = idx;
+    }
     setStatus('🔊 Stacy 正在說話…', 'speaking');
     nextlineEl.innerHTML = 'Stacy 的台詞中…';
     await speak(item.jp, voiceFor('stacy'));
@@ -375,7 +386,8 @@ async function advance(){
 }
 
 function finish(){
-  running = false;
+  running = false; pausedMode = null;
+  idx = 0; lastRenderedIdx = -1; // so 「再來一次」是全新開始
   nextlineEl.style.display='none';
   setStatus('🎉 對話完成！', '');
   btnStop.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
@@ -504,6 +516,27 @@ function stopRecog(){
 function start(){
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   stopRecog();
+
+  // resume from pause?
+  if (pausedMode === 'practice'){
+    pausedMode = null;
+    running = true; attempt = 0;
+    btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+    nextlineEl.style.display = '';
+    setStatus('▶ 從停下的地方繼續…', '');
+    advance();
+    return;
+  }
+  if (pausedMode === 'listenAll'){
+    pausedMode = null;
+    btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+    nextlineEl.style.display = 'none';
+    setStatus('▶ 繼續播放…', '');
+    listenAllFrom(listenAllPos);
+    return;
+  }
+
+  // fresh start
   if (!SR){
     $('warn').classList.remove('hidden');
     $('warn').innerHTML = '⚠️ 這個瀏覽器（看起來是 iPhone Safari）不支援語音辨識。'
@@ -513,16 +546,22 @@ function start(){
     $('warn').classList.add('hidden');
   }
   idx = 0; convoEl.innerHTML=''; running = true; attempt = 0;
+  lastRenderedIdx = -1;
   btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+  btnStart.textContent = '▶ 開始（自動進行）';
   nextlineEl.style.display='';
   advance();
 }
 
 function stop(){
+  // record what was running so we can resume
+  if (running) pausedMode = 'practice';
+  else if (listening) pausedMode = 'listenAll';
   running = false; listening = false; stopRecog();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
-  setStatus('⏹ 已停止', '');
-  btnStart.classList.remove('hidden'); btnStart.textContent = '▶ 繼續開始';
+  setStatus(pausedMode ? '⏸ 已暫停（按「繼續」從原本的地方繼續）' : '⏹ 已停止', '');
+  btnStart.classList.remove('hidden');
+  btnStart.textContent = pausedMode ? '▶ 繼續' : '▶ 開始（自動進行）';
   btnStop.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
 }
 
@@ -531,23 +570,19 @@ btnStop.onclick = stop;
 
 // ---------- listen-all mode (no mic, just play the whole dialogue) ----------
 let listening = false;
-async function listenAll(){
-  // stop any practice
-  running = false; stopRecog();
-  if ('speechSynthesis' in window) speechSynthesis.cancel();
-  // reset UI
-  idx = 0; convoEl.innerHTML = '';
-  btnStart.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
-  btnStop.classList.remove('hidden');
-  nextlineEl.style.display = 'none';
+
+async function listenAllFrom(startI){
   listening = true;
   $('warn').classList.add('hidden');
-
-  for (let i=0; i<SCRIPT.length; i++){
+  for (let i = startI; i < SCRIPT.length; i++){
+    listenAllPos = i;
     if (!listening) return;
     const item = SCRIPT[i];
-    if (item.part){ renderPart(item.part); await wait(300); continue; }
-    renderBubble(item);
+    if (item.part){
+      if (listenAllRenderedIdx !== i){ renderPart(item.part); listenAllRenderedIdx = i; }
+      await wait(300); continue;
+    }
+    if (listenAllRenderedIdx !== i){ renderBubble(item); listenAllRenderedIdx = i; }
     const who = item.who;
     setStatus((who==='stacy'?'🔊 Stacy（女聲）':'🔊 Jessie（男聲）') + ' 正在說…', 'speaking');
     await speak(item.jp, voiceFor(who));
@@ -558,6 +593,19 @@ async function listenAll(){
   setStatus('🎉 對話播放完成', '');
   btnStop.classList.add('hidden');
   btnStart.classList.remove('hidden'); btnStart.textContent = '▶ 開始（自動進行）';
+}
+
+async function listenAll(){
+  // stop any practice
+  running = false; pausedMode = null; stopRecog();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  // reset UI for a fresh full play-through
+  idx = 0; convoEl.innerHTML = '';
+  listenAllPos = 0; listenAllRenderedIdx = -1;
+  btnStart.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+  btnStop.classList.remove('hidden');
+  nextlineEl.style.display = 'none';
+  await listenAllFrom(0);
 }
 
 $('btnListenAll').onclick = listenAll;
@@ -595,9 +643,10 @@ btnSkip.onclick = () => {
 $('tHint').onclick = (e)=>{ document.body.classList.toggle('showhint'); e.target.classList.toggle('on'); };
 $('tTrans').onclick = (e)=>{ document.body.classList.toggle('showtrans'); e.target.classList.toggle('on'); };
 $('tReset').onclick = ()=>{
-  running = false; listening = false; stopRecog();
+  running = false; listening = false; pausedMode = null; stopRecog();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   idx = 0; convoEl.innerHTML = '';
+  lastRenderedIdx = -1; listenAllPos = 0; listenAllRenderedIdx = -1;
   btnStart.classList.remove('hidden'); btnStart.textContent = '▶ 開始（自動進行）';
   btnStop.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
   nextlineEl.style.display = '';
