@@ -174,14 +174,28 @@ let jpVoice = null, maleVoice = null, femaleVoice = null;
 function loadVoices(){
   const vs = speechSynthesis.getVoices();
   const ja = vs.filter(v => /^ja/i.test(v.lang));
-  // male-leaning Japanese voices
-  maleVoice = ja.find(v => /Otoya|Ichiro|Hattori|Daichi|Sakura.*Male|男|Male/i.test(v.name))
-           || null;
-  // female-leaning Japanese voices
-  femaleVoice = ja.find(v => /Kyoko|Haruka|Ayumi|Nanami|Sayaka|Mizuki|O-ren|女|Female/i.test(v.name))
-             || null;
-  // fallbacks
-  jpVoice = ja.find(v => /Google|Microsoft/i.test(v.name)) || ja[0] || null;
+
+  // Prefer premium / natural-sounding voices first
+  const score = v => {
+    let s = 0;
+    if (/premium|enhanced|neural|natural/i.test(v.name)) s += 10;
+    if (/Google/i.test(v.name)) s += 6;        // Google 日本語 sounds natural
+    if (/Microsoft.*(Nanami|Keita|Aoi|Daichi|Mayu|Naoki|Shiori)/i.test(v.name)) s += 8; // Edge neural
+    if (/Kyoko|Otoya|O-ren|Hattori/i.test(v.name)) s += 4; // Apple
+    if (v.localService === false) s += 2;     // cloud voices usually better
+    return s;
+  };
+  ja.sort((a,b)=>score(b)-score(a));
+
+  // Identify male / female by known name patterns
+  const isMale   = v => /Otoya|Ichiro|Hattori|Daichi|Keita|Naoki|男|Male/i.test(v.name);
+  const isFemale = v => /Kyoko|Haruka|Ayumi|Nanami|Sayaka|Mizuki|O-ren|Aoi|Mayu|Shiori|女|Female/i.test(v.name);
+
+  maleVoice   = ja.find(isMale)   || null;
+  femaleVoice = ja.find(isFemale) || null;
+
+  // Fallback: any Japanese voice (highest-scored first)
+  jpVoice = ja[0] || null;
   if (!maleVoice)   maleVoice   = jpVoice;
   if (!femaleVoice) femaleVoice = jpVoice;
 }
@@ -196,20 +210,22 @@ function speak(text, opts){
     const u = new SpeechSynthesisUtterance(text);
     u.lang = 'ja-JP';
     u.voice = opts.voice || jpVoice;
-    u.rate = opts.rate || 0.9;
-    u.pitch = opts.pitch != null ? opts.pitch : 1.05;
+    u.rate  = opts.rate  != null ? opts.rate  : 1.0;
+    u.pitch = opts.pitch != null ? opts.pitch : 1.0;
     u.onend = ()=>resolve(); u.onerror = ()=>resolve();
     speechSynthesis.speak(u);
   });
 }
 
-// pick voice + pitch for each speaker. If only one JP voice exists, fake gender by pitch.
+// pick voice + small pitch tweak. Keep pitch close to 1.0 so it doesn't sound robotic.
+// If we have two distinct voices, leave pitch ≈ 1.0 (the voice itself differentiates them).
+// If only one voice is available, apply a *small* pitch differential.
 function voiceFor(who){
   const sameVoice = (maleVoice === femaleVoice);
   if (who === 'stacy'){
-    return { voice: maleVoice, pitch: sameVoice ? 0.7 : 0.95, rate: 0.92 };
+    return { voice: maleVoice,   pitch: sameVoice ? 0.85 : 1.0, rate: 0.98 };
   } else {
-    return { voice: femaleVoice, pitch: sameVoice ? 1.35 : 1.1, rate: 0.95 };
+    return { voice: femaleVoice, pitch: sameVoice ? 1.15 : 1.0, rate: 1.0  };
   }
 }
 
