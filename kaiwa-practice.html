@@ -218,13 +218,13 @@ function speak(text, opts){
 }
 
 // Stacy = female voice, Jessie = male voice (swapped per user preference).
-// Keep pitch close to 1.0 so it doesn't sound robotic.
+// Keep pitch close to 1.0 so it doesn't sound robotic. Rate slowed to 0.75x.
 function voiceFor(who){
   const sameVoice = (maleVoice === femaleVoice);
   if (who === 'stacy'){
-    return { voice: femaleVoice, pitch: sameVoice ? 1.15 : 1.0, rate: 1.0  };
+    return { voice: femaleVoice, pitch: sameVoice ? 1.15 : 1.0, rate: 0.75 };
   } else {
-    return { voice: maleVoice,   pitch: sameVoice ? 0.85 : 1.0, rate: 0.98 };
+    return { voice: maleVoice,   pitch: sameVoice ? 0.85 : 1.0, rate: 0.75 };
   }
 }
 
