@@ -217,15 +217,14 @@ function speak(text, opts){
   });
 }
 
-// pick voice + small pitch tweak. Keep pitch close to 1.0 so it doesn't sound robotic.
-// If we have two distinct voices, leave pitch ≈ 1.0 (the voice itself differentiates them).
-// If only one voice is available, apply a *small* pitch differential.
+// Stacy = female voice, Jessie = male voice (swapped per user preference).
+// Keep pitch close to 1.0 so it doesn't sound robotic.
 function voiceFor(who){
   const sameVoice = (maleVoice === femaleVoice);
   if (who === 'stacy'){
-    return { voice: maleVoice,   pitch: sameVoice ? 0.85 : 1.0, rate: 0.98 };
-  } else {
     return { voice: femaleVoice, pitch: sameVoice ? 1.15 : 1.0, rate: 1.0  };
+  } else {
+    return { voice: maleVoice,   pitch: sameVoice ? 0.85 : 1.0, rate: 0.98 };
   }
 }
 
@@ -484,7 +483,7 @@ async function listenAll(){
     if (item.part){ renderPart(item.part); await wait(300); continue; }
     renderBubble(item);
     const who = item.who;
-    setStatus((who==='stacy'?'🔊 Stacy（男聲）':'🔊 Jessie（女聲）') + ' 正在說…', 'speaking');
+    setStatus((who==='stacy'?'🔊 Stacy（女聲）':'🔊 Jessie（男聲）') + ' 正在說…', 'speaking');
     await speak(item.jp, voiceFor(who));
     if (!listening) return;
     await wait(350);
