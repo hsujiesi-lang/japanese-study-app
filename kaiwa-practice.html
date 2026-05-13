@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>日文對話練習 — Stacy &amp; Jessie</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, "PingFang TC", "Microsoft JhengHei", "Hiragino Kaku Gothic ProN", "Noto Sans TC", sans-serif;
+    background: #f4f1ea; color: #2c2c2c; line-height: 1.7;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+    padding: 16px 16px 200px;
+  }
+  .wrap { width: 100%; max-width: 640px; }
+  header { text-align: center; margin-bottom: 12px; }
+  header h1 { font-size: 1.25rem; color: #b5402f; }
+  header p { font-size: .8rem; color: #888; margin-top: 4px;}
+  .partlabel {
+    text-align: center; font-size: .85rem; color: #7a6a55; font-weight: 700;
+    margin: 18px 0 8px; padding: 6px; background: #ece5d6; border-radius: 8px;
+  }
+  .bubble {
+    margin: 10px 0; padding: 12px 14px; border-radius: 14px; max-width: 88%;
+    font-size: 1.15rem; position: relative; animation: pop .2s ease;
+  }
+  @keyframes pop { from {opacity:0; transform:translateY(6px);} to {opacity:1; transform:none;} }
+  .stacy { background:#fff; border:1px solid #e3ddcf; margin-right:auto; border-bottom-left-radius:4px;}
+  .me    { background:#d8ecd8; margin-left:auto;  border-bottom-right-radius:4px;}
+  .who { font-size:.7rem; font-weight:700; opacity:.6; display:block; margin-bottom:2px;}
+  .stacy .who { color:#b5402f;}
+  .me .who { color:#2f7a3f; text-align:right;}
+  .trans { font-size:.82rem; color:#888; margin-top:4px; display:none;}
+  body.showtrans .trans { display:block;}
+  .convo { display:flex; flex-direction:column;}
+  .heard { font-size:.82rem; color:#555; margin-top:6px; padding-top:6px; border-top:1px dashed #bbb;}
+  .heard b { color:#2f7a3f;}
+  .heard.bad b { color:#c0392b;}
+  .score { font-weight:700;}
+
+  .panel {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: #fff; border-top: 1px solid #e3ddcf;
+    padding: 12px 14px env(safe-area-inset-bottom, 14px);
+    box-shadow: 0 -4px 16px rgba(0,0,0,.08); z-index: 50;
+  }
+  .panel-inner { max-width: 640px; margin: 0 auto;}
+  .status { text-align:center; font-size:.95rem; min-height:1.5em; margin-bottom:8px; color:#555;}
+  .status.listening { color:#c0392b; font-weight:700;}
+  .status.speaking { color:#b5402f;}
+  .nextline {
+    text-align:center; font-size:1.2rem; background:#f0f8f0; border:1px dashed #9bc99b;
+    border-radius:10px; padding:8px; margin-bottom:10px; display:none;
+  }
+  body.showhint .nextline { display:block;}
+  .nextline small { display:block; color:#888; font-size:.75rem; margin-top:4px;}
+  .btnrow { display:flex; gap:8px; flex-wrap:wrap; justify-content:center;}
+  button {
+    font-family: inherit; font-size:.95rem; padding:11px 16px; border-radius:999px;
+    border:none; cursor:pointer; font-weight:700; transition:transform .1s;
+  }
+  button:active { transform:scale(.96);}
+  .primary { background:#b5402f; color:#fff; flex:1; min-width:160px; font-size:1.05rem;}
+  .ghost { background:#eee; color:#444;}
+  .toggle { background:#ece5d6; color:#6a5a45; font-size:.8rem; padding:8px 12px;}
+  .toggle.on { background:#b5402f; color:#fff;}
+  .topbar { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;}
+  .done { text-align:center; padding:24px; font-size:1.25rem; color:#2f7a3f; font-weight:700;}
+  .warn { background:#fff6e0; border:1px solid #f0d68a; color:#8a6d1a; font-size:.85rem; padding:10px 12px; border-radius:8px; margin-bottom:10px;}
+  .hidden { display:none !important;}
+  .live-dot { display:inline-block; width:10px; height:10px; background:#c0392b; border-radius:50%; margin-right:6px; animation:pulse 1s infinite;}
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🗣️ 日文對話練習</h1>
+    <p>AI 扮演 Stacy，你扮演 Jessie。按開始後會自動進行整段對話。</p>
+  </header>
+
+  <div class="topbar">
+    <button class="toggle" id="tHint">顯示日文提示</button>
+    <button class="toggle" id="tTrans">顯示中文翻譯</button>
+    <button class="ghost" id="tReset">重新開始</button>
+  </div>
+
+  <div id="warn" class="warn hidden"></div>
+
+  <div class="convo" id="convo"></div>
+</div>
+
+<div class="panel">
+  <div class="panel-inner">
+    <div class="status" id="status">按「開始」就會自動進行整段對話</div>
+    <div class="nextline" id="nextline"></div>
+    <div class="btnrow">
+      <button class="primary" id="btnStart">▶ 開始（自動進行）</button>
+      <button class="ghost hidden" id="btnStop">⏹ 停止</button>
+      <button class="ghost hidden" id="btnDone">✅ 我說完了</button>
+      <button class="ghost hidden" id="btnSkip">⏭ 跳過這句</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- conversation data ----------
+const SCRIPT = [
+  {part:"Part 1 — 教室裡的招呼（Lesson 1）"},
+  {who:"stacy", jp:"ジェシーさん、こんにちは。", en:"Jessie，你好。"},
+  {who:"me",    jp:"ステイシーさん、こんにちは。げんきですか。", en:"Stacy，你好。你好嗎？"},
+  {who:"stacy", jp:"はい、げんきです。ジェシーさんは？", en:"嗯，我很好。Jessie 你呢？"},
+  {who:"me",    jp:"わたしもげんきです。", en:"我也很好。"},
+
+  {part:"Part 2 — 聊上次的假期（Lesson 3 & 5）"},
+  {who:"stacy", jp:"やすみになにをしましたか。", en:"放假時你做了什麼？"},
+  {who:"me",    jp:"ほんやにいきました。それから、にほんごのほんをかいました。", en:"我去了書店。然後買了日文書。"},
+  {who:"stacy", jp:"いいですね。どうでしたか。", en:"不錯耶。怎麼樣？"},
+  {who:"me",    jp:"たのしかったです。でも、ほんはちょっとたかかったです。", en:"很開心。不過書有點貴。"},
+  {who:"stacy", jp:"そうですね。", en:"是喔。"},
+  {who:"me",    jp:"ステイシーさんは、やすみになにをしましたか。", en:"Stacy 放假做了什麼？"},
+  {who:"stacy", jp:"うちでにほんごをべんきょうしました。それから、ともだちとカフェにいきました。", en:"我在家學日文。然後跟朋友去咖啡廳。"},
+  {who:"me",    jp:"どうでしたか。", en:"怎麼樣？"},
+  {who:"stacy", jp:"とても、たのしかったです。でも、にほんごはちょっとむずかしかったです。", en:"很開心。不過日文有點難。"},
+  {who:"me",    jp:"そうです。", en:"是啊。"},
+
+  {part:"Part 3 — 空閒時間和共同興趣"},
+  {who:"me",    jp:"ステイシーさんは、しゅうまつたいていなにをしますか。", en:"Stacy 週末通常做什麼？"},
+  {who:"stacy", jp:"わたしは、よくともだちとえいがをみます。", en:"我常常跟朋友看電影。"},
+  {who:"me",    jp:"そうですか。わたしもえいががすきです。", en:"是喔。我也喜歡看電影。"},
+  {who:"stacy", jp:"どんなえいががすきですか。", en:"喜歡什麼樣的電影？"},
+  {who:"me",    jp:"ホラーえいががだいすきです。", en:"我超喜歡恐怖片。"},
+  {who:"stacy", jp:"わたしもホラーえいががすきです。", en:"我也喜歡恐怖片。"},
+
+  {part:"Part 4 & 5 — 一起約計畫"},
+  {who:"stacy", jp:"じゃ、こんしゅうまつ、いっしょにえいがをみましょうか。", en:"那這週末一起看電影吧？"},
+  {who:"me",    jp:"いいですね。", en:"好啊。"},
+  {who:"stacy", jp:"どようびはどうですか。", en:"星期六怎麼樣？"},
+  {who:"me",    jp:"すみません。どようびはちょっと…アルバイトがあります。", en:"抱歉，星期六有點…我要打工。"},
+  {who:"stacy", jp:"そうですか。じゃあ、にちようびはどうですか。", en:"這樣啊。那星期天呢？"},
+  {who:"me",    jp:"にちようびはだいじょうぶです。", en:"星期天可以。"},
+  {who:"stacy", jp:"なんじにあいますか。", en:"幾點見面？"},
+  {who:"me",    jp:"じゅうにじはどうですか。", en:"12 點怎麼樣？"},
+  {who:"stacy", jp:"いいですね。", en:"好啊。"},
+  {who:"me",    jp:"じゃあ、えいがのまえに、にほんのたべものをたべませんか。", en:"那看電影前要不要吃日式料理？"},
+  {who:"stacy", jp:"いいですね。にほんのレストランでひるごはんをたべませんか。", en:"好啊。要不要在日式餐廳吃午餐？"},
+  {who:"me",    jp:"どこであいますか。", en:"在哪裡見面？"},
+  {who:"stacy", jp:"スーパーのまえに、にほんのレストランがあります。そこであいませんか。", en:"超市前面有一家日式餐廳，在那裡見面好嗎？"},
+  {who:"me",    jp:"いいですね。そのレストランのたべものはおいしいですか。", en:"好啊。那家餐廳的東西好吃嗎？"},
+  {who:"stacy", jp:"はい、とてもおいしいです。", en:"嗯，非常好吃。"},
+  {who:"me",    jp:"ラーメンはありますか。", en:"有拉麵嗎？"},
+  {who:"stacy", jp:"はい、ラーメンはたかくないですよ。", en:"有，拉麵不貴喔。"},
+  {who:"me",    jp:"いいですね。じゃ、にちようびのじゅうにじに、そのレストランであいましょう。", en:"好啊。那星期天 12 點在那家餐廳見。"},
+  {who:"stacy", jp:"はい、そうしましょう。", en:"嗯，就這麼辦。"},
+  {who:"me",    jp:"じゃあ、また。", en:"那再見囉。"},
+  {who:"stacy", jp:"はい、またね。", en:"嗯，再見。"},
+];
+
+// ---------- DOM ----------
+const $ = id => document.getElementById(id);
+const convoEl = $('convo'), statusEl = $('status'), nextlineEl = $('nextline');
+const btnStart = $('btnStart'), btnStop = $('btnStop'), btnDone = $('btnDone'), btnSkip = $('btnSkip');
+
+let idx = 0;
+let running = false;
+let recognizing = false;
+let attempt = 0;
+const PASS = 0.45;
+const MAX_TRY = 1;          // retry once if mishear, then move on
+const NO_SPEECH_MS = 9000;  // give up listening after 9s of silence
+
+let jpVoice = null;
+function loadVoices(){
+  const vs = speechSynthesis.getVoices();
+  jpVoice = vs.find(v => /ja[-_]JP/i.test(v.lang) && /Kyoko|Otoya|Google|Microsoft|Nanami|Hattori|Haruka|Ayumi/i.test(v.name))
+         || vs.find(v => /^ja/i.test(v.lang)) || null;
+}
+loadVoices();
+if (typeof speechSynthesis !== 'undefined') speechSynthesis.onvoiceschanged = loadVoices;
+
+function speak(text){
+  return new Promise(resolve => {
+    if (!('speechSynthesis' in window)) { resolve(); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ja-JP'; if (jpVoice) u.voice = jpVoice;
+    u.rate = 0.9; u.pitch = 1.05;
+    u.onend = ()=>resolve(); u.onerror = ()=>resolve();
+    speechSynthesis.speak(u);
+  });
+}
+
+function norm(s){
+  return (s||'')
+    .replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60))
+    .replace(/[ 　、。.,!！?？…「」『』~〜ー\-]/g,'')
+    .toLowerCase().trim();
+}
+function similarity(a,b){
+  a = norm(a); b = norm(b);
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  const big = s => { const r=[]; for(let i=0;i<s.length-1;i++) r.push(s.slice(i,i+2)); return r.length?r:[s]; };
+  const A = big(a), B = big(b);
+  const bag = {}; A.forEach(x=>bag[x]=(bag[x]||0)+1);
+  let inter = 0; B.forEach(x=>{ if(bag[x]>0){inter++; bag[x]--;} });
+  let dice = 2*inter/(A.length+B.length);
+  if (a.includes(b) || b.includes(a)) dice = Math.max(dice, 0.85);
+  return dice;
+}
+
+// ---------- rendering ----------
+function renderPart(label){
+  const d = document.createElement('div'); d.className='partlabel'; d.textContent = label;
+  convoEl.appendChild(d); scrollDown();
+}
+function renderBubble(item){
+  const b = document.createElement('div');
+  b.className = 'bubble ' + (item.who==='stacy'?'stacy':'me');
+  b.innerHTML = `<span class="who">${item.who==='stacy'?'Stacy（AI）':'Jessie（你）'}</span>`
+    + `<div>${item.jp}</div>` + `<div class="trans">${item.en}</div>`;
+  convoEl.appendChild(b); scrollDown();
+  return b;
+}
+function addHeard(bubble, heard, score, skipped){
+  const h = document.createElement('div');
+  const pct = Math.round(score*100);
+  const good = score >= PASS;
+  h.className = 'heard' + (good||skipped?'':' bad');
+  if (skipped){
+    h.innerHTML = '（已跳過）';
+  } else {
+    h.innerHTML = `你說的：<b>${heard||'（沒聽到聲音）'}</b> &nbsp;<span class="score">${pct}%</span> ${good?'✅':'🔁'}`;
+  }
+  bubble.appendChild(h); scrollDown();
+}
+function scrollDown(){ window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}); }
+
+function setStatus(t, cls){ statusEl.innerHTML = t; statusEl.className = 'status' + (cls?(' '+cls):''); }
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+// ---------- flow ----------
+function showHint(item){
+  nextlineEl.innerHTML = `${item.jp}<small>👆 換你說（會自動聽。說完不動就會繼續）</small>`;
+}
+
+async function advance(){
+  if (!running) return;
+  while (idx < SCRIPT.length && SCRIPT[idx].part){ renderPart(SCRIPT[idx].part); idx++; }
+  if (idx >= SCRIPT.length){ finish(); return; }
+  const item = SCRIPT[idx];
+
+  btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+
+  if (item.who === 'stacy'){
+    renderBubble(item);
+    setStatus('🔊 Stacy 正在說話…', 'speaking');
+    nextlineEl.innerHTML = 'Stacy 的台詞中…';
+    await speak(item.jp);
+    if (!running) return;
+    idx++;
+    await wait(250);
+    advance();
+  } else {
+    attempt = 0;
+    showHint(item);
+    await wait(200);
+    if (!running) return;
+    listenForLine(item);
+  }
+}
+
+function finish(){
+  running = false;
+  nextlineEl.style.display='none';
+  setStatus('🎉 對話完成！', '');
+  btnStop.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+  btnStart.classList.remove('hidden'); btnStart.textContent = '▶ 再來一次';
+  const d = document.createElement('div'); d.className='done';
+  d.textContent = '🎉 辛苦了！對話完成';
+  convoEl.appendChild(d);
+  scrollDown();
+}
+
+// ---------- speech recognition ----------
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recog = null;
+if (SR){
+  recog = new SR();
+  recog.lang = 'ja-JP';
+  recog.interimResults = true;
+  recog.maxAlternatives = 3;
+  recog.continuous = false;
+}
+
+let currentItem = null;
+let currentFinalText = '';
+let silenceTimer = null;
+
+function clearSilenceTimer(){ if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer = null; } }
+
+function listenForLine(item){
+  if (!running) return;
+  currentItem = item; currentFinalText = '';
+
+  if (!recog){
+    // No speech recognition — auto-advance with a timer based on text length
+    setStatus('（這個瀏覽器不支援語音辨識，請自己唸出來，幾秒後會自動進行）', '');
+    btnDone.classList.remove('hidden'); btnSkip.classList.remove('hidden');
+    const ms = Math.max(2500, item.jp.length * 220);
+    silenceTimer = setTimeout(()=>{
+      if (!running) return;
+      const bubble = renderBubble(item);
+      addHeard(bubble, '', 1);
+      idx++; setStatus('➡️ 繼續…', ''); setTimeout(advance, 400);
+    }, ms);
+    return;
+  }
+
+  recognizing = true;
+  setStatus('<span class="live-dot"></span>正在聽你說… 請開始說', 'listening');
+  btnDone.classList.remove('hidden'); btnSkip.classList.remove('hidden');
+
+  recog.onresult = (e) => {
+    let interim = '';
+    for (let i=e.resultIndex; i<e.results.length; i++){
+      const r = e.results[i];
+      if (r.isFinal) currentFinalText += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    setStatus('<span class="live-dot"></span>聽到：' + (currentFinalText + interim || '...'), 'listening');
+  };
+
+  recog.onerror = (e) => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){
+      running = false; recognizing = false; clearSilenceTimer();
+      setStatus('🚫 沒有麥克風權限。請按瀏覽器網址列旁的鎖頭圖示，允許麥克風後再按開始', '');
+      btnStart.classList.remove('hidden'); btnStop.classList.add('hidden');
+      btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+    } else if (e.error === 'audio-capture'){
+      running = false; recognizing = false;
+      setStatus('🎤 找不到麥克風。請檢查裝置設定', '');
+    }
+    // 'no-speech' / 'aborted' / 'network' → 讓 onend 處理
+  };
+
+  recog.onend = () => {
+    if (!recognizing) return;
+    recognizing = false;
+    clearSilenceTimer();
+    if (!running) return;
+    const score = similarity(currentFinalText, item.jp);
+    handleResult(item, currentFinalText.trim(), score);
+  };
+
+  // Safety net: if recognition never ends (some browsers hang)
+  clearSilenceTimer();
+  silenceTimer = setTimeout(()=>{
+    if (recognizing){ try{ recog.stop(); }catch(e){} }
+  }, NO_SPEECH_MS);
+
+  try { recog.start(); }
+  catch(err){
+    recognizing = false;
+    setTimeout(()=>{ if (running) listenForLine(item); }, 500);
+  }
+}
+
+function handleResult(item, heard, score){
+  const ok = score >= PASS;
+  if (!heard && attempt < MAX_TRY){
+    attempt++;
+    setStatus('🔇 沒聽到，再試一次…', '');
+    setTimeout(()=>{ if (running) listenForLine(item); }, 500);
+    return;
+  }
+  if (!ok && heard && attempt < MAX_TRY){
+    const bubble = renderBubble(item);
+    addHeard(bubble, heard, score);
+    attempt++;
+    setStatus('🔁 再說一次看看', '');
+    showHint(item);
+    setTimeout(()=>{ if (running) listenForLine(item); }, 700);
+    return;
+  }
+  // accept and move on (passed, or out of tries)
+  const bubble = renderBubble(item);
+  addHeard(bubble, heard, score);
+  idx++;
+  setStatus(ok ? '✅ 不錯！繼續…' : '➡️ 繼續…', '');
+  setTimeout(advance, ok ? 500 : 700);
+}
+
+function stopRecog(){
+  recognizing = false; clearSilenceTimer();
+  if (recog){ try{ recog.abort(); }catch(e){} }
+}
+
+// ---------- controls ----------
+function start(){
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  stopRecog();
+  if (!SR){
+    $('warn').classList.remove('hidden');
+    $('warn').innerHTML = '⚠️ 這個瀏覽器（看起來是 iPhone Safari）不支援語音辨識。'
+      + '會自動播放 Stacy 的台詞，你跟著唸就好；幾秒後會自動進行下一句。<br>'
+      + '如果想要偵測你的發音，請改用 <b>Android 的 Chrome</b> 或 <b>電腦上的 Chrome</b>。';
+  } else {
+    $('warn').classList.add('hidden');
+  }
+  idx = 0; convoEl.innerHTML=''; running = true; attempt = 0;
+  btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+  nextlineEl.style.display='';
+  advance();
+}
+
+function stop(){
+  running = false; stopRecog();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  setStatus('⏹ 已停止。按「開始」重新進行', '');
+  btnStart.classList.remove('hidden'); btnStart.textContent = '▶ 繼續開始';
+  btnStop.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+}
+
+btnStart.onclick = start;
+btnStop.onclick = stop;
+
+// "我說完了" — force end recognition early, accept what was heard
+btnDone.onclick = () => {
+  if (!recog || !recognizing) {
+    // no recog mode: short-circuit timer
+    if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; }
+    if (currentItem){
+      const it = currentItem;
+      const bubble = renderBubble(it);
+      addHeard(bubble, '（無辨識，已確認）', 1);
+      idx++; setStatus('➡️ 繼續…',''); setTimeout(advance, 300);
+    }
+    return;
+  }
+  try { recog.stop(); } catch(e){}
+};
+
+// "跳過這句"
+btnSkip.onclick = () => {
+  if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer=null; }
+  recognizing = false;
+  if (recog){ try{ recog.abort(); }catch(e){} }
+  const it = currentItem || SCRIPT[idx];
+  if (!it || it.who !== 'me') return;
+  const bubble = renderBubble(it);
+  addHeard(bubble, '', 0, true);
+  idx++;
+  setStatus('⏭ 跳過，繼續…','');
+  setTimeout(advance, 300);
+};
+
+$('tHint').onclick = (e)=>{ document.body.classList.toggle('showhint'); e.target.classList.toggle('on'); };
+$('tTrans').onclick = (e)=>{ document.body.classList.toggle('showtrans'); e.target.classList.toggle('on'); };
+$('tReset').onclick = ()=>{
+  running = false; stopRecog();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  idx = 0; convoEl.innerHTML = '';
+  btnStart.classList.remove('hidden'); btnStart.textContent = '▶ 開始（自動進行）';
+  btnStop.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+  nextlineEl.style.display = '';
+  setStatus('按「開始」就會自動進行整段對話','');
+};
+
+// defaults
+document.body.classList.add('showhint'); $('tHint').classList.add('on');
+setStatus('按「開始」就會自動進行整段對話','');
+</script>
+</body>
+</html>
