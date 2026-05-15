@@ -80,6 +80,29 @@
   .vc-row select, .vc-row input[type=range] { flex:1; min-width:160px; padding:6px; font-size:.85rem;}
   .vc-buttons { justify-content:center; gap:10px;}
   .vc-note { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:8px; border-radius:6px; margin-top:8px;}
+  .outline {
+    background:#fff; border:1px solid #e3ddcf; border-radius:12px; padding:10px;
+    margin-bottom:12px; max-height: 55vh; overflow-y: auto;
+  }
+  .outline-hint { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:6px 8px; border-radius:6px; margin-bottom:8px;}
+  .ol-part { font-size:.8rem; font-weight:700; color:#7a6a55; background:#ece5d6; padding:5px 8px; border-radius:6px; margin:10px 0 6px;}
+  .ol-line { display:flex; gap:6px; padding:7px 8px; border-radius:8px; align-items:flex-start; border:1px solid transparent;}
+  .ol-line:hover { background:#f4f1ea;}
+  .ol-line.stacy .ol-who { color:#b5402f;}
+  .ol-line.me .ol-who { color:#2f7a3f;}
+  .ol-who { font-size:.7rem; font-weight:700; min-width:48px; padding-top:3px;}
+  .ol-text { flex:1; font-size:1rem; line-height:1.5;}
+  .ol-text small { display:block; color:#888; font-size:.72rem; margin-top:2px;}
+  body.showtrans .ol-text small { display:block;}
+  body:not(.showtrans) .ol-text small { display:none;}
+  .ol-btns { display:flex; gap:4px; flex-shrink:0;}
+  .ol-btn {
+    font-size:.75rem; padding:5px 8px; border-radius:6px; border:1px solid #ddd;
+    background:#fff; cursor:pointer; font-weight:600;
+  }
+  .ol-btn.listen { background:#fff5f0; border-color:#e9c4b6; color:#b5402f;}
+  .ol-btn.practice { background:#f0f8f0; border-color:#bcd9bc; color:#2f7a3f;}
+  .ol-btn:active { transform:scale(.95);}
   .live-dot { display:inline-block; width:10px; height:10px; background:#c0392b; border-radius:50%; margin-right:6px; animation:pulse 1s infinite;}
   @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.3;}}
 </style>
@@ -96,7 +119,13 @@
     <button class="toggle" id="tTrans">顯示中文翻譯</button>
     <button class="ghost" id="tReset">重新開始</button>
     <button class="ghost" id="btnListenAll">🎧 聽完整對話</button>
+    <button class="toggle" id="tOutline">📋 對話總覽</button>
     <button class="toggle" id="tVoiceCfg">🔧 語音設定</button>
+  </div>
+
+  <div id="outline" class="outline hidden">
+    <div class="outline-hint">點任何一句 → 從那裡開始播放（🎧 聽）或開始練習（🎤 練）</div>
+    <div id="outlineList"></div>
   </div>
 
   <div id="voiceCfg" class="voicecfg hidden">
@@ -609,6 +638,94 @@ async function listenAll(){
 }
 
 $('btnListenAll').onclick = listenAll;
+
+// ---------- outline (clickable full dialogue) ----------
+function buildOutline(){
+  const wrap = $('outlineList');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  SCRIPT.forEach((item, i) => {
+    if (item.part){
+      const d = document.createElement('div'); d.className='ol-part'; d.textContent = item.part;
+      wrap.appendChild(d); return;
+    }
+    const row = document.createElement('div');
+    row.className = 'ol-line ' + item.who;
+    row.innerHTML =
+      `<div class="ol-who">${item.who==='stacy'?'Stacy':'Jessie'}</div>` +
+      `<div class="ol-text">${item.jp}<small>${item.en||''}</small></div>` +
+      `<div class="ol-btns">` +
+        `<button class="ol-btn listen" data-i="${i}" data-mode="listen">🎧 聽</button>` +
+        `<button class="ol-btn practice" data-i="${i}" data-mode="practice">🎤 練</button>` +
+      `</div>`;
+    wrap.appendChild(row);
+  });
+  wrap.querySelectorAll('.ol-btn').forEach(b => {
+    b.onclick = (e) => {
+      e.stopPropagation();
+      const i = parseInt(b.dataset.i, 10);
+      const mode = b.dataset.mode;
+      jumpTo(i, mode);
+    };
+  });
+  // clicking the row itself = listen
+  wrap.querySelectorAll('.ol-line').forEach(row => {
+    row.onclick = () => {
+      const btn = row.querySelector('.ol-btn.listen');
+      if (btn) btn.click();
+    };
+  });
+}
+
+// jump to script index i and start playing/practicing from there
+function jumpTo(i, mode){
+  // stop whatever is happening
+  running = false; listening = false; pausedMode = null; stopRecog();
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+
+  // reset display + render everything BEFORE index i so context is visible
+  convoEl.innerHTML = '';
+  lastRenderedIdx = -1; listenAllRenderedIdx = -1;
+  for (let k = 0; k < i; k++){
+    const it = SCRIPT[k];
+    if (it.part) renderPart(it.part);
+    else renderBubble(it);
+  }
+
+  // close the outline (mobile-friendly)
+  $('outline').classList.add('hidden');
+  $('tOutline').classList.remove('on');
+
+  if (mode === 'practice'){
+    idx = i;
+    lastRenderedIdx = i - 1; // nothing rendered AT i yet
+    running = true; attempt = 0;
+    btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+    btnStart.textContent = '▶ 開始（自動進行）';
+    nextlineEl.style.display = '';
+    setStatus('▶ 從第 ' + (i+1) + ' 句開始練習…', '');
+    advance();
+  } else {
+    // listen mode
+    listenAllPos = i;
+    listenAllRenderedIdx = i - 1;
+    btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
+    btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+    nextlineEl.style.display = 'none';
+    setStatus('🎧 從第 ' + (i+1) + ' 句開始播放…', 'speaking');
+    listenAllFrom(i);
+  }
+}
+
+$('tOutline').onclick = (e)=>{
+  const ol = $('outline');
+  ol.classList.toggle('hidden');
+  e.target.classList.toggle('on');
+  if (!ol.classList.contains('hidden')){
+    buildOutline();
+    ol.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+};
 
 // "我說完了" — force end recognition early, accept what was heard
 btnDone.onclick = () => {
