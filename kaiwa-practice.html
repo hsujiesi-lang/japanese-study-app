@@ -80,28 +80,29 @@
   .vc-row select, .vc-row input[type=range] { flex:1; min-width:160px; padding:6px; font-size:.85rem;}
   .vc-buttons { justify-content:center; gap:10px;}
   .vc-note { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:8px; border-radius:6px; margin-top:8px;}
+  /* 對話總覽：固定在螢幕上半部，下半部可以看到對話 */
   .outline {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(244, 241, 234, 0.97);
-    z-index: 100; padding: 12px 12px 180px;
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 50vh; max-height: 50vh;
+    background: #fffaf0;
+    z-index: 100; padding: 10px;
     display: flex; flex-direction: column;
-    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    border-bottom: 2px solid #b5402f;
   }
-  .outline-header { display:flex; gap:8px; align-items:center; margin-bottom:8px;}
+  /* 當總覽打開時，下面對話往下推一半，這樣不會被擋到 */
+  body.outline-open { padding-top: calc(50vh + 16px) !important;}
+  .outline-header { display:flex; gap:8px; align-items:center; margin-bottom:6px;}
   .outline-close {
     background:#b5402f; color:#fff; border:none; border-radius:999px;
-    padding:8px 14px; font-weight:700; cursor:pointer; flex-shrink:0; font-family:inherit;
+    padding:6px 12px; font-weight:700; cursor:pointer; flex-shrink:0; font-family:inherit; font-size:.85rem;
   }
   .outline-close:active { transform:scale(.96);}
   #outlineList {
     flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-    background:#fff; border:1px solid #e3ddcf; border-radius:12px; padding:10px;
+    background:#fff; border:1px solid #e3ddcf; border-radius:10px; padding:8px;
   }
-  .outline-status {
-    background:#fff; border:1px solid #e3ddcf; border-radius:10px;
-    padding:8px 10px; margin-top:8px; font-size:.85rem; text-align:center; min-height:1.6em;
-  }
-  .outline-hint { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:6px 8px; border-radius:6px; flex:1;}
+  .outline-hint { font-size:.72rem; color:#8a6d1a; background:#fff6e0; padding:5px 8px; border-radius:6px; flex:1;}
   .ol-part { font-size:.8rem; font-weight:700; color:#7a6a55; background:#ece5d6; padding:5px 8px; border-radius:6px; margin:10px 0 6px;}
   .ol-line { display:flex; gap:6px; padding:7px 8px; border-radius:8px; align-items:flex-start; border:1px solid transparent; cursor:pointer; transition:background .15s;}
   .ol-line:hover { background:#f4f1ea;}
@@ -148,7 +149,6 @@
       <button class="outline-close" id="btnCloseOutline">✕ 關閉</button>
     </div>
     <div id="outlineList"></div>
-    <div class="outline-status" id="outlineStatus"></div>
   </div>
 
   <div id="voiceCfg" class="voicecfg hidden">
@@ -398,8 +398,6 @@ function scrollDown(){ window.scrollTo({top: document.body.scrollHeight, behavio
 
 function setStatus(t, cls){
   statusEl.innerHTML = t; statusEl.className = 'status' + (cls?(' '+cls):'');
-  const osEl = $('outlineStatus');
-  if (osEl) osEl.innerHTML = t;
 }
 function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
@@ -770,15 +768,15 @@ function jumpTo(i, mode){
 function openOutline(){
   const ol = $('outline');
   ol.classList.remove('hidden');
+  document.body.classList.add('outline-open');
   $('tOutline').classList.add('on');
   buildOutline();
   const cur = running ? idx : (listening ? listenAllPos : -1);
   if (cur >= 0) setOutlineActive(cur);
-  // mirror status
-  $('outlineStatus').innerHTML = statusEl.innerHTML;
 }
 function closeOutline(){
   $('outline').classList.add('hidden');
+  document.body.classList.remove('outline-open');
   $('tOutline').classList.remove('on');
 }
 $('tOutline').onclick = ()=>{
