@@ -86,8 +86,10 @@
   }
   .outline-hint { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:6px 8px; border-radius:6px; margin-bottom:8px;}
   .ol-part { font-size:.8rem; font-weight:700; color:#7a6a55; background:#ece5d6; padding:5px 8px; border-radius:6px; margin:10px 0 6px;}
-  .ol-line { display:flex; gap:6px; padding:7px 8px; border-radius:8px; align-items:flex-start; border:1px solid transparent;}
+  .ol-line { display:flex; gap:6px; padding:7px 8px; border-radius:8px; align-items:flex-start; border:1px solid transparent; cursor:pointer; transition:background .15s;}
   .ol-line:hover { background:#f4f1ea;}
+  .ol-line.active { background:#fff3d4; border-color:#e8c46c; box-shadow: 0 0 0 2px #f4d684;}
+  .ol-line.active .ol-who { color:#a8761a;}
   .ol-line.stacy .ol-who { color:#b5402f;}
   .ol-line.me .ol-who { color:#2f7a3f;}
   .ol-who { font-size:.7rem; font-weight:700; min-width:48px; padding-top:3px;}
@@ -392,6 +394,7 @@ async function advance(){
   const item = SCRIPT[idx];
 
   btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
+  setOutlineActive(idx);
 
   if (item.who === 'stacy'){
     if (lastRenderedIdx !== idx){
@@ -606,6 +609,7 @@ async function listenAllFrom(startI){
   for (let i = startI; i < SCRIPT.length; i++){
     listenAllPos = i;
     if (!listening) return;
+    setOutlineActive(i);
     const item = SCRIPT[i];
     if (item.part){
       if (listenAllRenderedIdx !== i){ renderPart(item.part); listenAllRenderedIdx = i; }
@@ -651,6 +655,7 @@ function buildOutline(){
     }
     const row = document.createElement('div');
     row.className = 'ol-line ' + item.who;
+    row.dataset.scriptI = i;
     row.innerHTML =
       `<div class="ol-who">${item.who==='stacy'?'Stacy':'Jessie'}</div>` +
       `<div class="ol-text">${item.jp}<small>${item.en||''}</small></div>` +
@@ -677,6 +682,27 @@ function buildOutline(){
   });
 }
 
+// highlight the currently playing line in the outline; auto-scroll into view
+function setOutlineActive(i){
+  const list = $('outlineList'); if (!list) return;
+  const rows = list.querySelectorAll('.ol-line');
+  let activeEl = null;
+  rows.forEach(el => {
+    const k = parseInt(el.dataset.scriptI, 10);
+    const isActive = k === i;
+    el.classList.toggle('active', isActive);
+    if (isActive) activeEl = el;
+  });
+  // scroll within outline panel if outline is visible
+  const ol = $('outline');
+  if (activeEl && ol && !ol.classList.contains('hidden')){
+    const r = activeEl.getBoundingClientRect(), or = ol.getBoundingClientRect();
+    if (r.top < or.top || r.bottom > or.bottom){
+      activeEl.scrollIntoView({block:'center', behavior:'smooth'});
+    }
+  }
+}
+
 // jump to script index i and start playing/practicing from there
 function jumpTo(i, mode){
   // stop whatever is happening
@@ -692,9 +718,8 @@ function jumpTo(i, mode){
     else renderBubble(it);
   }
 
-  // close the outline (mobile-friendly)
-  $('outline').classList.add('hidden');
-  $('tOutline').classList.remove('on');
+  // keep the outline OPEN so user can keep clicking different lines
+  setOutlineActive(i);
 
   if (mode === 'practice'){
     idx = i;
@@ -703,7 +728,7 @@ function jumpTo(i, mode){
     btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
     btnStart.textContent = '▶ 開始（自動進行）';
     nextlineEl.style.display = '';
-    setStatus('▶ 從第 ' + (i+1) + ' 句開始練習…', '');
+    setStatus('▶ 從第 ' + (i+1) + ' 句開始練習（總覽留著，可隨時點別句）', '');
     advance();
   } else {
     // listen mode
@@ -712,7 +737,7 @@ function jumpTo(i, mode){
     btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
     btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
     nextlineEl.style.display = 'none';
-    setStatus('🎧 從第 ' + (i+1) + ' 句開始播放…', 'speaking');
+    setStatus('🎧 從第 ' + (i+1) + ' 句開始播放（總覽留著，可隨時點別句）', 'speaking');
     listenAllFrom(i);
   }
 }
@@ -723,6 +748,9 @@ $('tOutline').onclick = (e)=>{
   e.target.classList.toggle('on');
   if (!ol.classList.contains('hidden')){
     buildOutline();
+    // highlight current position if any
+    const cur = running ? idx : (listening ? listenAllPos : -1);
+    if (cur >= 0) setOutlineActive(cur);
     ol.scrollIntoView({behavior:'smooth', block:'start'});
   }
 };
