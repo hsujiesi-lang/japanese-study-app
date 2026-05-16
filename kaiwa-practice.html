@@ -45,7 +45,7 @@
     position: fixed; bottom: 0; left: 0; right: 0;
     background: #fff; border-top: 1px solid #e3ddcf;
     padding: 12px 14px env(safe-area-inset-bottom, 14px);
-    box-shadow: 0 -4px 16px rgba(0,0,0,.08); z-index: 50;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.08); z-index: 110;
   }
   .panel-inner { max-width: 640px; margin: 0 auto;}
   .status { text-align:center; font-size:.95rem; min-height:1.5em; margin-bottom:8px; color:#555;}
@@ -81,10 +81,27 @@
   .vc-buttons { justify-content:center; gap:10px;}
   .vc-note { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:8px; border-radius:6px; margin-top:8px;}
   .outline {
-    background:#fff; border:1px solid #e3ddcf; border-radius:12px; padding:10px;
-    margin-bottom:12px; max-height: 55vh; overflow-y: auto;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(244, 241, 234, 0.97);
+    z-index: 100; padding: 12px 12px 180px;
+    display: flex; flex-direction: column;
+    backdrop-filter: blur(4px);
   }
-  .outline-hint { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:6px 8px; border-radius:6px; margin-bottom:8px;}
+  .outline-header { display:flex; gap:8px; align-items:center; margin-bottom:8px;}
+  .outline-close {
+    background:#b5402f; color:#fff; border:none; border-radius:999px;
+    padding:8px 14px; font-weight:700; cursor:pointer; flex-shrink:0; font-family:inherit;
+  }
+  .outline-close:active { transform:scale(.96);}
+  #outlineList {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background:#fff; border:1px solid #e3ddcf; border-radius:12px; padding:10px;
+  }
+  .outline-status {
+    background:#fff; border:1px solid #e3ddcf; border-radius:10px;
+    padding:8px 10px; margin-top:8px; font-size:.85rem; text-align:center; min-height:1.6em;
+  }
+  .outline-hint { font-size:.78rem; color:#8a6d1a; background:#fff6e0; padding:6px 8px; border-radius:6px; flex:1;}
   .ol-part { font-size:.8rem; font-weight:700; color:#7a6a55; background:#ece5d6; padding:5px 8px; border-radius:6px; margin:10px 0 6px;}
   .ol-line { display:flex; gap:6px; padding:7px 8px; border-radius:8px; align-items:flex-start; border:1px solid transparent; cursor:pointer; transition:background .15s;}
   .ol-line:hover { background:#f4f1ea;}
@@ -126,8 +143,12 @@
   </div>
 
   <div id="outline" class="outline hidden">
-    <div class="outline-hint">點任何一句 → 從那裡開始播放（🎧 聽）或開始練習（🎤 練）</div>
+    <div class="outline-header">
+      <div class="outline-hint">點任何一句 → 從那裡開始播放（🎧 聽）或練習（🎤 練）</div>
+      <button class="outline-close" id="btnCloseOutline">✕ 關閉</button>
+    </div>
     <div id="outlineList"></div>
+    <div class="outline-status" id="outlineStatus"></div>
   </div>
 
   <div id="voiceCfg" class="voicecfg hidden">
@@ -375,7 +396,11 @@ function addHeard(bubble, heard, score, skipped){
 }
 function scrollDown(){ window.scrollTo({top: document.body.scrollHeight, behavior:'smooth'}); }
 
-function setStatus(t, cls){ statusEl.innerHTML = t; statusEl.className = 'status' + (cls?(' '+cls):''); }
+function setStatus(t, cls){
+  statusEl.innerHTML = t; statusEl.className = 'status' + (cls?(' '+cls):'');
+  const osEl = $('outlineStatus');
+  if (osEl) osEl.innerHTML = t;
+}
 function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
 
 // ---------- flow ----------
@@ -742,18 +767,25 @@ function jumpTo(i, mode){
   }
 }
 
-$('tOutline').onclick = (e)=>{
+function openOutline(){
   const ol = $('outline');
-  ol.classList.toggle('hidden');
-  e.target.classList.toggle('on');
-  if (!ol.classList.contains('hidden')){
-    buildOutline();
-    // highlight current position if any
-    const cur = running ? idx : (listening ? listenAllPos : -1);
-    if (cur >= 0) setOutlineActive(cur);
-    ol.scrollIntoView({behavior:'smooth', block:'start'});
-  }
+  ol.classList.remove('hidden');
+  $('tOutline').classList.add('on');
+  buildOutline();
+  const cur = running ? idx : (listening ? listenAllPos : -1);
+  if (cur >= 0) setOutlineActive(cur);
+  // mirror status
+  $('outlineStatus').innerHTML = statusEl.innerHTML;
+}
+function closeOutline(){
+  $('outline').classList.add('hidden');
+  $('tOutline').classList.remove('on');
+}
+$('tOutline').onclick = ()=>{
+  if ($('outline').classList.contains('hidden')) openOutline();
+  else closeOutline();
 };
+$('btnCloseOutline').onclick = closeOutline;
 
 // "我說完了" — force end recognition early, accept what was heard
 btnDone.onclick = () => {
