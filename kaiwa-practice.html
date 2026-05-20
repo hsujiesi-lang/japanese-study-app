@@ -263,6 +263,8 @@ let pausedMode = null;      // 'practice' | 'listenAll' | null
 let lastRenderedIdx = -1;   // last script index for which a bubble was rendered (practice mode)
 let listenAllPos = 0;       // current position when in listenAll mode
 let listenAllRenderedIdx = -1;
+let currentGen = 0;         // session generation — any old async fn with stale gen must exit
+function bumpGen(){ return ++currentGen; }
 const PASS = 0.45;
 const MAX_TRY = 1;          // retry once if mishear, then move on
 const NO_SPEECH_MS = 9000;  // give up listening after 9s of silence
@@ -406,9 +408,11 @@ function showHint(item){
   nextlineEl.innerHTML = `${item.jp}<small>👆 換你說（會自動聽。說完不動就會繼續）</small>`;
 }
 
-async function advance(){
-  if (!running) return;
+async function advance(myGen){
+  if (myGen == null) myGen = currentGen;
+  if (!running || myGen !== currentGen) return;
   while (idx < SCRIPT.length && SCRIPT[idx].part){
+    if (myGen !== currentGen) return;
     if (lastRenderedIdx !== idx) renderPart(SCRIPT[idx].part);
     lastRenderedIdx = idx;
     idx++;
@@ -427,16 +431,17 @@ async function advance(){
     setStatus('🔊 Stacy 正在說話…', 'speaking');
     nextlineEl.innerHTML = 'Stacy 的台詞中…';
     await speak(item.jp, voiceFor('stacy'));
-    if (!running) return;
+    if (!running || myGen !== currentGen) return;
     idx++;
     await wait(250);
-    advance();
+    if (!running || myGen !== currentGen) return;
+    advance(myGen);
   } else {
     attempt = 0;
     showHint(item);
     await wait(200);
-    if (!running) return;
-    listenForLine(item);
+    if (!running || myGen !== currentGen) return;
+    listenForLine(item, myGen);
   }
 }
 
@@ -470,8 +475,9 @@ let silenceTimer = null;
 
 function clearSilenceTimer(){ if (silenceTimer){ clearTimeout(silenceTimer); silenceTimer = null; } }
 
-function listenForLine(item){
-  if (!running) return;
+function listenForLine(item, myGen){
+  if (myGen == null) myGen = currentGen;
+  if (!running || myGen !== currentGen) return;
   currentItem = item; currentFinalText = '';
 
   if (!recog){
@@ -480,10 +486,10 @@ function listenForLine(item){
     btnDone.classList.remove('hidden'); btnSkip.classList.remove('hidden');
     const ms = Math.max(2500, item.jp.length * 220);
     silenceTimer = setTimeout(()=>{
-      if (!running) return;
+      if (!running || myGen !== currentGen) return;
       const bubble = renderBubble(item);
       addHeard(bubble, '', 1);
-      idx++; setStatus('➡️ 繼續…', ''); setTimeout(advance, 400);
+      idx++; setStatus('➡️ 繼續…', ''); setTimeout(()=>advance(myGen), 400);
     }, ms);
     return;
   }
@@ -519,9 +525,9 @@ function listenForLine(item){
     if (!recognizing) return;
     recognizing = false;
     clearSilenceTimer();
-    if (!running) return;
+    if (!running || myGen !== currentGen) return;
     const score = similarity(currentFinalText, item.jp);
-    handleResult(item, currentFinalText.trim(), score);
+    handleResult(item, currentFinalText.trim(), score, myGen);
   };
 
   // Safety net: if recognition never ends (some browsers hang)
@@ -533,16 +539,18 @@ function listenForLine(item){
   try { recog.start(); }
   catch(err){
     recognizing = false;
-    setTimeout(()=>{ if (running) listenForLine(item); }, 500);
+    setTimeout(()=>{ if (running && myGen === currentGen) listenForLine(item, myGen); }, 500);
   }
 }
 
-function handleResult(item, heard, score){
+function handleResult(item, heard, score, myGen){
+  if (myGen == null) myGen = currentGen;
+  if (myGen !== currentGen) return;
   const ok = score >= PASS;
   if (!heard && attempt < MAX_TRY){
     attempt++;
     setStatus('🔇 沒聽到，再試一次…', '');
-    setTimeout(()=>{ if (running) listenForLine(item); }, 500);
+    setTimeout(()=>{ if (running && myGen === currentGen) listenForLine(item, myGen); }, 500);
     return;
   }
   if (!ok && heard && attempt < MAX_TRY){
@@ -551,7 +559,7 @@ function handleResult(item, heard, score){
     attempt++;
     setStatus('🔁 再說一次看看', '');
     showHint(item);
-    setTimeout(()=>{ if (running) listenForLine(item); }, 700);
+    setTimeout(()=>{ if (running && myGen === currentGen) listenForLine(item, myGen); }, 700);
     return;
   }
   // accept and move on (passed, or out of tries)
@@ -559,7 +567,7 @@ function handleResult(item, heard, score){
   addHeard(bubble, heard, score);
   idx++;
   setStatus(ok ? '✅ 不錯！繼續…' : '➡️ 繼續…', '');
-  setTimeout(advance, ok ? 500 : 700);
+  setTimeout(()=>advance(myGen), ok ? 500 : 700);
 }
 
 function stopRecog(){
@@ -569,6 +577,7 @@ function stopRecog(){
 
 // ---------- controls ----------
 function start(){
+  bumpGen();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   stopRecog();
 
@@ -576,18 +585,20 @@ function start(){
   if (pausedMode === 'practice'){
     pausedMode = null;
     running = true; attempt = 0;
+    const myGen = bumpGen();
     btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
     nextlineEl.style.display = '';
     setStatus('▶ 從停下的地方繼續…', '');
-    advance();
+    advance(myGen);
     return;
   }
   if (pausedMode === 'listenAll'){
     pausedMode = null;
+    const myGen = bumpGen();
     btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
     nextlineEl.style.display = 'none';
     setStatus('▶ 繼續播放…', '');
-    listenAllFrom(listenAllPos);
+    listenAllFrom(listenAllPos, myGen);
     return;
   }
 
@@ -602,13 +613,15 @@ function start(){
   }
   idx = 0; convoEl.innerHTML=''; running = true; attempt = 0;
   lastRenderedIdx = -1;
+  const myGen = bumpGen();
   btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
   btnStart.textContent = '▶ 開始（自動進行）';
   nextlineEl.style.display='';
-  advance();
+  advance(myGen);
 }
 
 function stop(){
+  bumpGen();
   // record what was running so we can resume
   if (running) pausedMode = 'practice';
   else if (listening) pausedMode = 'listenAll';
@@ -626,24 +639,28 @@ btnStop.onclick = stop;
 // ---------- listen-all mode (no mic, just play the whole dialogue) ----------
 let listening = false;
 
-async function listenAllFrom(startI){
+async function listenAllFrom(startI, myGen){
+  if (myGen == null) myGen = currentGen;
   listening = true;
   $('warn').classList.add('hidden');
   for (let i = startI; i < SCRIPT.length; i++){
+    if (!listening || myGen !== currentGen) return;
     listenAllPos = i;
-    if (!listening) return;
     setOutlineActive(i);
     const item = SCRIPT[i];
     if (item.part){
       if (listenAllRenderedIdx !== i){ renderPart(item.part); listenAllRenderedIdx = i; }
-      await wait(300); continue;
+      await wait(300);
+      if (!listening || myGen !== currentGen) return;
+      continue;
     }
     if (listenAllRenderedIdx !== i){ renderBubble(item); listenAllRenderedIdx = i; }
     const who = item.who;
     setStatus((who==='stacy'?'🔊 Stacy（女聲）':'🔊 Jessie（男聲）') + ' 正在說…', 'speaking');
     await speak(item.jp, voiceFor(who));
-    if (!listening) return;
+    if (!listening || myGen !== currentGen) return;
     await wait(350);
+    if (!listening || myGen !== currentGen) return;
   }
   listening = false;
   setStatus('🎉 對話播放完成', '');
@@ -652,6 +669,7 @@ async function listenAllFrom(startI){
 }
 
 async function listenAll(){
+  bumpGen();
   // stop any practice
   running = false; pausedMode = null; stopRecog();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
@@ -661,7 +679,8 @@ async function listenAll(){
   btnStart.classList.add('hidden'); btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
   btnStop.classList.remove('hidden');
   nextlineEl.style.display = 'none';
-  await listenAllFrom(0);
+  const myGen = bumpGen();
+  await listenAllFrom(0, myGen);
 }
 
 $('btnListenAll').onclick = listenAll;
@@ -728,6 +747,8 @@ function setOutlineActive(i){
 
 // jump to script index i and start playing/practicing from there
 function jumpTo(i, mode){
+  // invalidate any in-flight session FIRST so old async fns will exit on their next checkpoint
+  bumpGen();
   // stop whatever is happening
   running = false; listening = false; pausedMode = null; stopRecog();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
@@ -744,24 +765,26 @@ function jumpTo(i, mode){
   // keep the outline OPEN so user can keep clicking different lines
   setOutlineActive(i);
 
+  // new session
+  const myGen = bumpGen();
+
   if (mode === 'practice'){
     idx = i;
-    lastRenderedIdx = i - 1; // nothing rendered AT i yet
+    lastRenderedIdx = i - 1;
     running = true; attempt = 0;
     btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
     btnStart.textContent = '▶ 開始（自動進行）';
     nextlineEl.style.display = '';
     setStatus('▶ 從第 ' + (i+1) + ' 句開始練習（總覽留著，可隨時點別句）', '');
-    advance();
+    advance(myGen);
   } else {
-    // listen mode
     listenAllPos = i;
     listenAllRenderedIdx = i - 1;
     btnStart.classList.add('hidden'); btnStop.classList.remove('hidden');
     btnDone.classList.add('hidden'); btnSkip.classList.add('hidden');
     nextlineEl.style.display = 'none';
     setStatus('🎧 從第 ' + (i+1) + ' 句開始播放（總覽留著，可隨時點別句）', 'speaking');
-    listenAllFrom(i);
+    listenAllFrom(i, myGen);
   }
 }
 
@@ -818,6 +841,7 @@ btnSkip.onclick = () => {
 $('tHint').onclick = (e)=>{ document.body.classList.toggle('showhint'); e.target.classList.toggle('on'); };
 $('tTrans').onclick = (e)=>{ document.body.classList.toggle('showtrans'); e.target.classList.toggle('on'); };
 $('tReset').onclick = ()=>{
+  bumpGen();
   running = false; listening = false; pausedMode = null; stopRecog();
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   idx = 0; convoEl.innerHTML = '';
