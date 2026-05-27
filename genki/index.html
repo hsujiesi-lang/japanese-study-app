@@ -1124,9 +1124,11 @@ const VERBS = [
 ];
 
 // ============================
-// GRAMMAR PRACTICE — Lesson 6 / Grammar 2: 〜てください
+// GRAMMAR PRACTICE — Lesson 6 Grammar 2-7
 // ============================
-const TE_KUDASAI = {
+const GRAMMARS = {};
+
+GRAMMARS['te-kudasai'] = {
   title: 'Grammar 2 ｜ 〜てください (Please do...)',
   explanation: [
     '<b>用法：</b>動詞的 <b>て形</b> + <b>ください</b>，意思是「請（為我）做某事」。',
@@ -1211,6 +1213,167 @@ const TE_KUDASAI = {
       answers:['手伝ってください。','手伝ってください','てつだってください','てつだってください。','私を手伝ってください','私をてつだってください'] },
     { type:'translate', prompt:'Please write your name.',
       answers:['名前を書いてください。','名前を書いてください','なまえをかいてください','なまえをかいてください。'] },
+  ]
+};
+
+// ----- Grammar 3: Describing Two Activities -----
+GRAMMARS['te-two'] = {
+  title: 'Grammar 3 ｜ Describing Two Activities (て形連接)',
+  explanation: [
+    '<b>用法：</b>用 <b>て形</b> 把兩個動作連起來，相當於英文的「..., and ...」。',
+    '時態由<b>最後一個動詞</b>決定（最後動詞是過去式 → 整句過去式）。',
+    '兩個動作之間<b>不能用 と</b> 連接（と 只能連名詞）。',
+    'て形 也可以更鬆散地連接：第一句描述第二句的<b>方式或情況</b>（例：バスに乗って、会社に行きます ＝搭巴士去公司）。'
+  ],
+  examples: [
+    { jp:'図書館に行って、本を借ります。',          en:'I will go to the library and borrow some books.' },
+    { jp:'今日は、六時に起きて、勉強しました。',    en:'Today I got up at 6 and studied.' },
+    { jp:'食堂に行って、昼ご飯を食べましょう。',    en:"Let's go to the cafeteria and have lunch." },
+    { jp:'バスに乗って、会社に行きます。',          en:'I take the bus and go to work.' },
+    { jp:'教科書を忘れて、すみません。',            en:"I'm sorry for forgetting the textbook." },
+    { jp:'うちに帰って、テレビを見ます。',          en:'I will go home and watch TV.' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'うちに____、テレビを見ました。', en:'I went home and watched TV.', answers:['帰って','かえって'] },
+    { type:'fill', prompt:'六時に____、勉強しました。',     en:'I got up at 6 and studied.',  answers:['起きて','おきて'] },
+    { type:'fill', prompt:'バスに____、会社に行きます。',   en:'I take the bus to work.',      answers:['乗って','のって'] },
+    { type:'fill', prompt:'図書館に____、本を借ります。',   en:'I go to the library and borrow books.', answers:['行って','いって'] },
+    { type:'fill', prompt:'シャワーを____、寝ます。',       en:'I take a shower and go to sleep.', answers:['浴びて','あびて'] },
+    { type:'fill', prompt:'コーヒーを____、新聞を読みます。', en:'I drink coffee and read the newspaper.', answers:['飲んで','のんで'] },
+    { type:'fill', prompt:'電気を____、寝ました。',         en:'I turned off the light and went to sleep.', answers:['消して','けして'] },
+    { type:'translate', prompt:"Let's go to the cafeteria and eat lunch.",
+      answers:['食堂に行って、昼ご飯を食べましょう。','食堂に行って、昼ご飯を食べましょう','しょくどうに行って、ひるごはんを食べましょう','しょくどうにいって、ひるごはんをたべましょう'] },
+    { type:'translate', prompt:'I will go home and watch TV.',
+      answers:['うちに帰って、テレビを見ます。','うちに帰って、テレビを見ます','うちにかえって、テレビを見ます','うちにかえって、テレビをみます'] },
+    { type:'translate', prompt:'I will get up at 6 and study.',
+      answers:['六時に起きて、勉強します。','六時に起きて、勉強します','ろくじに起きて、勉強します','ろくじにおきて、べんきょうします'] },
+  ]
+};
+
+// ----- Grammar 4: 〜てもいいです -----
+GRAMMARS['te-mo-ii'] = {
+  title: 'Grammar 4 ｜ 〜てもいいです (May I...?)',
+  explanation: [
+    '<b>用法：</b>動詞 <b>て形 + もいいです</b> ＝ 「可以…」(陳述允許)。',
+    '<b>問句：てもいいですか</b> ＝ 「我可以…嗎？」',
+    '同意對方時可以說「<b>いいですよ</b>」或「<b>どうぞ</b>」。',
+    '不能單獨用 もいいです（て 必須是動詞變化的一部分）。'
+  ],
+  examples: [
+    { jp:'教科書を見てもいいですよ。',         en:'You may use the textbook.' },
+    { jp:'トイレに行ってもいいですか。',       en:'May I go to the bathroom?' },
+    { jp:'まどを開けてもいいですか。',         en:'May I open the window?' },
+    { jp:'ここに座ってもいいですか。',         en:'May I sit here?' },
+    { jp:'写真を撮ってもいいですか。',         en:'May I take a picture?' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'まどを____もいいですか。',     en:'May I open the window?',      answers:['開けて','あけて'] },
+    { type:'fill', prompt:'ここに____もいいですか。',     en:'May I sit here?',             answers:['座って','すわって'] },
+    { type:'fill', prompt:'写真を____もいいですか。',     en:'May I take a picture?',       answers:['撮って','とって'] },
+    { type:'fill', prompt:'教科書を____もいいですか。',   en:'May I look at the textbook?', answers:['見て','みて'] },
+    { type:'fill', prompt:'シャワーを____もいいですか。', en:'May I take a shower?',        answers:['浴びて','あびて'] },
+    { type:'fill', prompt:'エアコンを____もいいですか。', en:'May I turn on the AC?',       answers:['つけて'] },
+    { type:'fill', prompt:'電気を____もいいですか。',     en:'May I turn off the light?',   answers:['消して','けして'] },
+    { type:'translate', prompt:'May I use this textbook?',
+      answers:['この教科書を使ってもいいですか。','このきょうかしょを使ってもいいですか','この教科書を使ってもいいですか','このきょうかしょをつかってもいいですか'] },
+    { type:'translate', prompt:'May I turn on the air conditioner?',
+      answers:['エアコンをつけてもいいですか。','エアコンをつけてもいいですか'] },
+    { type:'translate', prompt:'May I sit here?',
+      answers:['ここに座ってもいいですか。','ここに座ってもいいですか','ここにすわってもいいですか'] },
+    { type:'translate', prompt:'May I borrow this book?',
+      answers:['この本を借りてもいいですか。','この本を借りてもいいですか','この本をかりてもいいですか','このほんをかりてもいいですか'] },
+  ]
+};
+
+// ----- Grammar 5: 〜てはいけません -----
+GRAMMARS['te-wa-ikemasen'] = {
+  title: 'Grammar 5 ｜ 〜てはいけません (Must not...)',
+  explanation: [
+    '<b>用法：</b>動詞 <b>て形 + はいけません</b> ＝ 「不可以…／不準…」。是<b>強烈禁止</b>。',
+    '常用於規則、規定、教導等情境。',
+    '注意：和 〜てもいいです 不同，<b>はいけません 的 は 不可以省略</b>。',
+    '較柔軟的「請別…」會在 Lesson 8 學到（〜ないでください）。'
+  ],
+  examples: [
+    { jp:'ここで写真を撮ってはいけません。',     en:'You must not take pictures here.' },
+    { jp:'ここでたばこを吸ってはいけません。',   en:'You must not smoke here.' },
+    { jp:'授業中に電話してはいけません。',       en:'You must not make phone calls during class.' },
+    { jp:'図書館で食べてはいけません。',         en:'You must not eat in the library.' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'ここで写真を____はいけません。',   en:'You must not take pictures here.', answers:['撮って','とって'] },
+    { type:'fill', prompt:'ここでたばこを____はいけません。', en:'You must not smoke here.',         answers:['吸って','すって'] },
+    { type:'fill', prompt:'授業中に____はいけません。',       en:'You must not make calls in class.', answers:['電話して','でんわして'] },
+    { type:'fill', prompt:'図書館で____はいけません。',       en:'You must not eat in the library.',  answers:['食べて','たべて'] },
+    { type:'fill', prompt:'ここに____はいけません。',         en:'You must not enter here.',          answers:['入って','はいって'] },
+    { type:'translate', prompt:'You must not smoke here.',
+      answers:['ここでたばこを吸ってはいけません。','ここでたばこを吸ってはいけません','ここでたばこをすってはいけません','ここでたばこをすってはいけません。'] },
+    { type:'translate', prompt:'You must not take pictures here.',
+      answers:['ここで写真を撮ってはいけません。','ここで写真を撮ってはいけません','ここでしゃしんをとってはいけません'] },
+    { type:'translate', prompt:'You must not use the computer.',
+      answers:['パソコンを使ってはいけません。','パソコンを使ってはいけません','パソコンをつかってはいけません'] },
+  ]
+};
+
+// ----- Grammar 6: 〜から (because) -----
+GRAMMARS['kara'] = {
+  title: 'Grammar 6 ｜ 〜から (because)',
+  explanation: [
+    '<b>用法：</b>句子 + <b>から</b> ＝ 「因為…」，說明原因或理由。',
+    '<b>結構：</b>(情況／提議／判斷)。(原因)<b>から</b>。',
+    '也可以反過來：(原因)<b>から</b>、(情況)。',
+    'から 接 です／ます 句（如：高いです<b>から</b>、行きます<b>から</b>）。'
+  ],
+  examples: [
+    { jp:'私は今晩勉強します。あしたテストがありますから。', en:"I'll study tonight, because we have an exam tomorrow." },
+    { jp:'バスに乗りましょう。タクシーは高いですから。',     en:"Let's go by bus, because taxis are expensive." },
+    { jp:'いそぎましょう。バスが来ますから。',               en:"Let's hurry, because the bus is coming." },
+    { jp:'今日はうちに帰ります。いそがしいですから。',       en:"I'll go home today, because I'm busy." },
+  ],
+  exercises: [
+    { type:'fill', prompt:'いそぎましょう。バスが来ます____。',         en:"Let's hurry, because the bus is coming.", answers:['から'] },
+    { type:'fill', prompt:'今晩勉強します。あしたテストがあります____。', en:"I'll study tonight, because we have an exam tomorrow.", answers:['から'] },
+    { type:'fill', prompt:'バスに乗りましょう。タクシーは____。',       en:"Let's take the bus, because taxis are expensive.", answers:['高いですから','たかいですから'] },
+    { type:'fill', prompt:'うちで休みます。____ですから。',             en:"I'll rest at home, because I'm not feeling well (tough situation).", answers:['たいへん','大変'] },
+    { type:'translate', prompt:"I'll study tonight, because we have an exam tomorrow.",
+      answers:['今晩勉強します。あしたテストがありますから。','こんばん勉強します。あしたテストがありますから','こんばんべんきょうします。あしたテストがありますから'] },
+    { type:'translate', prompt:"Let's hurry, because the bus is coming.",
+      answers:['いそぎましょう。バスが来ますから。','いそぎましょう。バスが来ますから','いそぎましょう。バスがきますから'] },
+    { type:'translate', prompt:"Let's take a bus, because taxis are expensive.",
+      answers:['バスに乗りましょう。タクシーは高いですから。','バスにのりましょう。タクシーはたかいですから'] },
+  ]
+};
+
+// ----- Grammar 7: 〜ましょうか (Offering Assistance) -----
+GRAMMARS['mashou-ka'] = {
+  title: 'Grammar 7 ｜ 〜ましょうか (Offering Assistance)',
+  explanation: [
+    '<b>用法：</b>動詞ます形的 ます → <b>ましょうか</b>。',
+    'Lesson 5 學過：「<b>(一起) …吧？</b>」(邀請)。例：一緒に図書館で勉強しましょうか。',
+    'Lesson 6 新用法：「<b>我來…吧？</b>」(主動<b>提供協助</b>)。',
+    '看到別人有困難時：荷物を持ちましょうか。(我幫你拿吧？)'
+  ],
+  examples: [
+    { jp:'(私が) やりましょうか。',         en:"I'll do it (shall I?)." },
+    { jp:'荷物を持ちましょうか。',           en:'Shall I carry your bag?' },
+    { jp:'まどを開けましょうか。',           en:'Shall I open the window?' },
+    { jp:'電気を消しましょうか。',           en:'Shall I turn off the light?' },
+    { jp:'手伝いましょうか。',               en:'Shall I help you?' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'荷物を____か。',   en:'Shall I carry your bag?',     answers:['持ちましょう','もちましょう'] },
+    { type:'fill', prompt:'まどを____か。',   en:'Shall I open the window?',    answers:['開けましょう','あけましょう'] },
+    { type:'fill', prompt:'電気を____か。',   en:'Shall I turn off the light?', answers:['消しましょう','けしましょう'] },
+    { type:'fill', prompt:'エアコンを____か。', en:'Shall I turn on the AC?',   answers:['つけましょう'] },
+    { type:'fill', prompt:'____か。',         en:"Shall I help you?",          answers:['手伝いましょう','てつだいましょう'] },
+    { type:'translate', prompt:'Shall I carry your bag?',
+      answers:['荷物を持ちましょうか。','荷物を持ちましょうか','にもつを持ちましょうか','にもつをもちましょうか'] },
+    { type:'translate', prompt:'Shall I help you?',
+      answers:['手伝いましょうか。','手伝いましょうか','てつだいましょうか'] },
+    { type:'translate', prompt:'Shall I open the window?',
+      answers:['まどを開けましょうか。','まどを開けましょうか','まどをあけましょうか'] },
+    { type:'translate', prompt:"Shall we go to the cafe?",
+      answers:['カフェに行きましょうか。','カフェに行きましょうか','カフェにいきましょうか'] },
   ]
 };
 
@@ -1982,26 +2145,36 @@ function toggleLessonSection(id) {
 }
 
 // ============================
-// GRAMMAR PRACTICE — 〜てください
+// GRAMMAR PRACTICE (generic — works for any entry in GRAMMARS)
 // ============================
-const tePracticeState = { correct: 0, wrong: 0, history: [], current: null, attempts: 0 };
+const grammarPracticeStates = {};  // keyed by grammar id
 
-function teKudasaiSectionHTML() {
-  const g = TE_KUDASAI;
+function getGrammarState(id) {
+  if (!grammarPracticeStates[id]) {
+    grammarPracticeStates[id] = { correct: 0, wrong: 0, current: null, attempts: 0 };
+  }
+  return grammarPracticeStates[id];
+}
+
+function grammarSectionHTML(id) {
+  const g = GRAMMARS[id];
+  if (!g) return '';
   const explainHtml = g.explanation.map(p => `<p>${p}</p>`).join('');
-  const examplesHtml = g.examples.map(ex => `
-    <div class="grammar-example" onclick="speak('${ex.jp}')">
-      <div>
-        <div class="ex-jp">${ex.jp}</div>
-        <div class="ex-en">${ex.en}</div>
-      </div>
-      <button class="ex-speak" onclick="event.stopPropagation(); speak('${ex.jp}')">🔊</button>
-    </div>
-  `).join('');
+  const examplesHtml = g.examples.map(ex => {
+    const safe = ex.jp.replace(/'/g, "\\'");
+    return `
+      <div class="grammar-example" onclick="speak('${safe}')">
+        <div>
+          <div class="ex-jp">${ex.jp}</div>
+          <div class="ex-en">${ex.en}</div>
+        </div>
+        <button class="ex-speak" onclick="event.stopPropagation(); speak('${safe}')">🔊</button>
+      </div>`;
+  }).join('');
 
   return `
-    <div class="lesson-section collapsed" id="te-kudasai-section">
-      <div class="lesson-section-header" onclick="toggleLessonSection('te-kudasai-section')">
+    <div class="lesson-section collapsed" id="grammar-section-${id}">
+      <div class="lesson-section-header" onclick="toggleLessonSection('grammar-section-${id}')">
         <h3>📝 ${g.title}</h3>
         <span class="toggle-arrow">▼</span>
       </div>
@@ -2015,65 +2188,66 @@ function teKudasaiSectionHTML() {
           <div class="practice-zone-header">
             <h4>✏️ 練習 Practice</h4>
             <div class="practice-zone-stats">
-              ✅<span class="ok" id="te-stat-ok">0</span> ・
-              ❌<span class="ng" id="te-stat-ng">0</span>
+              ✅<span class="ok" id="g-stat-ok-${id}">0</span> ・
+              ❌<span class="ng" id="g-stat-ng-${id}">0</span>
             </div>
           </div>
-          <div id="te-exercise-area"></div>
+          <div id="g-ex-area-${id}"></div>
         </div>
       </div>
     </div>
   `;
 }
 
-// Normalize answer for comparison (trim, remove trailing 。)
+// Normalize answer for comparison (trim, remove trailing 。, fullwidth spaces)
 function normalizeAns(s) {
-  return s.replace(/\s+/g,'').replace(/。$/,'').replace(/ください/g,'ください').trim();
+  return s.replace(/[\s　]+/g,'').replace(/[。.]$/,'').trim();
 }
 
-function pickNextExercise() {
-  const pool = TE_KUDASAI.exercises;
-  // Avoid immediate repeat
+function pickNextGrammarExercise(id) {
+  const g = GRAMMARS[id];
+  if (!g) return;
+  const state = getGrammarState(id);
   let pick;
   do {
-    pick = pool[Math.floor(Math.random() * pool.length)];
-  } while (pool.length > 1 && tePracticeState.current === pick);
-  tePracticeState.current = pick;
-  tePracticeState.attempts = 0;
-  renderExercise();
+    pick = g.exercises[Math.floor(Math.random() * g.exercises.length)];
+  } while (g.exercises.length > 1 && state.current === pick);
+  state.current = pick;
+  state.attempts = 0;
+  renderGrammarExercise(id);
 }
 
-function renderExercise() {
-  const ex = tePracticeState.current;
+function renderGrammarExercise(id) {
+  const state = getGrammarState(id);
+  const ex = state.current;
   if (!ex) return;
-  const area = document.getElementById('te-exercise-area');
+  const area = document.getElementById(`g-ex-area-${id}`);
   if (!area) return;
 
-  const tagText = ex.type === 'conj' ? '🔤 て形變化' :
-                  ex.type === 'fill' ? '✏️ 填空 (動詞 て形)' :
+  const tagText = ex.type === 'conj' ? '🔤 動詞變化' :
+                  ex.type === 'fill' ? '✏️ 填空' :
                   '📝 句子翻譯';
 
   let promptHtml = '';
   let inputHint = '';
   if (ex.type === 'conj') {
-    // Show dict form big, ask for te-form (no ください needed)
     promptHtml = `
       <div class="exercise-prompt"><span style="color:#FF7043;">${ex.prompt}</span> → ?</div>
-      <div class="exercise-en">${ex.en} · 寫出 <b>て形</b>（不用加 ください）</div>
+      <div class="exercise-en">${ex.en}</div>
     `;
-    inputHint = '範例：たべる → たべて／食べて';
+    inputHint = '寫出變化後的形式';
   } else if (ex.type === 'fill') {
     promptHtml = `
       <div class="exercise-prompt">${ex.prompt}</div>
-      <div class="exercise-en">${ex.en} · 在 ___ 填入動詞 <b>て形</b>（不含 ください）</div>
+      <div class="exercise-en">${ex.en} · 在 ____ 填入答案</div>
     `;
-    inputHint = '範例：水を____ください → 飲んで／のんで';
+    inputHint = '可以打漢字或平假名';
   } else { // translate
     promptHtml = `
       <div class="exercise-prompt" style="font-size:1.15em;">${ex.prompt}</div>
-      <div class="exercise-en">寫出完整的日文句子（含 ください）</div>
+      <div class="exercise-en">寫出完整日文句子</div>
     `;
-    inputHint = '範例：水を飲んでください 或 みずをのんでください';
+    inputHint = '漢字／平假名都接受，句尾 。可有可無';
   }
 
   area.innerHTML = `
@@ -2081,70 +2255,72 @@ function renderExercise() {
       <span class="exercise-type-tag ${ex.type}">${tagText}</span>
       ${promptHtml}
       <div class="input-hint">💡 ${inputHint}</div>
-      <input type="text" class="exercise-input" id="te-ex-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter') checkExercise()">
+      <input type="text" class="exercise-input" id="g-ex-input-${id}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter') checkGrammarExercise('${id}')">
       <div class="exercise-buttons">
-        <button class="ex-btn-submit" onclick="checkExercise()">✅ 確認</button>
-        <button class="ex-btn-show"   onclick="showExerciseAnswer()">👀 看答案</button>
-        <button class="ex-btn-skip"   onclick="nextExercise()">⏭ 跳過</button>
+        <button class="ex-btn-submit" onclick="checkGrammarExercise('${id}')">✅ 確認</button>
+        <button class="ex-btn-show"   onclick="showGrammarAnswer('${id}')">👀 看答案</button>
+        <button class="ex-btn-skip"   onclick="nextGrammarExercise('${id}')">⏭ 跳過</button>
       </div>
-      <div class="exercise-feedback" id="te-ex-feedback"></div>
+      <div class="exercise-feedback" id="g-ex-fb-${id}"></div>
     </div>
   `;
   setTimeout(() => {
-    const inp = document.getElementById('te-ex-input');
+    const inp = document.getElementById(`g-ex-input-${id}`);
     if (inp) inp.focus();
   }, 50);
 }
 
-function checkExercise() {
-  const ex = tePracticeState.current;
-  const inp = document.getElementById('te-ex-input');
-  const fb = document.getElementById('te-ex-feedback');
+function checkGrammarExercise(id) {
+  const state = getGrammarState(id);
+  const ex = state.current;
+  const inp = document.getElementById(`g-ex-input-${id}`);
+  const fb = document.getElementById(`g-ex-fb-${id}`);
   const raw = inp.value.trim();
   if (!raw) return;
   const userAns = normalizeAns(raw);
   const accepted = ex.answers.map(normalizeAns);
 
-  tePracticeState.attempts++;
+  state.attempts++;
 
   if (accepted.includes(userAns)) {
-    // Correct (only count first attempt as fully correct)
-    if (tePracticeState.attempts === 1) tePracticeState.correct++;
+    if (state.attempts === 1) state.correct++;
     inp.classList.add('correct');
     fb.className = 'exercise-feedback show correct';
     fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${ex.answers[0]}</span>`;
     speak(ex.answers[0]);
-    updateStats();
-    setTimeout(nextExercise, 1500);
+    updateGrammarStats(id);
+    setTimeout(() => nextGrammarExercise(id), 1500);
   } else {
-    if (tePracticeState.attempts === 1) tePracticeState.wrong++;
+    if (state.attempts === 1) state.wrong++;
     inp.classList.add('wrong');
     fb.className = 'exercise-feedback show wrong';
     fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
-    updateStats();
+    updateGrammarStats(id);
   }
 }
 
-function showExerciseAnswer() {
-  const ex = tePracticeState.current;
-  const fb = document.getElementById('te-ex-feedback');
-  if (tePracticeState.attempts === 0) tePracticeState.wrong++;
+function showGrammarAnswer(id) {
+  const state = getGrammarState(id);
+  const ex = state.current;
+  const fb = document.getElementById(`g-ex-fb-${id}`);
+  if (state.attempts === 0) state.wrong++;
   fb.className = 'exercise-feedback show wrong';
-  fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也可以：${ex.answers.slice(1).join('、')}</span>` : ''}`;
+  fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${ex.answers.slice(1).join('、')}</span>` : ''}`;
   speak(ex.answers[0]);
-  updateStats();
-  setTimeout(nextExercise, 2500);
+  updateGrammarStats(id);
+  setTimeout(() => nextGrammarExercise(id), 2500);
 }
 
-function nextExercise() {
-  pickNextExercise();
+function nextGrammarExercise(id) {
+  pickNextGrammarExercise(id);
 }
 
-function updateStats() {
-  const ok = document.getElementById('te-stat-ok');
-  const ng = document.getElementById('te-stat-ng');
-  if (ok) ok.textContent = tePracticeState.correct;
-  if (ng) ng.textContent = tePracticeState.wrong;
+function updateGrammarStats(id) {
+  const state = getGrammarState(id);
+  const ok = document.getElementById(`g-stat-ok-${id}`);
+  const ng = document.getElementById(`g-stat-ng-${id}`);
+  if (ok) ok.textContent = state.correct;
+  if (ng) ng.textContent = state.wrong;
 }
 
 // Per-lesson playback state
@@ -2258,12 +2434,16 @@ function buildLessonContent(num) {
   const container = document.getElementById(`lesson${num}-content`);
   const data = LESSONS[num];
 
-  // For lessons that have a vocab list only (no flashcards / quiz),
-  // render just the vocab section under the grammar intro.
+  // Lesson 6 — vocab + Grammar 2-7 (each in its own collapsible section)
   if (VOCAB[num] && num === 6) {
-    container.innerHTML = vocabSectionHTML(num) + teKudasaiSectionHTML();
-    // initialize first practice exercise (the section starts expanded)
-    setTimeout(pickNextExercise, 50);
+    const grammarIds = ['te-kudasai','te-two','te-mo-ii','te-wa-ikemasen','kara','mashou-ka'];
+    container.innerHTML =
+      vocabSectionHTML(num) +
+      grammarIds.map(id => grammarSectionHTML(id)).join('');
+    // initialize the first exercise for each grammar topic
+    setTimeout(() => {
+      grammarIds.forEach(id => pickNextGrammarExercise(id));
+    }, 50);
     return;
   }
 
