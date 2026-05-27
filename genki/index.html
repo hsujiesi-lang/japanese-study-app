@@ -1965,9 +1965,9 @@ function vocabSectionHTML(num) {
     inner += `</div>`;
   });
 
-  // Wrap everything inside one collapsible section
+  // Wrap everything inside one collapsible section (collapsed by default)
   return `
-    <div class="lesson-section" id="vocab-section-${num}">
+    <div class="lesson-section collapsed" id="vocab-section-${num}">
       <div class="lesson-section-header" onclick="toggleLessonSection('vocab-section-${num}')">
         <h3>📚 単語 Vocabulary <span style="opacity:0.85; font-size:0.85em; font-weight:500;">(${allItems.length} 個)</span></h3>
         <span class="toggle-arrow">▼</span>
@@ -2000,7 +2000,7 @@ function teKudasaiSectionHTML() {
   `).join('');
 
   return `
-    <div class="lesson-section" id="te-kudasai-section">
+    <div class="lesson-section collapsed" id="te-kudasai-section">
       <div class="lesson-section-header" onclick="toggleLessonSection('te-kudasai-section')">
         <h3>📝 ${g.title}</h3>
         <span class="toggle-arrow">▼</span>
