@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Genki">
+<title>げんき Lessons 1-6 練習</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    background: #FFF8F0; color: #333; min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+  }
+  header {
+    background: linear-gradient(135deg, #FF7043 0%, #FF8A65 100%);
+    color: white; padding: 20px 16px; text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  header h1 { font-size: 1.6em; letter-spacing: 1px; }
+  header .subtitle { font-size: 0.85em; opacity: 0.9; margin-top: 4px; }
+  main { max-width: 900px; margin: 0 auto; padding: 16px; }
+
+  /* Hub page */
+  .hub-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px; margin-top: 16px;
+  }
+  .hub-card {
+    background: white; border-radius: 16px; padding: 20px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer;
+    text-align: center; transition: transform 0.15s, box-shadow 0.15s;
+    border: 2px solid transparent;
+  }
+  .hub-card:active { transform: scale(0.97); }
+  .hub-card .lesson-num {
+    font-size: 0.85em; color: #FF7043; font-weight: 700; letter-spacing: 1px;
+  }
+  .hub-card .lesson-title {
+    font-size: 1.05em; margin-top: 6px; color: #37474F; font-weight: 600;
+  }
+  .hub-card .lesson-en {
+    font-size: 0.75em; color: #999; margin-top: 4px;
+  }
+  .hub-card.verbs-card {
+    background: linear-gradient(135deg, #FFE0B2 0%, #FFCC80 100%);
+    grid-column: 1 / -1;
+    padding: 24px 20px;
+  }
+  .hub-card.verbs-card .lesson-num { color: #E64A19; }
+  .hub-card.verbs-card .lesson-title { font-size: 1.2em; }
+
+  /* Page nav */
+  .top-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    background: white; padding: 12px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .back-btn {
+    background: #FF7043; color: white; border: none; border-radius: 20px;
+    padding: 6px 14px; font-size: 0.9em; font-weight: 600; cursor: pointer;
+  }
+  .top-nav h2 { font-size: 1.05em; color: #37474F; }
+
+  /* Sections */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* Verb reference */
+  .filter-bar {
+    display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px;
+    background: white; border-bottom: 1px solid #FFE0B2;
+    position: sticky; top: 49px; z-index: 40;
+  }
+  .filter-chip {
+    background: #ECEFF1; color: #546E7A; border: 1.5px solid transparent;
+    border-radius: 20px; padding: 5px 12px; font-size: 0.82em;
+    cursor: pointer; font-weight: 600;
+  }
+  .filter-chip.active { background: #FF7043; color: white; border-color: #FF7043; }
+  .filter-chip.type-ru.active { background: #5C6BC0; border-color: #5C6BC0; }
+  .filter-chip.type-u.active { background: #26A69A; border-color: #26A69A; }
+  .filter-chip.type-irr.active { background: #AB47BC; border-color: #AB47BC; }
+
+  .verb-card {
+    background: white; border-radius: 12px; padding: 14px;
+    margin: 12px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border-left: 4px solid #FF7043;
+  }
+  .verb-card.ru { border-left-color: #5C6BC0; }
+  .verb-card.u { border-left-color: #26A69A; }
+  .verb-card.irregular { border-left-color: #AB47BC; }
+
+  .verb-header {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 8px;
+  }
+  .verb-jp {
+    font-size: 1.4em; font-weight: 700; color: #37474F;
+    cursor: pointer; user-select: none;
+  }
+  .verb-jp:active { color: #FF7043; }
+  .verb-jp .kanji { font-size: 1.1em; }
+  .verb-jp .hira { color: #999; font-size: 0.7em; margin-left: 6px; }
+  .speaker-icon {
+    display: inline-block; margin-left: 6px; font-size: 0.7em;
+    color: #FF7043; vertical-align: middle;
+  }
+  .verb-en { font-size: 0.9em; color: #666; }
+  .verb-meta {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;
+  }
+  .badge {
+    font-size: 0.7em; padding: 3px 8px; border-radius: 10px;
+    font-weight: 600;
+  }
+  .badge-lesson { background: #FFE0B2; color: #E64A19; }
+  .badge-type { background: #ECEFF1; color: #546E7A; }
+  .badge-type.ru { background: #E8EAF6; color: #3949AB; }
+  .badge-type.u { background: #E0F2F1; color: #00796B; }
+  .badge-type.irregular { background: #F3E5F5; color: #7B1FA2; }
+  .badge-particle {
+    background: #FFF3E0; color: #E65100; font-family: monospace;
+    font-size: 0.8em; padding: 3px 7px;
+  }
+  .badge-particle.none { background: #F5F5F5; color: #757575; font-family: inherit; }
+
+  .conjugation-table {
+    display: grid; grid-template-columns: 1.2fr 2fr 2fr;
+    gap: 1px; background: #F0F0F0; border-radius: 8px; overflow: hidden;
+    margin-top: 10px; font-size: 0.88em;
+  }
+  .conj-cell {
+    background: white; padding: 8px 10px;
+    cursor: pointer; user-select: none;
+  }
+  .conj-cell:active { background: #FFF3E0; }
+  .conj-header {
+    background: #F5F5F5 !important; font-weight: 700;
+    color: #546E7A; font-size: 0.85em; cursor: default;
+  }
+  .conj-label { font-weight: 600; color: #FF7043; font-size: 0.8em; }
+  .conj-form { font-size: 1.05em; color: #37474F; margin-top: 2px; }
+
+  /* Lesson pages */
+  .lesson-intro {
+    background: white; border-radius: 12px; padding: 20px 16px;
+    margin: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .lesson-intro h3 { color: #FF7043; margin-bottom: 10px; }
+  .lesson-intro p { color: #555; line-height: 1.6; font-size: 0.95em; }
+  .topic-grid {
+    display: grid; grid-template-columns: 1fr; gap: 10px; padding: 0 16px;
+  }
+  .topic-card {
+    background: white; border-radius: 12px; padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer;
+    border-left: 3px solid #FF7043;
+  }
+  .topic-card:active { background: #FFF3E0; }
+  .topic-card .topic-title { font-weight: 700; color: #37474F; font-size: 1em; }
+  .topic-card .topic-example {
+    font-size: 0.9em; color: #666; margin-top: 6px; font-style: italic;
+  }
+
+  /* Practice cards (flashcard style) */
+  .flashcard-container {
+    padding: 20px 16px; min-height: 60vh; display: flex;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  .flashcard {
+    background: white; border-radius: 20px; padding: 32px 24px;
+    width: 100%; max-width: 420px; min-height: 260px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1); cursor: pointer;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: center; text-align: center; user-select: none;
+    transition: transform 0.2s;
+  }
+  .flashcard:active { transform: scale(0.98); }
+  .flashcard .question { font-size: 1.5em; color: #37474F; font-weight: 600; }
+  .flashcard .question-en { font-size: 0.95em; color: #999; margin-top: 10px; }
+  .flashcard .answer {
+    display: none; margin-top: 20px; padding-top: 20px;
+    border-top: 1px dashed #DDD; width: 100%;
+  }
+  .flashcard.revealed .answer { display: block; }
+  .flashcard.revealed .hint { display: none; }
+  .flashcard .hint { color: #BBB; font-size: 0.85em; margin-top: 16px; }
+  .flashcard .answer-jp { font-size: 1.4em; color: #FF7043; font-weight: 700; }
+  .flashcard .answer-en { font-size: 0.9em; color: #666; margin-top: 6px; }
+
+  .flashcard-controls {
+    display: flex; justify-content: space-between; align-items: center;
+    width: 100%; max-width: 420px; margin-top: 20px;
+  }
+  .control-btn {
+    background: white; border: 1.5px solid #FF7043; color: #FF7043;
+    border-radius: 24px; padding: 10px 20px; font-size: 0.95em;
+    font-weight: 600; cursor: pointer; min-width: 80px;
+  }
+  .control-btn:active { background: #FFE0B2; }
+  .control-btn.primary { background: #FF7043; color: white; }
+  .control-btn.primary:active { background: #E64A19; }
+  .progress { color: #999; font-size: 0.9em; }
+
+  /* Quiz */
+  .quiz-q {
+    background: white; border-radius: 16px; padding: 20px;
+    margin: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .quiz-prompt { font-size: 1.1em; color: #37474F; margin-bottom: 14px; line-height: 1.5; }
+  .quiz-prompt .jp { font-weight: 700; color: #FF7043; }
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-option {
+    background: #FAFAFA; border: 2px solid #EEE; border-radius: 10px;
+    padding: 12px 14px; font-size: 1em; cursor: pointer; text-align: left;
+    transition: all 0.15s;
+  }
+  .quiz-option:active { background: #FFF3E0; }
+  .quiz-option.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; }
+  .quiz-option.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; }
+
+  /* Particle reference */
+  .particle-info {
+    background: #FFF3E0; border-radius: 10px; padding: 10px 12px;
+    margin: 12px 16px; font-size: 0.85em; color: #555;
+  }
+  .particle-info b { color: #E64A19; }
+
+  /* Tab switcher inside verb page */
+  .verb-tabs {
+    display: flex; background: white; padding: 6px;
+    margin: 12px 16px 0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .verb-tab {
+    flex: 1; background: transparent; border: none; padding: 8px;
+    border-radius: 8px; font-size: 0.85em; font-weight: 600;
+    color: #757575; cursor: pointer;
+  }
+  .verb-tab.active { background: #FF7043; color: white; }
+
+  /* Stats / Summary box */
+  .stats-box {
+    background: white; border-radius: 12px; padding: 14px 16px;
+    margin: 12px 16px; display: flex; justify-content: space-around;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06); font-size: 0.85em;
+  }
+  .stat-item { text-align: center; }
+  .stat-item .stat-num { font-size: 1.4em; font-weight: 700; color: #FF7043; }
+  .stat-item.ru .stat-num { color: #5C6BC0; }
+  .stat-item.u .stat-num { color: #26A69A; }
+  .stat-item.irregular .stat-num { color: #AB47BC; }
+  .stat-item .stat-label { color: #888; margin-top: 2px; font-size: 0.85em; }
+
+  /* Search */
+  .search-box {
+    width: calc(100% - 32px); margin: 12px 16px; padding: 10px 14px;
+    border: 2px solid #FFE0B2; border-radius: 12px; font-size: 1em;
+    background: white; outline: none;
+  }
+  .search-box:focus { border-color: #FF7043; }
+
+  /* Vocab list */
+  .vocab-section-title {
+    background: #E8EAF6; color: #37474F; padding: 10px 16px;
+    margin: 12px 16px 6px; border-radius: 8px;
+    font-size: 0.95em; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .vocab-section-title .count {
+    font-size: 0.78em; color: #777; font-weight: 500;
+  }
+  .vocab-grid {
+    display: grid; grid-template-columns: 1fr; gap: 8px;
+    padding: 0 16px;
+  }
+  .vocab-card {
+    background: white; border-radius: 10px; padding: 12px 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; transition: background 0.1s;
+    border-left: 3px solid #B0BEC5;
+  }
+  .vocab-card:active { background: #FFF3E0; }
+  .vocab-card.noun       { border-left-color: #5C6BC0; }
+  .vocab-card.adverb     { border-left-color: #FFA726; }
+  .vocab-card.naadj      { border-left-color: #00897B; }
+  .vocab-card .vocab-jp { min-width: 0; flex: 1; }
+  .vocab-card .vocab-main {
+    font-size: 1.15em; font-weight: 700; color: #37474F;
+  }
+  .vocab-card .vocab-hira {
+    font-size: 0.78em; color: #999; margin-left: 6px;
+  }
+  .vocab-card .vocab-en {
+    font-size: 0.85em; color: #666; margin-top: 2px;
+  }
+  .vocab-card .vocab-speak {
+    background: #FFF3E0; border: none; color: #E65100;
+    border-radius: 50%; width: 36px; height: 36px;
+    font-size: 1.1em; cursor: pointer; flex-shrink: 0;
+  }
+  .vocab-card .vocab-speak:active { background: #FFE0B2; }
+
+  .vocab-play-all-btn {
+    display: block; width: calc(100% - 32px); margin: 8px 16px 12px;
+    background: linear-gradient(135deg,#5C6BC0 0%,#3949AB 100%);
+    color: white; border: none; border-radius: 10px;
+    padding: 12px; font-size: 0.95em; font-weight: 700; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(92,107,192,0.3);
+  }
+
+  /* Adjective styles */
+  .verb-card.adj-i { border-left-color: #D81B60; }
+  .verb-card.adj-na { border-left-color: #00897B; }
+  .badge-type.adj-i { background: #FCE4EC; color: #AD1457; }
+  .badge-type.adj-na { background: #E0F2F1; color: #00695C; }
+  .filter-chip.adj-type-i.active { background: #D81B60; color: white; border-color: #D81B60; }
+  .filter-chip.adj-type-na.active { background: #00897B; color: white; border-color: #00897B; }
+  .stat-item.adj-i .stat-num { color: #D81B60; }
+  .stat-item.adj-na .stat-num { color: #00897B; }
+  .adj-irregular-tag {
+    display: inline-block; background: #FFF59D; color: #F57F17;
+    font-size: 0.7em; padding: 2px 8px; border-radius: 10px;
+    font-weight: 700; margin-left: 6px;
+  }
+
+  /* Kana page */
+  .kana-tabs {
+    display: flex; background: white; padding: 6px;
+    margin: 12px 16px 0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    gap: 4px;
+  }
+  .kana-tab {
+    flex: 1; background: transparent; border: none; padding: 8px 4px;
+    border-radius: 8px; font-size: 0.82em; font-weight: 600;
+    color: #757575; cursor: pointer;
+  }
+  .kana-tab.active { background: #FF7043; color: white; }
+  .kana-panel { display: none; padding: 4px 0 16px; }
+  .kana-panel.active { display: block; }
+
+  .kana-section-title {
+    background: #E8EAF6; color: #37474F; padding: 10px 16px;
+    margin: 12px 16px 6px; border-radius: 8px;
+    font-size: 0.95em; font-weight: 700;
+  }
+  .kana-row-label {
+    color: #999; font-size: 0.78em; padding: 4px 16px 2px; font-family: monospace;
+  }
+  .kana-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 6px; padding: 0 16px;
+  }
+  .kana-cell {
+    background: white; border-radius: 10px; padding: 10px 4px;
+    text-align: center; cursor: pointer; user-select: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.1s, background 0.1s;
+    min-height: 64px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+  }
+  .kana-cell:active { transform: scale(0.95); background: #FFF3E0; }
+  .kana-cell.empty { background: transparent; box-shadow: none; cursor: default; }
+  .kana-cell .kana-char { font-size: 1.6em; color: #C62828; font-weight: 700; line-height: 1; }
+  .kana-cell .kana-romaji { font-size: 0.72em; color: #999; margin-top: 4px; }
+
+  /* Combo grid: 4 columns (header + ya/yu/yo) */
+  .combo-grid {
+    display: grid; grid-template-columns: 0.6fr 1fr 1fr 1fr;
+    gap: 6px; padding: 0 16px; align-items: center;
+  }
+  .combo-header {
+    text-align: center; color: #999; font-size: 1.05em;
+    padding: 4px; font-family: monospace;
+  }
+  .combo-row-label {
+    text-align: center; color: #555; font-size: 1.05em; font-weight: 600;
+  }
+
+  /* Practice card */
+  .practice-card {
+    background: white; border-radius: 16px; padding: 28px 20px;
+    margin: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+  .practice-prompt-kana {
+    font-size: 4.5em; color: #C62828; font-weight: 700; line-height: 1;
+    cursor: pointer; user-select: none;
+  }
+  .practice-prompt-kana.katakana { color: #1565C0; }
+  .practice-prompt-romaji {
+    font-size: 2.5em; color: #37474F; font-weight: 700; font-family: monospace;
+    letter-spacing: 2px;
+  }
+  .practice-input {
+    width: 100%; max-width: 240px; padding: 12px 16px; font-size: 1.4em;
+    border: 2px solid #FFE0B2; border-radius: 10px; outline: none;
+    text-align: center; margin-top: 18px; font-family: monospace;
+  }
+  .practice-input:focus { border-color: #FF7043; }
+  .practice-input.correct { border-color: #4CAF50; background: #E8F5E9; }
+  .practice-input.wrong { border-color: #F44336; background: #FFEBEE; }
+  .practice-feedback {
+    margin-top: 12px; font-size: 1em; font-weight: 600; min-height: 24px;
+  }
+  .practice-feedback.correct { color: #2E7D32; }
+  .practice-feedback.wrong { color: #C62828; }
+  .practice-options {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    max-width: 320px; margin: 18px auto 0;
+  }
+  .practice-option-btn {
+    background: #FAFAFA; border: 2px solid #EEE; border-radius: 12px;
+    padding: 14px; font-size: 2em; cursor: pointer;
+    font-weight: 700; color: #C62828; font-family: 'Hiragino Sans','Noto Sans JP',sans-serif;
+  }
+  .practice-option-btn.katakana { color: #1565C0; }
+  .practice-option-btn:active { background: #FFF3E0; }
+  .practice-option-btn.correct { background: #C8E6C9; border-color: #4CAF50; color: #2E7D32; }
+  .practice-option-btn.wrong { background: #FFCDD2; border-color: #F44336; color: #C62828; }
+
+  .practice-stats {
+    display: flex; justify-content: space-around;
+    background: #FFF8F0; border-radius: 10px; padding: 10px;
+    margin: 0 16px 12px; font-size: 0.85em;
+  }
+  .practice-stats span { font-weight: 700; }
+  .practice-stats .ok { color: #2E7D32; }
+  .practice-stats .ng { color: #C62828; }
+
+  .practice-controls {
+    display: flex; justify-content: center; gap: 10px;
+    padding: 0 16px 16px;
+  }
+
+  /* Te-form box */
+  .te-form-box {
+    margin-top: 10px; background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    border-radius: 10px; padding: 10px 14px; cursor: pointer;
+    border: 1.5px dashed #FFB74D; transition: all 0.15s;
+  }
+  .te-form-box:active { background: #FFCC80; }
+  .te-form-label {
+    font-size: 0.75em; font-weight: 700; color: #E65100;
+    letter-spacing: 0.5px; margin-bottom: 4px;
+  }
+  .te-form-content {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 8px; flex-wrap: wrap;
+  }
+  .te-form-text {
+    font-size: 1.2em; font-weight: 700; color: #BF360C;
+  }
+  .te-form-rule {
+    font-size: 0.78em; color: #8D6E63; font-family: monospace;
+  }
+
+  /* Note */
+  .note {
+    background: #FFFDE7; border-left: 3px solid #FBC02D;
+    padding: 8px 12px; margin-top: 8px; font-size: 0.82em;
+    color: #555; border-radius: 0 8px 8px 0;
+  }
+
+  /* Bottom padding */
+  .bottom-pad { height: 40px; }
+
+  @media (min-width: 600px) {
+    .conjugation-table { grid-template-columns: 1.5fr 2fr 2fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HUB PAGE ============ -->
+<div id="page-hub" class="page active">
+  <header>
+    <h1>げんき I</h1>
+    <div class="subtitle">Lessons 1〜6 練習アプリ</div>
+  </header>
+  <main>
+    <div class="hub-grid">
+      <div class="hub-card verbs-card" onclick="showPage('verbs')">
+        <div class="lesson-num">📖 VERBS REFERENCE</div>
+        <div class="lesson-title">動詞まとめ (Lessons 1〜6)</div>
+        <div class="lesson-en">All verbs · Particles · Conjugations · 發音</div>
+      </div>
+      <div class="hub-card verbs-card" onclick="showPage('adjectives')" style="background:linear-gradient(135deg,#E1F5FE 0%,#81D4FA 100%);">
+        <div class="lesson-num" style="color:#01579B">🎨 ADJECTIVES REFERENCE</div>
+        <div class="lesson-title">形容詞まとめ (Lessons 1〜6)</div>
+        <div class="lesson-en">い／な · Present・Past · Aff・Neg · 發音</div>
+      </div>
+      <div class="hub-card" onclick="showPage('hiragana')" style="background:linear-gradient(135deg,#FFE4EC 0%,#FFB3C8 100%);">
+        <div class="lesson-num" style="color:#C2185B">ひらがな</div>
+        <div class="lesson-title">Hiragana 練習</div>
+        <div class="lesson-en">表 + 練習 + 發音</div>
+      </div>
+      <div class="hub-card" onclick="showPage('katakana')" style="background:linear-gradient(135deg,#E3F2FD 0%,#90CAF9 100%);">
+        <div class="lesson-num" style="color:#1565C0">カタカナ</div>
+        <div class="lesson-title">Katakana 練習</div>
+        <div class="lesson-en">表 + 練習 + 發音</div>
+      </div>
+      <div class="hub-card" onclick="showPage('lesson1')">
+        <div class="lesson-num">第1課 LESSON 1</div>
+        <div class="lesson-title">あたらしいともだち</div>
+        <div class="lesson-en">New Friends</div>
+      </div>
+      <div class="hub-card" onclick="showPage('lesson2')">
+        <div class="lesson-num">第2課 LESSON 2</div>
+        <div class="lesson-title">かいもの</div>
+        <div class="lesson-en">Shopping</div>
+      </div>
+      <div class="hub-card" onclick="showPage('lesson3')">
+        <div class="lesson-num">第3課 LESSON 3</div>
+        <div class="lesson-title">デートの約束</div>
+        <div class="lesson-en">Making a Date</div>
+      </div>
+      <div class="hub-card" onclick="showPage('lesson4')">
+        <div class="lesson-num">第4課 LESSON 4</div>
+        <div class="lesson-title">初めてのデート</div>
+        <div class="lesson-en">The First Date</div>
+      </div>
+      <div class="hub-card" onclick="showPage('lesson5')">
+        <div class="lesson-num">第5課 LESSON 5</div>
+        <div class="lesson-title">沖縄旅行</div>
+        <div class="lesson-en">A Trip to Okinawa</div>
+      </div>
+      <div class="hub-card" onclick="showPage('lesson6')">
+        <div class="lesson-num">第6課 LESSON 6</div>
+        <div class="lesson-title">ロバートさんの一日</div>
+        <div class="lesson-en">A Day in Robert's Life</div>
+      </div>
+    </div>
+    <div class="bottom-pad"></div>
+  </main>
+</div>
+
+<!-- ============ VERBS PAGE ============ -->
+<div id="page-verbs" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>動詞まとめ</h2>
+    <span style="width:60px"></span>
+  </div>
+
+  <div class="stats-box">
+    <div class="stat-item ru" onclick="playAllOfType('ru')" style="cursor:pointer">
+      <div class="stat-num" id="stat-ru">0</div><div class="stat-label">Ru 🔊</div>
+    </div>
+    <div class="stat-item u" onclick="playAllOfType('u')" style="cursor:pointer">
+      <div class="stat-num" id="stat-u">0</div><div class="stat-label">U 🔊</div>
+    </div>
+    <div class="stat-item irregular" onclick="playAllOfType('irregular')" style="cursor:pointer">
+      <div class="stat-num" id="stat-irr">0</div><div class="stat-label">Irr 🔊</div>
+    </div>
+    <div class="stat-item" onclick="playAllOfType('all')" style="cursor:pointer">
+      <div class="stat-num" id="stat-total">0</div><div class="stat-label">All 🔊</div>
+    </div>
+  </div>
+
+  <div id="playback-bar" style="display:none; background:#FF7043; color:white; padding:10px 16px; margin:8px 16px; border-radius:10px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:115px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+    <div style="flex:1; min-width:0;">
+      <div id="playback-status" style="font-weight:600;">▶ 播放中…</div>
+      <div id="playback-progress" style="opacity:0.9; font-size:0.82em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+    </div>
+    <div style="display:flex; gap:6px; margin-left:10px; flex-shrink:0;">
+      <button id="pause-btn" onclick="togglePause()" style="background:white; color:#FF7043; border:none; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏸ 暫停</button>
+      <button onclick="stopPlayback()" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
+    </div>
+  </div>
+
+  <input type="text" class="search-box" id="verb-search" placeholder="🔍 搜尋動詞 (kanji / hiragana / English)" oninput="renderVerbs()">
+
+  <div class="filter-bar">
+    <button class="filter-chip active" data-filter="all" onclick="setFilter(this,'type','all')">全部</button>
+    <button class="filter-chip type-ru" data-filter="ru" onclick="setFilter(this,'type','ru')">Ru-verb</button>
+    <button class="filter-chip type-u" data-filter="u" onclick="setFilter(this,'type','u')">U-verb</button>
+    <button class="filter-chip type-irr" data-filter="irregular" onclick="setFilter(this,'type','irregular')">Irregular</button>
+    <span style="width:8px"></span>
+    <button class="filter-chip active" data-lesson="all" onclick="setFilter(this,'lesson','all')">All L</button>
+    <button class="filter-chip" data-lesson="3" onclick="setFilter(this,'lesson','3')">L3</button>
+    <button class="filter-chip" data-lesson="4" onclick="setFilter(this,'lesson','4')">L4</button>
+    <button class="filter-chip" data-lesson="5" onclick="setFilter(this,'lesson','5')">L5</button>
+    <button class="filter-chip" data-lesson="6" onclick="setFilter(this,'lesson','6')">L6</button>
+  </div>
+
+  <div class="particle-info">
+    💡 <b>提示</b>：點擊任何日文字可以聽發音。卡片左邊顏色：<b style="color:#5C6BC0">藍=Ru</b>，<b style="color:#26A69A">綠=U</b>，<b style="color:#AB47BC">紫=Irregular</b>
+  </div>
+
+  <div style="padding:0 16px; margin-bottom:8px;">
+    <button onclick="playFilteredVerbs()" id="play-filtered-btn" style="width:100%; background:linear-gradient(135deg,#FF7043 0%,#E64A19 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(255,112,67,0.3);">
+      ▶ 播放目前篩選的 <span id="filtered-count">0</span> 個動詞 (全部變化形)
+    </button>
+  </div>
+
+  <div id="verb-list"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ============ LESSON PAGES ============ -->
+<!-- ============ ADJECTIVES PAGE ============ -->
+<div id="page-adjectives" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>形容詞まとめ</h2>
+    <span style="width:60px"></span>
+  </div>
+
+  <div class="stats-box">
+    <div class="stat-item adj-i" onclick="playAllAdjOfType('i')" style="cursor:pointer">
+      <div class="stat-num" id="adj-stat-i" style="color:#D81B60">0</div><div class="stat-label">い-adj 🔊</div>
+    </div>
+    <div class="stat-item adj-na" onclick="playAllAdjOfType('na')" style="cursor:pointer">
+      <div class="stat-num" id="adj-stat-na" style="color:#00897B">0</div><div class="stat-label">な-adj 🔊</div>
+    </div>
+    <div class="stat-item" onclick="playAllAdjOfType('all')" style="cursor:pointer">
+      <div class="stat-num" id="adj-stat-total">0</div><div class="stat-label">All 🔊</div>
+    </div>
+  </div>
+
+  <div id="adj-playback-bar" style="display:none; background:#0288D1; color:white; padding:10px 16px; margin:8px 16px; border-radius:10px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:115px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+    <div style="flex:1; min-width:0;">
+      <div id="adj-playback-status" style="font-weight:600;">▶ 播放中…</div>
+      <div id="adj-playback-progress" style="opacity:0.9; font-size:0.82em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+    </div>
+    <div style="display:flex; gap:6px; margin-left:10px; flex-shrink:0;">
+      <button id="adj-pause-btn" onclick="toggleAdjPause()" style="background:white; color:#0288D1; border:none; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏸ 暫停</button>
+      <button onclick="stopAdjPlayback()" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
+    </div>
+  </div>
+
+  <input type="text" class="search-box" id="adj-search" placeholder="🔍 搜尋形容詞 (kanji / hiragana / English)" oninput="renderAdjectives()">
+
+  <div class="filter-bar">
+    <button class="filter-chip active" data-adj-filter="all" onclick="setAdjFilter(this,'type','all')">全部</button>
+    <button class="filter-chip adj-type-i" data-adj-filter="i" onclick="setAdjFilter(this,'type','i')">い-adj</button>
+    <button class="filter-chip adj-type-na" data-adj-filter="na" onclick="setAdjFilter(this,'type','na')">な-adj</button>
+    <span style="width:8px"></span>
+    <button class="filter-chip active" data-adj-lesson="all" onclick="setAdjFilter(this,'lesson','all')">All L</button>
+    <button class="filter-chip" data-adj-lesson="3" onclick="setAdjFilter(this,'lesson','3')">L3</button>
+    <button class="filter-chip" data-adj-lesson="5" onclick="setAdjFilter(this,'lesson','5')">L5</button>
+    <button class="filter-chip" data-adj-lesson="6" onclick="setAdjFilter(this,'lesson','6')">L6</button>
+  </div>
+
+  <div class="particle-info">
+    💡 <b>提示</b>：點任何日文字會發音。<b style="color:#D81B60">粉=い形</b>，<b style="color:#00897B">綠=な形</b>。⚠️ <b>いい・かっこいい</b> 是不規則：第一音節 い→よ。
+  </div>
+
+  <div style="padding:0 16px; margin-bottom:8px;">
+    <button onclick="playFilteredAdjectives()" id="adj-play-filtered-btn" style="width:100%; background:linear-gradient(135deg,#0288D1 0%,#01579B 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(2,136,209,0.3);">
+      ▶ 播放目前篩選的 <span id="adj-filtered-count">0</span> 個形容詞 (全部變化形)
+    </button>
+  </div>
+
+  <div id="adj-list"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ============ HIRAGANA PAGE ============ -->
+<div id="page-hiragana" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>ひらがな Hiragana</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="kana-tabs">
+    <button class="kana-tab active" onclick="switchKanaTab(this,'hira-ref')">📋 表 Table</button>
+    <button class="kana-tab" onclick="switchKanaTab(this,'hira-p1')">✏️ 字→ローマ字</button>
+    <button class="kana-tab" onclick="switchKanaTab(this,'hira-p2')">✏️ ローマ字→字</button>
+  </div>
+  <div id="hira-ref" class="kana-panel active"></div>
+  <div id="hira-p1" class="kana-panel"></div>
+  <div id="hira-p2" class="kana-panel"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ============ KATAKANA PAGE ============ -->
+<div id="page-katakana" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>カタカナ Katakana</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="kana-tabs">
+    <button class="kana-tab active" onclick="switchKanaTab(this,'kata-ref')">📋 表 Table</button>
+    <button class="kana-tab" onclick="switchKanaTab(this,'kata-p1')">✏️ 字→ローマ字</button>
+    <button class="kana-tab" onclick="switchKanaTab(this,'kata-p2')">✏️ ローマ字→字</button>
+  </div>
+  <div id="kata-ref" class="kana-panel active"></div>
+  <div id="kata-p1" class="kana-panel"></div>
+  <div id="kata-p2" class="kana-panel"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<div id="page-lesson1" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>第1課 New Friends</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📚 文法重點</h3>
+    <p>1. X は Y です — 「X 是 Y」<br>
+    2. Question Sentences — 加 か 變疑問句<br>
+    3. Noun の Noun — 所有/修飾</p>
+  </div>
+  <div id="lesson1-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<div id="page-lesson2" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>第2課 Shopping</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📚 文法重點</h3>
+    <p>1. これ・それ・あれ・どれ (this/that/that over there/which)<br>
+    2. この・その・あの・どの + Noun<br>
+    3. ここ・そこ・あそこ・どこ (here/there/over there/where)<br>
+    4. だれの Noun (whose)<br>
+    5. Noun も (also)<br>
+    6. Noun じゃないです (is not)<br>
+    7. ～ね / ～よ</p>
+  </div>
+  <div id="lesson2-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<div id="page-lesson3" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>第3課 Making a Date</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📚 文法重點</h3>
+    <p>1. Verb Conjugation (Ru/U/Irregular)<br>
+    2. Present Tense (Affirmative / Negative)<br>
+    3. Particles を・で・に・へ<br>
+    4. Time References<br>
+    5. ～ませんか (Won't you...?)<br>
+    6. Frequency Adverbs<br>
+    7. Word Order・Topic Particle は</p>
+  </div>
+  <div id="lesson3-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<div id="page-lesson4" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>第4課 The First Date</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📚 文法重點</h3>
+    <p>1. X があります／います<br>
+    2. Describing Where Things Are<br>
+    3. Past Tense of です (でした / じゃなかったです)<br>
+    4. Past Tense of Verbs (ました / ませんでした)<br>
+    5. も (also)・一時間 (one hour)<br>
+    6. たくさん (a lot) ・ と (with)</p>
+  </div>
+  <div id="lesson4-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<div id="page-lesson5" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>第5課 A Trip to Okinawa</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📚 文法重點</h3>
+    <p>1. Adjectives (Present Tense) い／な-adj<br>
+    2. Adjectives (Past Tense)<br>
+    3. Adjectives (Noun Modification)<br>
+    4. 好き(な)／きらい(な)<br>
+    5. ～ましょう／～ましょうか (Let's...)<br>
+    6. Counting (Counters)</p>
+  </div>
+  <div id="lesson5-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<div id="page-lesson6" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>第6課 A Day in Robert's Life</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📚 文法重點</h3>
+    <p>1. Te-form (て形)<br>
+    2. ～てください (Please do...)<br>
+    3. Describing Two Activities<br>
+    4. ～てもいいです (May I...?)<br>
+    5. ～てはいけません (Must not...)<br>
+    6. ～から (because)<br>
+    7. ～ましょうか (Offering assistance)</p>
+  </div>
+  <div id="lesson6-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+
+<script>
+// ============================
+// KANA DATA
+// ============================
+// Hiragana sections — each row: { label, cells: [[char|null, romaji|null], ...] }
+const HIRAGANA = {
+  basic: {
+    title: 'Basic Hiragana (清音)',
+    rows: [
+      { label: 'a / i / u / e / o', cells: [['あ','a'],['い','i'],['う','u'],['え','e'],['お','o']] },
+      { label: 'ka / ki / ku / ke / ko', cells: [['か','ka'],['き','ki'],['く','ku'],['け','ke'],['こ','ko']] },
+      { label: 'sa / shi / su / se / so', cells: [['さ','sa'],['し','shi'],['す','su'],['せ','se'],['そ','so']] },
+      { label: 'ta / chi / tsu / te / to', cells: [['た','ta'],['ち','chi'],['つ','tsu'],['て','te'],['と','to']] },
+      { label: 'na / ni / nu / ne / no', cells: [['な','na'],['に','ni'],['ぬ','nu'],['ね','ne'],['の','no']] },
+      { label: 'ha / hi / fu / he / ho', cells: [['は','ha'],['ひ','hi'],['ふ','fu'],['へ','he'],['ほ','ho']] },
+      { label: 'ma / mi / mu / me / mo', cells: [['ま','ma'],['み','mi'],['む','mu'],['め','me'],['も','mo']] },
+      { label: 'ya / yu / yo',       cells: [['や','ya'],null,['ゆ','yu'],null,['よ','yo']] },
+      { label: 'ra / ri / ru / re / ro', cells: [['ら','ra'],['り','ri'],['る','ru'],['れ','re'],['ろ','ro']] },
+      { label: 'wa / wo / n', cells: [['わ','wa'],null,null,null,['を','wo']] },
+      { label: '',            cells: [['ん','n'],null,null,null,null] },
+    ]
+  },
+  dakuten: {
+    title: 'Dakuten — Voiced (濁音)',
+    rows: [
+      { label: 'ga / gi / gu / ge / go', cells: [['が','ga'],['ぎ','gi'],['ぐ','gu'],['げ','ge'],['ご','go']] },
+      { label: 'za / ji / zu / ze / zo', cells: [['ざ','za'],['じ','ji'],['ず','zu'],['ぜ','ze'],['ぞ','zo']] },
+      { label: 'da / ji / zu / de / do', cells: [['だ','da'],['ぢ','ji'],['づ','zu'],['で','de'],['ど','do']] },
+      { label: 'ba / bi / bu / be / bo', cells: [['ば','ba'],['び','bi'],['ぶ','bu'],['べ','be'],['ぼ','bo']] },
+    ]
+  },
+  handakuten: {
+    title: 'Handakuten — P-sounds (半濁音)',
+    rows: [
+      { label: 'pa / pi / pu / pe / po', cells: [['ぱ','pa'],['ぴ','pi'],['ぷ','pu'],['ぺ','pe'],['ぽ','po']] },
+    ]
+  },
+  combo: {
+    title: 'Combo Hiragana (拗音)',
+    sections: [
+      { sub: '清音', rows: [
+        { base:'き', cells:[['きゃ','kya'],['きゅ','kyu'],['きょ','kyo']] },
+        { base:'し', cells:[['しゃ','sha'],['しゅ','shu'],['しょ','sho']] },
+        { base:'ち', cells:[['ちゃ','cha'],['ちゅ','chu'],['ちょ','cho']] },
+        { base:'に', cells:[['にゃ','nya'],['にゅ','nyu'],['にょ','nyo']] },
+        { base:'ひ', cells:[['ひゃ','hya'],['ひゅ','hyu'],['ひょ','hyo']] },
+        { base:'み', cells:[['みゃ','mya'],['みゅ','myu'],['みょ','myo']] },
+        { base:'り', cells:[['りゃ','rya'],['りゅ','ryu'],['りょ','ryo']] },
+      ]},
+      { sub: '濁音', rows: [
+        { base:'ぎ', cells:[['ぎゃ','gya'],['ぎゅ','gyu'],['ぎょ','gyo']] },
+        { base:'じ', cells:[['じゃ','ja'],['じゅ','ju'],['じょ','jo']] },
+        { base:'び', cells:[['びゃ','bya'],['びゅ','byu'],['びょ','byo']] },
+      ]},
+      { sub: '半濁音', rows: [
+        { base:'ぴ', cells:[['ぴゃ','pya'],['ぴゅ','pyu'],['ぴょ','pyo']] },
+      ]},
+    ]
+  }
+};
+
+// Katakana — same structure, parallel romaji
+const KATAKANA = {
+  basic: {
+    title: 'Basic Katakana (清音)',
+    rows: [
+      { label: 'a / i / u / e / o', cells: [['ア','a'],['イ','i'],['ウ','u'],['エ','e'],['オ','o']] },
+      { label: 'ka / ki / ku / ke / ko', cells: [['カ','ka'],['キ','ki'],['ク','ku'],['ケ','ke'],['コ','ko']] },
+      { label: 'sa / shi / su / se / so', cells: [['サ','sa'],['シ','shi'],['ス','su'],['セ','se'],['ソ','so']] },
+      { label: 'ta / chi / tsu / te / to', cells: [['タ','ta'],['チ','chi'],['ツ','tsu'],['テ','te'],['ト','to']] },
+      { label: 'na / ni / nu / ne / no', cells: [['ナ','na'],['ニ','ni'],['ヌ','nu'],['ネ','ne'],['ノ','no']] },
+      { label: 'ha / hi / fu / he / ho', cells: [['ハ','ha'],['ヒ','hi'],['フ','fu'],['ヘ','he'],['ホ','ho']] },
+      { label: 'ma / mi / mu / me / mo', cells: [['マ','ma'],['ミ','mi'],['ム','mu'],['メ','me'],['モ','mo']] },
+      { label: 'ya / yu / yo',       cells: [['ヤ','ya'],null,['ユ','yu'],null,['ヨ','yo']] },
+      { label: 'ra / ri / ru / re / ro', cells: [['ラ','ra'],['リ','ri'],['ル','ru'],['レ','re'],['ロ','ro']] },
+      { label: 'wa / wo / n', cells: [['ワ','wa'],null,null,null,['ヲ','wo']] },
+      { label: '',            cells: [['ン','n'],null,null,null,null] },
+    ]
+  },
+  dakuten: {
+    title: 'Dakuten — Voiced (濁音)',
+    rows: [
+      { label: 'ga / gi / gu / ge / go', cells: [['ガ','ga'],['ギ','gi'],['グ','gu'],['ゲ','ge'],['ゴ','go']] },
+      { label: 'za / ji / zu / ze / zo', cells: [['ザ','za'],['ジ','ji'],['ズ','zu'],['ゼ','ze'],['ゾ','zo']] },
+      { label: 'da / ji / zu / de / do', cells: [['ダ','da'],['ヂ','ji'],['ヅ','zu'],['デ','de'],['ド','do']] },
+      { label: 'ba / bi / bu / be / bo', cells: [['バ','ba'],['ビ','bi'],['ブ','bu'],['ベ','be'],['ボ','bo']] },
+    ]
+  },
+  handakuten: {
+    title: 'Handakuten — P-sounds (半濁音)',
+    rows: [
+      { label: 'pa / pi / pu / pe / po', cells: [['パ','pa'],['ピ','pi'],['プ','pu'],['ペ','pe'],['ポ','po']] },
+    ]
+  },
+  combo: {
+    title: 'Combo Katakana (拗音)',
+    sections: [
+      { sub: '清音', rows: [
+        { base:'キ', cells:[['キャ','kya'],['キュ','kyu'],['キョ','kyo']] },
+        { base:'シ', cells:[['シャ','sha'],['シュ','shu'],['ショ','sho']] },
+        { base:'チ', cells:[['チャ','cha'],['チュ','chu'],['チョ','cho']] },
+        { base:'ニ', cells:[['ニャ','nya'],['ニュ','nyu'],['ニョ','nyo']] },
+        { base:'ヒ', cells:[['ヒャ','hya'],['ヒュ','hyu'],['ヒョ','hyo']] },
+        { base:'ミ', cells:[['ミャ','mya'],['ミュ','myu'],['ミョ','myo']] },
+        { base:'リ', cells:[['リャ','rya'],['リュ','ryu'],['リョ','ryo']] },
+      ]},
+      { sub: '濁音', rows: [
+        { base:'ギ', cells:[['ギャ','gya'],['ギュ','gyu'],['ギョ','gyo']] },
+        { base:'ジ', cells:[['ジャ','ja'],['ジュ','ju'],['ジョ','jo']] },
+        { base:'ビ', cells:[['ビャ','bya'],['ビュ','byu'],['ビョ','byo']] },
+      ]},
+      { sub: '半濁音', rows: [
+        { base:'ピ', cells:[['ピャ','pya'],['ピュ','pyu'],['ピョ','pyo']] },
+      ]},
+    ]
+  }
+};
+
+// ============================
+// VERB DATA (Genki Lessons 1-6)
+// ============================
+const VERBS = [
+  // ----- LESSON 3 -----
+  { lesson:3, type:'u',  kanji:'行く', hira:'いく', en:'to go', particles:['に','へ'], note:'destination に／へ' },
+  { lesson:3, type:'u',  kanji:'帰る', hira:'かえる', en:'to go back; to return', particles:['に','へ'], note:'destination に／へ ・ ends in -eru but is u-verb' },
+  { lesson:3, type:'u',  kanji:'聞く', hira:'きく', en:'to listen; to hear', particles:['を'], note:'' },
+  { lesson:3, type:'u',  kanji:'飲む', hira:'のむ', en:'to drink', particles:['を'], note:'' },
+  { lesson:3, type:'u',  kanji:'話す', hira:'はなす', en:'to speak; to talk', particles:['を','で'], note:'language を／で' },
+  { lesson:3, type:'u',  kanji:'読む', hira:'よむ', en:'to read', particles:['を'], note:'' },
+  { lesson:3, type:'ru', kanji:'起きる', hira:'おきる', en:'to get up', particles:[], note:'' },
+  { lesson:3, type:'ru', kanji:'食べる', hira:'たべる', en:'to eat', particles:['を'], note:'' },
+  { lesson:3, type:'ru', kanji:'寝る', hira:'ねる', en:'to sleep; to go to sleep', particles:[], note:'' },
+  { lesson:3, type:'ru', kanji:'見る', hira:'みる', en:'to see; to look at; to watch', particles:['を'], note:'' },
+  { lesson:3, type:'irregular', kanji:'来る', hira:'くる', en:'to come', particles:['に','へ'], note:'destination に／へ' },
+  { lesson:3, type:'irregular', kanji:'する', hira:'する', en:'to do', particles:['を'], note:'' },
+  { lesson:3, type:'irregular', kanji:'勉強する', hira:'べんきょうする', en:'to study', particles:['を'], note:'' },
+
+  // ----- LESSON 4 -----
+  { lesson:4, type:'u',  kanji:'会う', hira:'あう', en:'to meet; to see (a person)', particles:['に'], note:'person に' },
+  { lesson:4, type:'u',  kanji:'ある', hira:'ある', en:'there is... (non-living)', particles:['に','が'], note:'place に thing が ・ neg = ありません' },
+  { lesson:4, type:'u',  kanji:'買う', hira:'かう', en:'to buy', particles:['を'], note:'' },
+  { lesson:4, type:'u',  kanji:'書く', hira:'かく', en:'to write', particles:['に','を'], note:'person に thing を' },
+  { lesson:4, type:'u',  kanji:'撮る', hira:'とる', en:'to take (a picture)', particles:['を'], note:'' },
+  { lesson:4, type:'u',  kanji:'待つ', hira:'まつ', en:'to wait', particles:['を'], note:'' },
+  { lesson:4, type:'u',  kanji:'分かる', hira:'わかる', en:'to understand', particles:['が'], note:'thing が' },
+  { lesson:4, type:'ru', kanji:'いる', hira:'いる', en:'(person/animal) is in...; stays at...', particles:['に','が'], note:'place に person が' },
+
+  // ----- LESSON 5 -----
+  { lesson:5, type:'u',  kanji:'泳ぐ', hira:'およぐ', en:'to swim', particles:[], note:'' },
+  { lesson:5, type:'u',  kanji:'聞く', hira:'きく', en:'to ask (a person)', particles:['に'], note:'person に ・ (different from L3 "to listen")' },
+  { lesson:5, type:'u',  kanji:'乗る', hira:'のる', en:'to ride; to board', particles:['に'], note:'vehicle に' },
+  { lesson:5, type:'u',  kanji:'やる', hira:'やる', en:'to do; to perform', particles:['を'], note:'' },
+  { lesson:5, type:'ru', kanji:'出かける', hira:'でかける', en:'to go out', particles:[], note:'' },
+
+  // ----- LESSON 6 -----
+  { lesson:6, type:'u',  kanji:'遊ぶ', hira:'あそぶ', en:'to play; to spend time pleasantly', particles:[], note:'' },
+  { lesson:6, type:'u',  kanji:'急ぐ', hira:'いそぐ', en:'to hurry', particles:[], note:'' },
+  { lesson:6, type:'u',  kanji:'返す', hira:'かえす', en:'to return (a thing)', particles:['に','を'], note:'person に thing を' },
+  { lesson:6, type:'u',  kanji:'消す', hira:'けす', en:'to turn off; to erase', particles:['を'], note:'' },
+  { lesson:6, type:'u',  kanji:'死ぬ', hira:'しぬ', en:'to die', particles:[], note:'' },
+  { lesson:6, type:'u',  kanji:'座る', hira:'すわる', en:'to sit down', particles:['に'], note:'seat に' },
+  { lesson:6, type:'u',  kanji:'立つ', hira:'たつ', en:'to stand up', particles:[], note:'' },
+  { lesson:6, type:'u',  kanji:'たばこを吸う', hira:'たばこをすう', en:'to smoke', particles:['を'], note:'たばこ を 吸う' },
+  { lesson:6, type:'u',  kanji:'使う', hira:'つかう', en:'to use', particles:['を'], note:'' },
+  { lesson:6, type:'u',  kanji:'手伝う', hira:'てつだう', en:'to help', particles:['を'], note:'person/task を' },
+  { lesson:6, type:'u',  kanji:'入る', hira:'はいる', en:'to enter', particles:['に'], note:'place に ・ ends in -airu but is u-verb' },
+  { lesson:6, type:'u',  kanji:'持つ', hira:'もつ', en:'to carry; to hold', particles:['を'], note:'' },
+  { lesson:6, type:'u',  kanji:'休む', hira:'やすむ', en:'to be absent (from...); to rest', particles:['を'], note:'class/work を' },
+  { lesson:6, type:'ru', kanji:'開ける', hira:'あける', en:'to open (something)', particles:['を'], note:'' },
+  { lesson:6, type:'ru', kanji:'閉める', hira:'しめる', en:'to close (something)', particles:['を'], note:'' },
+  { lesson:6, type:'ru', kanji:'教える', hira:'おしえる', en:'to teach; to instruct', particles:['に','を'], note:'person に thing を' },
+  { lesson:6, type:'ru', kanji:'忘れる', hira:'わすれる', en:'to forget; to leave behind', particles:['を'], note:'' },
+  { lesson:6, type:'ru', kanji:'降りる', hira:'おりる', en:'to get off', particles:['を'], note:'vehicle を' },
+  { lesson:6, type:'ru', kanji:'借りる', hira:'かりる', en:'to borrow', particles:['に','を'], note:'person に thing を' },
+  { lesson:6, type:'ru', kanji:'浴びる', hira:'シャワーをあびる', en:'to take a shower', particles:['を'], note:'シャワー を 浴びる' },
+  { lesson:6, type:'ru', kanji:'つける', hira:'つける', en:'to turn on', particles:['を'], note:'' },
+  { lesson:6, type:'irregular', kanji:'電話する', hira:'でんわする', en:'to call', particles:['に'], note:'person に' },
+  { lesson:6, type:'irregular', kanji:'連れてくる', hira:'つれてくる', en:'to bring (a person)', particles:['を'], note:'' },
+  { lesson:6, type:'irregular', kanji:'持ってくる', hira:'もってくる', en:'to bring (a thing)', particles:['を'], note:'' },
+];
+
+// ============================
+// LESSON VOCABULARY (non-verb words)
+// Lesson 6 — based on Genki textbook vocab list
+// ============================
+const VOCAB = {
+  6: {
+    nouns: [
+      { kanji:'漢字',     hira:'かんじ',       en:'kanji; Chinese character' },
+      { kanji:'教科書',   hira:'きょうかしょ', en:'textbook' },
+      { kanji:'',         hira:'ページ',       en:'page' },
+      { kanji:'次',       hira:'つぎ',         en:'next' },
+      { kanji:'お金',     hira:'おかね',       en:'money' },
+      { kanji:'荷物',     hira:'にもつ',       en:'baggage' },
+      { kanji:'',         hira:'パソコン',     en:'personal computer' },
+      { kanji:'',         hira:'シャワー',     en:'shower' },
+      { kanji:'',         hira:'エアコン',     en:'air conditioner' },
+      { kanji:'電気',     hira:'でんき',       en:'electricity; light' },
+      { kanji:'窓',       hira:'まど',         en:'window' },
+      { kanji:'電車',     hira:'でんしゃ',     en:'train' },
+      { kanji:'国',       hira:'くに',         en:'country; place of origin' },
+      { kanji:'今週',     hira:'こんしゅう',   en:'this week' },
+      { kanji:'来週',     hira:'らいしゅう',   en:'next week' },
+      { kanji:'来年',     hira:'らいねん',     en:'next year' },
+      { kanji:'夜',       hira:'よる',         en:'night' },
+    ],
+    naAdjectives: [
+      { kanji:'大変', hira:'たいへん', en:'tough (situation)' },
+    ],
+    adverbs: [
+      { kanji:'後で',     hira:'あとで',       en:'later on' },
+      { kanji:'',         hira:'すぐ',         en:'right away' },
+      { kanji:'',         hira:'ゆっくり',     en:'slowly; leisurely; unhurriedly' },
+      { kanji:'結構です', hira:'けっこうです', en:"That would be fine; That wouldn't be necessary" },
+      { kanji:'本当ですか', hira:'ほんとうですか', en:'Really?' },
+    ],
+  }
+};
+
+// ============================
+// ADJECTIVE DATA (Genki Lessons 1-6)
+// ============================
+// type: 'i' or 'na'
+// irregular: true for いい-family (first い → よ)
+const ADJECTIVES = [
+  // L3
+  { lesson:3, type:'i',  kanji:'いい',     hira:'いい',     en:'good', irregular:true },
+  { lesson:3, type:'i',  kanji:'早い',     hira:'はやい',   en:'early; fast' },
+
+  // L5 — い-adjectives
+  { lesson:5, type:'i',  kanji:'新しい',   hira:'あたらしい', en:'new' },
+  { lesson:5, type:'i',  kanji:'古い',     hira:'ふるい',   en:'old (thing — not for people)' },
+  { lesson:5, type:'i',  kanji:'暑い',     hira:'あつい',   en:'hot (weather)' },
+  { lesson:5, type:'i',  kanji:'寒い',     hira:'さむい',   en:'cold (weather — not for things)' },
+  { lesson:5, type:'i',  kanji:'熱い',     hira:'あつい',   en:'hot (thing)' },
+  { lesson:5, type:'i',  kanji:'忙しい',   hira:'いそがしい', en:'busy (people/days)' },
+  { lesson:5, type:'i',  kanji:'大きい',   hira:'おおきい', en:'large' },
+  { lesson:5, type:'i',  kanji:'小さい',   hira:'ちいさい', en:'small' },
+  { lesson:5, type:'i',  kanji:'面白い',   hira:'おもしろい', en:'interesting; funny' },
+  { lesson:5, type:'i',  kanji:'つまらない', hira:'つまらない', en:'boring' },
+  { lesson:5, type:'i',  kanji:'やさしい', hira:'やさしい', en:'easy (problem); kind (person)' },
+  { lesson:5, type:'i',  kanji:'難しい',   hira:'むずかしい', en:'difficult' },
+  { lesson:5, type:'i',  kanji:'かっこいい', hira:'かっこいい', en:'good-looking', irregular:true },
+  { lesson:5, type:'i',  kanji:'怖い',     hira:'こわい',   en:'frightening' },
+  { lesson:5, type:'i',  kanji:'楽しい',   hira:'たのしい', en:'fun' },
+  { lesson:5, type:'i',  kanji:'安い',     hira:'やすい',   en:'inexpensive; cheap' },
+
+  // L5 — な-adjectives
+  { lesson:5, type:'na', kanji:'好き',     hira:'すき',     en:'fond of; to like (〜が)' },
+  { lesson:5, type:'na', kanji:'嫌い',     hira:'きらい',   en:'disgusted with; to dislike (〜が)' },
+  { lesson:5, type:'na', kanji:'大好き',   hira:'だいすき', en:'very fond of; to love (〜が)' },
+  { lesson:5, type:'na', kanji:'大嫌い',   hira:'だいきらい', en:'to hate (〜が)' },
+  { lesson:5, type:'na', kanji:'きれい',   hira:'きれい',   en:'beautiful; clean' },
+  { lesson:5, type:'na', kanji:'元気',     hira:'げんき',   en:'healthy; energetic' },
+  { lesson:5, type:'na', kanji:'静か',     hira:'しずか',   en:'quiet' },
+  { lesson:5, type:'na', kanji:'にぎやか', hira:'にぎやか', en:'lively' },
+  { lesson:5, type:'na', kanji:'暇',       hira:'ひま',     en:'not busy; free (time)' },
+
+  // L6
+  { lesson:6, type:'na', kanji:'大変',     hira:'たいへん', en:'tough (situation)' },
+];
+
+// ============================
+// ADJECTIVE CONJUGATION (Genki p.132-134)
+// ============================
+// い-adjective:
+//   PresAff:  〜い + です
+//   PresNeg:  〜く + ないです
+//   PastAff:  〜かった + です
+//   PastNeg:  〜く + なかったです
+// Irregular (いい・かっこいい):  first い → よ in all forms except dict
+// な-adjective:
+//   PresAff:  〜 + です
+//   PresNeg:  〜じゃないです
+//   PastAff:  〜でした
+//   PastNeg:  〜じゃなかったです
+function adjConjugate(a) {
+  if (a.type === 'i') {
+    let base = a.hira;
+    if (a.irregular) {
+      // Change first い to よ for all non-dictionary forms.
+      // いい → よ ; かっこいい → かっこよ
+      base = base.replace(/いい$/, 'よ');
+    } else {
+      base = base.slice(0, -1); // drop final い
+    }
+    return {
+      presentAff: a.hira + 'です',
+      presentNeg: base + 'くないです',
+      pastAff:    base + 'かったです',
+      pastNeg:    base + 'くなかったです'
+    };
+  } else { // 'na'
+    return {
+      presentAff: a.hira + 'です',
+      presentNeg: a.hira + 'じゃないです',
+      pastAff:    a.hira + 'でした',
+      pastNeg:    a.hira + 'じゃなかったです'
+    };
+  }
+}
+
+// ============================
+// CONJUGATION ENGINE
+// ============================
+// U-verb final hiragana → -i ending
+const U_ENDINGS = {
+  'う':'い', 'つ':'ち', 'る':'り', 'く':'き', 'ぐ':'ぎ',
+  'す':'し', 'む':'み', 'ぬ':'に', 'ぶ':'び'
+};
+
+function conjugate(verb) {
+  const h = verb.hira;
+  let stem;
+
+  if (verb.type === 'ru') {
+    // remove final る
+    stem = h.slice(0, -1);
+    return formsFromStem(stem);
+  } else if (verb.type === 'u') {
+    // special: ある → あり… (regular for masu-form)
+    const last = h.slice(-1);
+    const mapped = U_ENDINGS[last] || last;
+    stem = h.slice(0, -1) + mapped;
+    return formsFromStem(stem);
+  } else { // irregular
+    if (h === 'する') return formsFromStem('し');
+    if (h === 'くる') return formsFromStem('き');
+    if (h.endsWith('する')) return formsFromStem(h.slice(0, -2) + 'し');
+    if (h.endsWith('くる')) return formsFromStem(h.slice(0, -2) + 'き');
+    return formsFromStem(h);
+  }
+}
+
+function formsFromStem(stem) {
+  return {
+    presentAff: stem + 'ます',
+    presentNeg: stem + 'ません',
+    pastAff:    stem + 'ました',
+    pastNeg:    stem + 'ませんでした'
+  };
+}
+
+// ============================
+// TE-FORM (Genki p.150 rules)
+// ============================
+// Ru-verbs:    る → て
+// U-verbs final:
+//   う／つ／る → って
+//   む／ぶ／ぬ → んで
+//   く → いて  (例外: 行く → 行って)
+//   ぐ → いで
+//   す → して
+// Irregular:  する → して ／ くる → きて
+function teForm(verb) {
+  const h = verb.hira;
+
+  if (verb.type === 'ru') {
+    return h.slice(0, -1) + 'て';
+  }
+
+  if (verb.type === 'u') {
+    // Exception: 行く (only the standalone いく)
+    if (h === 'いく') return 'いって';
+
+    const last = h.slice(-1);
+    const stem = h.slice(0, -1);
+    if (last === 'う' || last === 'つ' || last === 'る') return stem + 'って';
+    if (last === 'む' || last === 'ぶ' || last === 'ぬ') return stem + 'んで';
+    if (last === 'く') return stem + 'いて';
+    if (last === 'ぐ') return stem + 'いで';
+    if (last === 'す') return stem + 'して';
+    return stem + 'て';
+  }
+
+  if (verb.type === 'irregular') {
+    if (h === 'する') return 'して';
+    if (h === 'くる') return 'きて';
+    if (h.endsWith('する')) return h.slice(0, -2) + 'して';
+    if (h.endsWith('くる')) return h.slice(0, -2) + 'きて';
+    return h;
+  }
+  return h;
+}
+
+// Return the rule label for explanation
+function teFormRule(verb) {
+  if (verb.type === 'ru') return 'る → て';
+  if (verb.type === 'u') {
+    if (verb.hira === 'いく') return 'く → いて (例外: 行く→行って)';
+    const last = verb.hira.slice(-1);
+    if (last === 'う' || last === 'つ' || last === 'る') return `${last} → って`;
+    if (last === 'む' || last === 'ぶ' || last === 'ぬ') return `${last} → んで`;
+    if (last === 'く') return 'く → いて';
+    if (last === 'ぐ') return 'ぐ → いで';
+    if (last === 'す') return 'す → して';
+    return '';
+  }
+  if (verb.type === 'irregular') {
+    if (verb.hira === 'する' || verb.hira.endsWith('する')) return 'する → して';
+    if (verb.hira === 'くる' || verb.hira.endsWith('くる')) return 'くる → きて';
+  }
+  return '';
+}
+
+// ============================
+// SPEECH (Web Speech API)
+// ============================
+let jaVoice = null;
+function loadVoices() {
+  const voices = speechSynthesis.getVoices();
+  jaVoice = voices.find(v => v.lang === 'ja-JP') ||
+           voices.find(v => v.lang.startsWith('ja')) || null;
+}
+if ('speechSynthesis' in window) {
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ja-JP';
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  speechSynthesis.speak(u);
+}
+
+// Speak a sequence of texts, one after another, with a short pause
+function speakSequence(texts, gapMs) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const pause = (typeof gapMs === 'number') ? gapMs : 350;
+  let i = 0;
+  const speakNext = () => {
+    if (i >= texts.length) return;
+    const u = new SpeechSynthesisUtterance(texts[i]);
+    u.lang = 'ja-JP';
+    if (jaVoice) u.voice = jaVoice;
+    u.rate = 0.9;
+    u.pitch = 1.0;
+    u.onend = () => {
+      i++;
+      if (i < texts.length) setTimeout(speakNext, pause);
+    };
+    speechSynthesis.speak(u);
+  };
+  speakNext();
+}
+
+// Speak full verb set (dictionary → present aff/neg → past aff/neg → te-form)
+function speakVerbAll(hira, presAff, presNeg, pastAff, pastNeg, te) {
+  const seq = [hira, presAff, presNeg, pastAff, pastNeg];
+  if (te) seq.push(te);
+  speakSequence(seq, 450);
+}
+
+// ============================
+// PLAY ALL VERBS OF A TYPE (with pause/resume)
+// ============================
+const playback = {
+  token: 0,
+  active: false,
+  isPaused: false,
+  items: [],
+  index: 0,
+  typeName: '',
+  totalVerbs: 0
+};
+
+function stopPlayback() {
+  playback.token++;
+  playback.active = false;
+  playback.isPaused = false;
+  speechSynthesis.cancel();
+  document.getElementById('playback-bar').style.display = 'none';
+  const pb = document.getElementById('pause-btn');
+  if (pb) pb.textContent = '⏸ 暫停';
+}
+
+function togglePause() {
+  if (!playback.active) return;
+  const pb = document.getElementById('pause-btn');
+  const statusEl = document.getElementById('playback-status');
+
+  if (!playback.isPaused) {
+    // Pause
+    playback.isPaused = true;
+    if (speechSynthesis.speaking) speechSynthesis.pause();
+    pb.textContent = '▶ 繼續';
+    statusEl.textContent = `⏸ 已暫停 (${playback.typeName})`;
+  } else {
+    // Resume
+    playback.isPaused = false;
+    pb.textContent = '⏸ 暫停';
+    statusEl.textContent = `▶ 播放 ${playback.typeName} (${playback.totalVerbs} 個動詞)`;
+    if (speechSynthesis.paused && speechSynthesis.speaking) {
+      // mid-utterance — just resume
+      speechSynthesis.resume();
+    } else {
+      // we were between utterances — kick off the next one
+      playNextItem(playback.token);
+    }
+  }
+}
+
+function playAllOfType(typeKey) {
+  // Decide which verbs to include (respect current lesson filter only)
+  const verbs = VERBS.filter(v => {
+    if (typeKey !== 'all' && v.type !== typeKey) return false;
+    if (filterLesson !== 'all' && String(v.lesson) !== filterLesson) return false;
+    return true;
+  });
+  if (verbs.length === 0) return;
+
+  // Build a flat sequence: for each verb → 6 forms (incl. te-form)
+  const items = [];
+  verbs.forEach(v => {
+    const c = conjugate(v);
+    const te = teForm(v);
+    items.push({ text: v.hira,        label: `${v.kanji} (辞書形)` });
+    items.push({ text: c.presentAff,  label: `${v.kanji} 現在肯定` });
+    items.push({ text: c.presentNeg,  label: `${v.kanji} 現在否定` });
+    items.push({ text: c.pastAff,     label: `${v.kanji} 過去肯定` });
+    items.push({ text: c.pastNeg,     label: `${v.kanji} 過去否定` });
+    items.push({ text: te,            label: `${v.kanji} て形` });
+  });
+
+  const typeName = typeKey === 'all' ? '全部' :
+                   typeKey === 'ru'  ? 'Ru-verbs' :
+                   typeKey === 'u'   ? 'U-verbs'  : 'Irregular verbs';
+
+  // Reset playback state
+  speechSynthesis.cancel();
+  playback.token++;
+  playback.active = true;
+  playback.isPaused = false;
+  playback.items = items;
+  playback.index = 0;
+  playback.typeName = typeName;
+  playback.totalVerbs = verbs.length;
+
+  const bar = document.getElementById('playback-bar');
+  bar.style.display = 'flex';
+  document.getElementById('pause-btn').textContent = '⏸ 暫停';
+  document.getElementById('playback-status').textContent = `▶ 播放 ${typeName} (${verbs.length} 個動詞)`;
+
+  playNextItem(playback.token);
+}
+
+function playNextItem(myToken) {
+  if (myToken !== playback.token || !playback.active) return;
+  if (playback.isPaused) return;  // wait for resume to call us
+
+  const statusEl = document.getElementById('playback-status');
+  const progEl = document.getElementById('playback-progress');
+
+  if (playback.index >= playback.items.length) {
+    statusEl.textContent = `✅ 完成 ${playback.typeName}`;
+    progEl.textContent = '';
+    playback.active = false;
+    setTimeout(() => {
+      if (!playback.active) document.getElementById('playback-bar').style.display = 'none';
+    }, 1500);
+    return;
+  }
+
+  const item = playback.items[playback.index];
+  progEl.textContent = `${playback.index+1}/${playback.items.length} · ${item.label} · ${item.text}`;
+
+  const u = new SpeechSynthesisUtterance(item.text);
+  u.lang = 'ja-JP';
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  u.onend = () => {
+    if (myToken !== playback.token || !playback.active) return;
+    playback.index++;
+    const isVerbBoundary = (playback.index % 6 === 0);
+    setTimeout(() => playNextItem(myToken), isVerbBoundary ? 700 : 350);
+  };
+  speechSynthesis.speak(u);
+}
+
+// ============================
+// VERB PAGE
+// ============================
+let filterType = 'all';
+let filterLesson = 'all';
+
+function setFilter(btn, kind, value) {
+  if (kind === 'type') {
+    document.querySelectorAll('.filter-bar [data-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterType = value;
+  } else {
+    document.querySelectorAll('.filter-bar [data-lesson]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filterLesson = value;
+  }
+  renderVerbs();
+}
+
+function renderVerbs() {
+  const q = (document.getElementById('verb-search').value || '').trim().toLowerCase();
+  const list = document.getElementById('verb-list');
+  list.innerHTML = '';
+
+  const filtered = VERBS.filter(v => {
+    if (filterType !== 'all' && v.type !== filterType) return false;
+    if (filterLesson !== 'all' && String(v.lesson) !== filterLesson) return false;
+    if (q) {
+      const hay = (v.kanji + ' ' + v.hira + ' ' + v.en).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  filtered.forEach(v => list.appendChild(verbCard(v)));
+
+  // update stats based on full set
+  document.getElementById('stat-ru').textContent = VERBS.filter(v=>v.type==='ru').length;
+  document.getElementById('stat-u').textContent = VERBS.filter(v=>v.type==='u').length;
+  document.getElementById('stat-irr').textContent = VERBS.filter(v=>v.type==='irregular').length;
+  document.getElementById('stat-total').textContent = VERBS.length;
+
+  // update filtered count for the play-filtered button
+  const fcEl = document.getElementById('filtered-count');
+  if (fcEl) fcEl.textContent = filtered.length;
+  const btn = document.getElementById('play-filtered-btn');
+  if (btn) btn.disabled = filtered.length === 0;
+}
+
+// Play all verbs that match the current filters (type + lesson + search)
+function playFilteredVerbs() {
+  const q = (document.getElementById('verb-search').value || '').trim().toLowerCase();
+  const verbs = VERBS.filter(v => {
+    if (filterType !== 'all' && v.type !== filterType) return false;
+    if (filterLesson !== 'all' && String(v.lesson) !== filterLesson) return false;
+    if (q) {
+      const hay = (v.kanji + ' ' + v.hira + ' ' + v.en).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (verbs.length === 0) return;
+
+  const items = [];
+  verbs.forEach(v => {
+    const c = conjugate(v);
+    const te = teForm(v);
+    items.push({ text: v.hira,       label: `${v.kanji} (辞書形)` });
+    items.push({ text: c.presentAff, label: `${v.kanji} 現在肯定` });
+    items.push({ text: c.presentNeg, label: `${v.kanji} 現在否定` });
+    items.push({ text: c.pastAff,    label: `${v.kanji} 過去肯定` });
+    items.push({ text: c.pastNeg,    label: `${v.kanji} 過去否定` });
+    items.push({ text: te,           label: `${v.kanji} て形` });
+  });
+
+  // Build a friendly type name
+  const typeLabel = filterType === 'all' ? '全部類型' :
+                    filterType === 'ru'  ? 'Ru-verb' :
+                    filterType === 'u'   ? 'U-verb'  : 'Irregular';
+  const lessonLabel = filterLesson === 'all' ? '全課' : `L${filterLesson}`;
+  const typeName = `${lessonLabel} ${typeLabel}`;
+
+  speechSynthesis.cancel();
+  playback.token++;
+  playback.active = true;
+  playback.isPaused = false;
+  playback.items = items;
+  playback.index = 0;
+  playback.typeName = typeName;
+  playback.totalVerbs = verbs.length;
+
+  const bar = document.getElementById('playback-bar');
+  bar.style.display = 'flex';
+  document.getElementById('pause-btn').textContent = '⏸ 暫停';
+  document.getElementById('playback-status').textContent = `▶ 播放 ${typeName} (${verbs.length} 個動詞)`;
+
+  playNextItem(playback.token);
+}
+
+function verbCard(v) {
+  const c = conjugate(v);
+  const te = teForm(v);
+  const teRule = teFormRule(v);
+  const div = document.createElement('div');
+  div.className = 'verb-card ' + v.type;
+
+  const particleBadges = v.particles.length === 0
+    ? '<span class="badge badge-particle none">無</span>'
+    : v.particles.map(p => `<span class="badge badge-particle" onclick="speak('${p}')">${p}</span>`).join('');
+
+  const typeLabel = v.type === 'ru' ? 'Ru-verb' : (v.type === 'u' ? 'U-verb' : 'Irregular');
+
+  div.innerHTML = `
+    <div class="verb-header">
+      <div class="verb-jp" onclick="speakVerbAll('${v.hira}','${c.presentAff}','${c.presentNeg}','${c.pastAff}','${c.pastNeg}','${te}')" title="連續播放：辞書形 → 現在肯定 → 現在否定 → 過去肯定 → 過去否定 → て形">
+        <span class="kanji">${v.kanji}</span>
+        <span class="hira">[${v.hira}]</span>
+        <span class="speaker-icon">🔊 全部</span>
+      </div>
+      <div class="verb-en">${v.en}</div>
+    </div>
+    <div class="verb-meta">
+      <span class="badge badge-lesson">L${v.lesson}</span>
+      <span class="badge badge-type ${v.type}">${typeLabel}</span>
+      ${particleBadges}
+    </div>
+    ${v.note ? `<div class="note">📝 ${v.note}</div>` : ''}
+    <div class="conjugation-table">
+      <div class="conj-cell conj-header"></div>
+      <div class="conj-cell conj-header">肯定 Affirmative</div>
+      <div class="conj-cell conj-header">否定 Negative</div>
+
+      <div class="conj-cell">
+        <div class="conj-label">現在 Present</div>
+        <div class="conj-form">〜ます／ません</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.presentAff}')">
+        <div class="conj-form">${c.presentAff} 🔊</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.presentNeg}')">
+        <div class="conj-form">${c.presentNeg} 🔊</div>
+      </div>
+
+      <div class="conj-cell">
+        <div class="conj-label">過去 Past</div>
+        <div class="conj-form">〜ました／ませんでした</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.pastAff}')">
+        <div class="conj-form">${c.pastAff} 🔊</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.pastNeg}')">
+        <div class="conj-form">${c.pastNeg} 🔊</div>
+      </div>
+    </div>
+    <div class="te-form-box" onclick="speak('${te}')">
+      <div class="te-form-label">て形 Te-form</div>
+      <div class="te-form-content">
+        <span class="te-form-text">${te} 🔊</span>
+        <span class="te-form-rule">${teRule}</span>
+      </div>
+    </div>
+  `;
+  return div;
+}
+
+// ============================
+// LESSON CONTENT
+// ============================
+const LESSONS = {
+  1: {
+    examples: [
+      { q:'メアリーさんは アメリカじんです。', a:'Mary is American.', topic:'X は Y です' },
+      { q:'たけしさんは がくせいですか。', a:'Is Takeshi a student?', topic:'Question (か)' },
+      { q:'メアリーさんの せんこうは にほんごです。', a:"Mary's major is Japanese.", topic:'N の N' },
+      { q:'いいえ、にほんじんじゃないです。', a:"No, (I'm) not Japanese.", topic:'X は Y じゃないです' },
+      { q:'わたしは じゅうきゅうさいです。', a:'I am 19 years old.', topic:'Age' },
+      { q:'いま なんじですか。', a:'What time is it now?', topic:'Time question' },
+    ],
+    quiz: [
+      { prompt:'「I am a student」 →', options:['わたしは がくせいです。','わたしは がくせいですか。','わたしは がくせいじゃないです。','わたしの がくせいです。'], correct:0 },
+      { prompt:'「Mary\'s major」 →', options:['メアリーさん は せんこう','メアリーさん の せんこう','メアリーさん か せんこう','メアリーさん で せんこう'], correct:1 },
+      { prompt:'「Are you a teacher?」 →', options:['せんせいです。','せんせいじゃないです。','せんせいですか。','せんせいの。'], correct:2 },
+      { prompt:'What\'s your major? →', options:['なんさいですか。','なんねんせいですか。','なんじですか。','せんこうは なんですか。'], correct:3 },
+    ]
+  },
+  2: {
+    examples: [
+      { q:'これは ほんです。', a:'This is a book.', topic:'これ／それ／あれ' },
+      { q:'その かばんは いくらですか。', a:'How much is that bag?', topic:'この／その／あの＋N' },
+      { q:'トイレは どこですか。', a:'Where is the bathroom?', topic:'ここ／そこ／あそこ／どこ' },
+      { q:'これは だれの ぺんですか。', a:'Whose pen is this?', topic:'だれの N' },
+      { q:'メアリーさんも がくせいです。', a:'Mary is also a student.', topic:'N も' },
+      { q:'これは ほんじゃないです。', a:'This is not a book.', topic:'N じゃないです' },
+      { q:'おいしいですね。', a:"It's delicious, isn't it?", topic:'〜ね' },
+      { q:'これは ほんですよ。', a:'This is a book, you know!', topic:'〜よ' },
+    ],
+    quiz: [
+      { prompt:'(指著遠方的東西) → It\'s ___', options:['これ','それ','あれ','どれ'], correct:2 },
+      { prompt:'「Whose umbrella?」 →', options:['なんの かさ','どこの かさ','だれの かさ','いくらの かさ'], correct:2 },
+      { prompt:'「Takeshi is also a student」', options:['たけしさん は がくせいです','たけしさん の がくせいです','たけしさん も がくせいです','たけしさん か がくせいです'], correct:2 },
+      { prompt:'「It\'s not coffee」', options:['コーヒー です','コーヒー ですか','コーヒー じゃないです','コーヒー でした'], correct:2 },
+    ]
+  },
+  3: {
+    examples: [
+      { q:'まいにち ほんを よみます。', a:'(I) read books every day.', topic:'を particle (object)' },
+      { q:'うちで べんきょうします。', a:'(I) study at home.', topic:'で particle (location of action)' },
+      { q:'がっこうに いきます。', a:'(I) go to school.', topic:'に／へ particle (destination)' },
+      { q:'あした にほんごを べんきょうしません。', a:"(I) will not study Japanese tomorrow.", topic:'Negative (〜ません)' },
+      { q:'土曜日に えいがを みませんか。', a:"Would you like to see a movie on Saturday?", topic:'〜ませんか (invite)' },
+      { q:'よく テレビを みます。', a:'(I) often watch TV.', topic:'Frequency adverbs' },
+      { q:'ぜんぜん おさけを のみません。', a:"(I) don't drink alcohol at all.", topic:'ぜんぜん + neg' },
+    ],
+    quiz: [
+      { prompt:'「I drink coffee」 →', options:['コーヒー が のみます','コーヒー を のみます','コーヒー に のみます','コーヒー で のみます'], correct:1 },
+      { prompt:'「Study at the library」 →', options:['としょかん を べんきょうします','としょかん で べんきょうします','としょかん に べんきょうします','としょかん へ べんきょうします'], correct:1 },
+      { prompt:'「Go to Tokyo」 →', options:['とうきょう を いきます','とうきょう で いきます','とうきょう に いきます','とうきょう が いきます'], correct:2 },
+      { prompt:'「Won\'t you eat lunch?」', options:['ひるごはん を たべますか','ひるごはん を たべませんか','ひるごはん を たべました','ひるごはん を たべません'], correct:1 },
+      { prompt:'たべる の present-negative →', options:['たべます','たべません','たべました','たべませんでした'], correct:1 },
+      { prompt:'いく の present-affirmative →', options:['いきます','いくます','いります','いします'], correct:0 },
+      { prompt:'する の negative →', options:['すません','しません','さません','すます'], correct:1 },
+    ]
+  },
+  4: {
+    examples: [
+      { q:'つくえの うえに ほんが あります。', a:'There is a book on the desk.', topic:'X があります' },
+      { q:'きょうしつに がくせいが います。', a:'There is a student in the classroom.', topic:'X がいます' },
+      { q:'ぎんこうは としょかんの となりです。', a:'The bank is next to the library.', topic:'Location words' },
+      { q:'きのう えいがを みました。', a:'(I) watched a movie yesterday.', topic:'Past tense affirmative' },
+      { q:'きのう にほんごを べんきょうしませんでした。', a:"(I) didn't study Japanese yesterday.", topic:'Past tense negative' },
+      { q:'やましたせんせいは がくせいでした。', a:'Prof. Yamashita was a student.', topic:'です past = でした' },
+      { q:'あれは にほんの えいがじゃなかったです。', a:'That was not a Japanese movie.', topic:'です past neg' },
+      { q:'いちじかん メアリーさんを まちました。', a:'(I) waited for Mary for one hour.', topic:'一時間' },
+      { q:'メアリーさんと たけしさんは デパートに いきました。', a:'Mary and Takeshi went to the department store.', topic:'と (with)' },
+    ],
+    quiz: [
+      { prompt:'「There is a cat」(animal) →', options:['ねこ が あります','ねこ が います','ねこ で あります','ねこ に います'], correct:1 },
+      { prompt:'「There is a chair」 →', options:['いす が います','いす が あります','いす を あります','いす に あります'], correct:1 },
+      { prompt:'みる の 過去肯定 →', options:['みます','みません','みました','みませんでした'], correct:2 },
+      { prompt:'たべる の 過去否定 →', options:['たべません','たべました','たべませんでした','たべないでした'], correct:2 },
+      { prompt:'いく の 過去肯定 →', options:['いきます','いきました','いきませんでした','いいました'], correct:1 },
+      { prompt:'がくせいでした means →', options:['is a student','is not a student','was a student','will be a student'], correct:2 },
+    ]
+  },
+  5: {
+    examples: [
+      { q:'この レストランは おいしいです。', a:'This restaurant is delicious.', topic:'い-adj present' },
+      { q:'この レストランは おいしくないです。', a:'This restaurant is not delicious.', topic:'い-adj negative' },
+      { q:'この レストランは おいしかったです。', a:'This restaurant was delicious.', topic:'い-adj past' },
+      { q:'この レストランは おいしくなかったです。', a:'This restaurant was not delicious.', topic:'い-adj past neg' },
+      { q:'おきなわは きれいでした。', a:'Okinawa was beautiful.', topic:'な-adj past' },
+      { q:'にぎやかな まちです。', a:'It is a lively town.', topic:'な-adj + N' },
+      { q:'おもしろい えいがです。', a:'It is an interesting movie.', topic:'い-adj + N' },
+      { q:'メアリーさんは にほんごが すきです。', a:'Mary likes Japanese.', topic:'好き(な)' },
+      { q:'いっしょに たべましょう。', a:"Let's eat together.", topic:'〜ましょう' },
+      { q:'コーヒーを のみましょうか。', a:'Shall we drink coffee?', topic:'〜ましょうか' },
+      { q:'いい は 過去 → よかったです。', a:'いい is irregular: いい→よ', topic:'いい (irregular)' },
+    ],
+    quiz: [
+      { prompt:'さむい の past affirmative →', options:['さむいでした','さむかったです','さむくなかったです','さむくないでした'], correct:1 },
+      { prompt:'たかい の present negative →', options:['たかくないです','たかいじゃないです','たかかったです','たかくなかったです'], correct:0 },
+      { prompt:'いい の past affirmative →', options:['いかったです','よかったです','いいでした','よいです'], correct:1 },
+      { prompt:'げんき(な) past negative →', options:['げんきくなかったです','げんきじゃなかったです','げんきでした','げんきじゃないです'], correct:1 },
+      { prompt:'「a quiet town」 →', options:['しずか まち','しずかい まち','しずかな まち','しずかの まち'], correct:2 },
+      { prompt:'「Let\'s study Japanese」 →', options:['にほんごを べんきょうします','にほんごを べんきょうしましょう','にほんごを べんきょうしました','にほんごを べんきょうしません'], correct:1 },
+    ]
+  },
+  6: {
+    examples: [
+      { q:'みず を のんでください。', a:'Please drink water.', topic:'〜てください' },
+      { q:'まどを あけてください。', a:'Please open the window.', topic:'〜てください' },
+      { q:'うちに かえって、テレビをみました。', a:'I went home and watched TV.', topic:'Two activities (te-form)' },
+      { q:'ここで しゃしんを とってもいいですか。', a:'May I take a photo here?', topic:'〜てもいいですか' },
+      { q:'ここで たばこを すってはいけません。', a:'You must not smoke here.', topic:'〜てはいけません' },
+      { q:'いそぎましょう。バスがきますから。', a:"Let's hurry, because the bus is coming.", topic:'〜から (because)' },
+      { q:'にもつを もちましょうか。', a:'Shall I carry your bag?', topic:'〜ましょうか (offer)' },
+      { q:'たべる → たべて', a:'Ru-verb te-form: drop る, add て', topic:'Te-form rule (Ru)' },
+      { q:'のむ → のんで', a:'U-verb (む/ぶ/ぬ): んで', topic:'Te-form rule (U)' },
+      { q:'いく → いって  (例外!)', a:'いく is an exception: いって', topic:'Te-form rule (Exception)' },
+    ],
+    quiz: [
+      { prompt:'たべる の te-form →', options:['たべて','たべって','たべんで','たべいて'], correct:0 },
+      { prompt:'のむ の te-form →', options:['のみて','のんで','のって','のいて'], correct:1 },
+      { prompt:'かく の te-form →', options:['かいて','かって','かんで','かして'], correct:0 },
+      { prompt:'いく の te-form (例外) →', options:['いいて','いって','いんで','いきて'], correct:1 },
+      { prompt:'はなす の te-form →', options:['はなんで','はなって','はなして','はないて'], correct:2 },
+      { prompt:'する の te-form →', options:['して','すて','しって','せて'], correct:0 },
+      { prompt:'くる の te-form →', options:['きて','くて','こて','けて'], correct:0 },
+      { prompt:'「Please wait」 →', options:['まちます','まってください','まちて','まちません'], correct:1 },
+      { prompt:'「May I open the window?」 →', options:['まどを あけます','まどを あけてください','まどを あけてもいいですか','まどを あけてはいけません'], correct:2 },
+    ]
+  }
+};
+
+// ============================
+// VOCAB RENDER (non-verb word list with audio)
+// ============================
+function vocabSectionHTML(num) {
+  const vocab = VOCAB[num];
+  if (!vocab) return '';
+
+  const groups = [
+    { key:'nouns',         title:'📦 名詞 Nouns',          cls:'noun',   items:vocab.nouns || [] },
+    { key:'naAdjectives',  title:'🎨 な-形容詞',           cls:'naadj',  items:vocab.naAdjectives || [] },
+    { key:'adverbs',       title:'💬 副詞・表現 Adverbs / Expressions', cls:'adverb', items:vocab.adverbs || [] },
+  ].filter(g => g.items.length > 0);
+
+  // Build a flat list for the "play all" button
+  const allItems = [];
+  groups.forEach(g => g.items.forEach(it => allItems.push(it)));
+
+  let html = `
+    <div class="lesson-intro">
+      <h3>📚 単語 Vocabulary</h3>
+      <p style="color:#888;font-size:0.85em;">點任何單字或喇叭按鈕可以聽發音。動詞請看 <b>動詞まとめ</b>，形容詞請看 <b>形容詞まとめ</b>。</p>
+    </div>
+    <button class="vocab-play-all-btn" onclick="playLessonVocab(${num})">▶ 連續播放 Lesson ${num} 全部單字 (${allItems.length} 個)</button>
+    <div id="lesson-playback-bar-${num}" style="display:none; background:#5C6BC0; color:white; padding:10px 16px; margin:8px 16px; border-radius:10px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:60px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+      <div style="flex:1; min-width:0;">
+        <div id="lesson-playback-status-${num}" style="font-weight:600;">▶ 播放中…</div>
+        <div id="lesson-playback-progress-${num}" style="opacity:0.9; font-size:0.82em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+      </div>
+      <div style="display:flex; gap:6px; margin-left:10px; flex-shrink:0;">
+        <button id="lesson-pause-btn-${num}" onclick="toggleLessonPause(${num})" style="background:white; color:#5C6BC0; border:none; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏸ 暫停</button>
+        <button onclick="stopLessonPlayback(${num})" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
+      </div>
+    </div>
+  `;
+
+  groups.forEach(g => {
+    html += `<div class="vocab-section-title">${g.title} <span class="count">${g.items.length} 個</span></div>`;
+    html += `<div class="vocab-grid">`;
+    g.items.forEach(item => {
+      const display = item.kanji && item.kanji.length > 0 ? item.kanji : item.hira;
+      const hiraSub = item.kanji && item.kanji.length > 0 && item.kanji !== item.hira
+        ? `<span class="vocab-hira">[${item.hira}]</span>` : '';
+      html += `
+        <div class="vocab-card ${g.cls}" onclick="speak('${item.hira}')">
+          <div class="vocab-jp">
+            <div class="vocab-main">${display}${hiraSub}</div>
+            <div class="vocab-en">${item.en}</div>
+          </div>
+          <button class="vocab-speak" onclick="event.stopPropagation(); speak('${item.hira}')">🔊</button>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+
+  return html;
+}
+
+// Per-lesson playback state
+const lessonPlayback = {};
+
+function playLessonVocab(num) {
+  const vocab = VOCAB[num];
+  if (!vocab) return;
+  const all = [
+    ...(vocab.nouns || []),
+    ...(vocab.naAdjectives || []),
+    ...(vocab.adverbs || []),
+  ];
+  if (all.length === 0) return;
+
+  const items = all.map(it => ({
+    text: it.hira,
+    label: `${it.kanji || it.hira} — ${it.en}`
+  }));
+
+  speechSynthesis.cancel();
+  const state = lessonPlayback[num] = {
+    token: (lessonPlayback[num] ? lessonPlayback[num].token + 1 : 1),
+    active: true,
+    isPaused: false,
+    items: items,
+    index: 0,
+    total: all.length
+  };
+
+  const bar = document.getElementById(`lesson-playback-bar-${num}`);
+  if (bar) {
+    bar.style.display = 'flex';
+    document.getElementById(`lesson-pause-btn-${num}`).textContent = '⏸ 暫停';
+    document.getElementById(`lesson-playback-status-${num}`).textContent = `▶ 播放 Lesson ${num} 単語 (${all.length} 個)`;
+  }
+  playNextLessonItem(num, state.token);
+}
+
+function playNextLessonItem(num, myToken) {
+  const state = lessonPlayback[num];
+  if (!state || myToken !== state.token || !state.active) return;
+  if (state.isPaused) return;
+
+  const statusEl = document.getElementById(`lesson-playback-status-${num}`);
+  const progEl = document.getElementById(`lesson-playback-progress-${num}`);
+
+  if (state.index >= state.items.length) {
+    statusEl.textContent = `✅ 完成 Lesson ${num} 単語`;
+    progEl.textContent = '';
+    state.active = false;
+    setTimeout(() => {
+      if (!state.active) document.getElementById(`lesson-playback-bar-${num}`).style.display = 'none';
+    }, 1500);
+    return;
+  }
+
+  const item = state.items[state.index];
+  progEl.textContent = `${state.index+1}/${state.items.length} · ${item.label}`;
+
+  const u = new SpeechSynthesisUtterance(item.text);
+  u.lang = 'ja-JP';
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  u.onend = () => {
+    if (myToken !== state.token || !state.active) return;
+    state.index++;
+    setTimeout(() => playNextLessonItem(num, myToken), 500);
+  };
+  speechSynthesis.speak(u);
+}
+
+function toggleLessonPause(num) {
+  const state = lessonPlayback[num];
+  if (!state || !state.active) return;
+  const pb = document.getElementById(`lesson-pause-btn-${num}`);
+  const statusEl = document.getElementById(`lesson-playback-status-${num}`);
+  if (!state.isPaused) {
+    state.isPaused = true;
+    if (speechSynthesis.speaking) speechSynthesis.pause();
+    pb.textContent = '▶ 繼續';
+    statusEl.textContent = `⏸ 已暫停 (Lesson ${num} 単語)`;
+  } else {
+    state.isPaused = false;
+    pb.textContent = '⏸ 暫停';
+    statusEl.textContent = `▶ 播放 Lesson ${num} 単語 (${state.total} 個)`;
+    if (speechSynthesis.paused && speechSynthesis.speaking) {
+      speechSynthesis.resume();
+    } else {
+      playNextLessonItem(num, state.token);
+    }
+  }
+}
+
+function stopLessonPlayback(num) {
+  const state = lessonPlayback[num];
+  if (!state) return;
+  state.token++;
+  state.active = false;
+  state.isPaused = false;
+  speechSynthesis.cancel();
+  const bar = document.getElementById(`lesson-playback-bar-${num}`);
+  if (bar) bar.style.display = 'none';
+}
+
+// ============================
+// LESSON RENDER (flashcards + quiz)
+// ============================
+function buildLessonContent(num) {
+  const container = document.getElementById(`lesson${num}-content`);
+  const data = LESSONS[num];
+
+  // For lessons that have a vocab list only (no flashcards / quiz),
+  // render just the vocab section under the grammar intro.
+  if (VOCAB[num] && num === 6) {
+    container.innerHTML = vocabSectionHTML(num);
+    return;
+  }
+
+  container.innerHTML = vocabSectionHTML(num) + `
+    <div class="lesson-intro">
+      <h3>🃏 例文 Flashcards</h3>
+      <p style="color:#888;font-size:0.85em;">點卡片看翻譯，左右切換。點 🔊 聽發音。</p>
+    </div>
+    <div class="flashcard-container">
+      <div class="flashcard" id="card-${num}" onclick="toggleCard(${num})">
+        <div class="question" id="card-q-${num}"></div>
+        <div class="hint">點此查看翻譯</div>
+        <div class="answer">
+          <div class="answer-en" id="card-a-${num}"></div>
+          <div style="margin-top:10px"><button class="control-btn" onclick="event.stopPropagation(); speak(document.getElementById('card-q-${num}').textContent)">🔊 發音</button></div>
+        </div>
+      </div>
+      <div class="flashcard-controls">
+        <button class="control-btn" onclick="prevCard(${num})">← 前</button>
+        <span class="progress" id="prog-${num}"></span>
+        <button class="control-btn primary" onclick="nextCard(${num})">次 →</button>
+      </div>
+      <div style="margin-top:8px; color:#999; font-size:0.8em;" id="topic-${num}"></div>
+    </div>
+
+    <div class="lesson-intro">
+      <h3>🎯 小測驗</h3>
+      <p style="color:#888;font-size:0.85em;">點選答案，立刻知道對錯。</p>
+    </div>
+    <div id="quiz-${num}"></div>
+  `;
+
+  // Init flashcard
+  cardIndex[num] = 0;
+  showCard(num);
+
+  // Render quiz
+  const quizDiv = document.getElementById(`quiz-${num}`);
+  data.quiz.forEach((q, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-q';
+    div.innerHTML = `
+      <div class="quiz-prompt">${i+1}. ${q.prompt}</div>
+      <div class="quiz-options" id="quiz-${num}-${i}-opts">
+        ${q.options.map((opt, j) => `<button class="quiz-option" onclick="answerQuiz(${num},${i},${j})">${opt}</button>`).join('')}
+      </div>
+    `;
+    quizDiv.appendChild(div);
+  });
+}
+
+const cardIndex = {};
+function showCard(num) {
+  const data = LESSONS[num];
+  const i = cardIndex[num];
+  const card = data.examples[i];
+  document.getElementById(`card-q-${num}`).textContent = card.q;
+  document.getElementById(`card-a-${num}`).textContent = card.a;
+  document.getElementById(`topic-${num}`).textContent = '📌 ' + card.topic;
+  document.getElementById(`prog-${num}`).textContent = `${i+1} / ${data.examples.length}`;
+  document.getElementById(`card-${num}`).classList.remove('revealed');
+}
+function nextCard(num) {
+  cardIndex[num] = (cardIndex[num] + 1) % LESSONS[num].examples.length;
+  showCard(num);
+}
+function prevCard(num) {
+  cardIndex[num] = (cardIndex[num] - 1 + LESSONS[num].examples.length) % LESSONS[num].examples.length;
+  showCard(num);
+}
+function toggleCard(num) {
+  const card = document.getElementById(`card-${num}`);
+  card.classList.toggle('revealed');
+  if (card.classList.contains('revealed')) {
+    speak(LESSONS[num].examples[cardIndex[num]].q);
+  }
+}
+
+function answerQuiz(num, qIdx, ansIdx) {
+  const q = LESSONS[num].quiz[qIdx];
+  const opts = document.getElementById(`quiz-${num}-${qIdx}-opts`).children;
+  for (let i = 0; i < opts.length; i++) {
+    opts[i].disabled = true;
+    if (i === q.correct) opts[i].classList.add('correct');
+    if (i === ansIdx && ansIdx !== q.correct) opts[i].classList.add('wrong');
+  }
+}
+
+// ============================
+// ADJECTIVE PAGE
+// ============================
+let adjFilterType = 'all';
+let adjFilterLesson = 'all';
+
+function setAdjFilter(btn, kind, value) {
+  if (kind === 'type') {
+    document.querySelectorAll('[data-adj-filter]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    adjFilterType = value;
+  } else {
+    document.querySelectorAll('[data-adj-lesson]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    adjFilterLesson = value;
+  }
+  renderAdjectives();
+}
+
+function renderAdjectives() {
+  const q = (document.getElementById('adj-search').value || '').trim().toLowerCase();
+  const list = document.getElementById('adj-list');
+  list.innerHTML = '';
+
+  const filtered = ADJECTIVES.filter(a => {
+    if (adjFilterType !== 'all' && a.type !== adjFilterType) return false;
+    if (adjFilterLesson !== 'all' && String(a.lesson) !== adjFilterLesson) return false;
+    if (q) {
+      const hay = (a.kanji + ' ' + a.hira + ' ' + a.en).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  filtered.forEach(a => list.appendChild(adjCard(a)));
+
+  document.getElementById('adj-stat-i').textContent = ADJECTIVES.filter(a=>a.type==='i').length;
+  document.getElementById('adj-stat-na').textContent = ADJECTIVES.filter(a=>a.type==='na').length;
+  document.getElementById('adj-stat-total').textContent = ADJECTIVES.length;
+
+  const fcEl = document.getElementById('adj-filtered-count');
+  if (fcEl) fcEl.textContent = filtered.length;
+  const btn = document.getElementById('adj-play-filtered-btn');
+  if (btn) btn.disabled = filtered.length === 0;
+}
+
+// Play all adjectives that match the current filters (type + lesson + search)
+function playFilteredAdjectives() {
+  const q = (document.getElementById('adj-search').value || '').trim().toLowerCase();
+  const adjs = ADJECTIVES.filter(a => {
+    if (adjFilterType !== 'all' && a.type !== adjFilterType) return false;
+    if (adjFilterLesson !== 'all' && String(a.lesson) !== adjFilterLesson) return false;
+    if (q) {
+      const hay = (a.kanji + ' ' + a.hira + ' ' + a.en).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (adjs.length === 0) return;
+
+  const items = [];
+  adjs.forEach(a => {
+    const c = adjConjugate(a);
+    items.push({ text: a.hira,       label: `${a.kanji} (辞書形)` });
+    items.push({ text: c.presentAff, label: `${a.kanji} 現在肯定` });
+    items.push({ text: c.presentNeg, label: `${a.kanji} 現在否定` });
+    items.push({ text: c.pastAff,    label: `${a.kanji} 過去肯定` });
+    items.push({ text: c.pastNeg,    label: `${a.kanji} 過去否定` });
+  });
+
+  const typeLabel = adjFilterType === 'all' ? '全部類型' :
+                    adjFilterType === 'i'   ? 'い-adj' : 'な-adj';
+  const lessonLabel = adjFilterLesson === 'all' ? '全課' : `L${adjFilterLesson}`;
+  const typeName = `${lessonLabel} ${typeLabel}`;
+
+  speechSynthesis.cancel();
+  adjPlayback.token++;
+  adjPlayback.active = true;
+  adjPlayback.isPaused = false;
+  adjPlayback.items = items;
+  adjPlayback.index = 0;
+  adjPlayback.typeName = typeName;
+  adjPlayback.totalAdj = adjs.length;
+
+  const bar = document.getElementById('adj-playback-bar');
+  bar.style.display = 'flex';
+  document.getElementById('adj-pause-btn').textContent = '⏸ 暫停';
+  document.getElementById('adj-playback-status').textContent = `▶ 播放 ${typeName} (${adjs.length} 個形容詞)`;
+
+  playNextAdjItem(adjPlayback.token);
+}
+
+function adjCard(a) {
+  const c = adjConjugate(a);
+  const div = document.createElement('div');
+  const typeClass = a.type === 'i' ? 'adj-i' : 'adj-na';
+  div.className = 'verb-card ' + typeClass;
+
+  const typeLabel = a.type === 'i' ? 'い-adjective' : 'な-adjective';
+  const irrTag = a.irregular ? '<span class="adj-irregular-tag">⚠ 不規則</span>' : '';
+  const naMarker = a.type === 'na' ? '<span class="badge badge-particle">(な)</span>' : '';
+
+  div.innerHTML = `
+    <div class="verb-header">
+      <div class="verb-jp" onclick="speakAdjAll('${a.hira}','${c.presentAff}','${c.presentNeg}','${c.pastAff}','${c.pastNeg}')" title="連續播放：辞書形 → 現在肯定 → 現在否定 → 過去肯定 → 過去否定">
+        <span class="kanji">${a.kanji}</span>
+        <span class="hira">[${a.hira}]</span>
+        <span class="speaker-icon">🔊 全部</span>
+        ${irrTag}
+      </div>
+      <div class="verb-en">${a.en}</div>
+    </div>
+    <div class="verb-meta">
+      <span class="badge badge-lesson">L${a.lesson}</span>
+      <span class="badge badge-type ${typeClass}">${typeLabel}</span>
+      ${naMarker}
+    </div>
+    ${a.irregular ? `<div class="note">📝 第一音節 い→よ（${a.hira}→${a.hira.replace(/いい$/,'よ')}…）。例外規則。</div>` : ''}
+    <div class="conjugation-table">
+      <div class="conj-cell conj-header"></div>
+      <div class="conj-cell conj-header">肯定 Affirmative</div>
+      <div class="conj-cell conj-header">否定 Negative</div>
+
+      <div class="conj-cell">
+        <div class="conj-label">現在 Present</div>
+        <div class="conj-form">${a.type === 'i' ? '〜いです／〜くないです' : '〜です／〜じゃないです'}</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.presentAff}')">
+        <div class="conj-form">${c.presentAff} 🔊</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.presentNeg}')">
+        <div class="conj-form">${c.presentNeg} 🔊</div>
+      </div>
+
+      <div class="conj-cell">
+        <div class="conj-label">過去 Past</div>
+        <div class="conj-form">${a.type === 'i' ? '〜かったです／〜くなかったです' : '〜でした／〜じゃなかったです'}</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.pastAff}')">
+        <div class="conj-form">${c.pastAff} 🔊</div>
+      </div>
+      <div class="conj-cell" onclick="speak('${c.pastNeg}')">
+        <div class="conj-form">${c.pastNeg} 🔊</div>
+      </div>
+    </div>
+    ${a.type === 'na' ? `<div class="te-form-box" onclick="speak('${a.hira}な')" style="background:linear-gradient(135deg,#E0F2F1 0%,#80CBC4 100%); border-color:#4DB6AC;">
+      <div class="te-form-label" style="color:#00695C;">名詞修飾 Noun Modification</div>
+      <div class="te-form-content">
+        <span class="te-form-text" style="color:#004D40;">${a.hira}な + 名詞 🔊</span>
+        <span class="te-form-rule">な-adj 修飾名詞要加 な</span>
+      </div>
+    </div>` : ''}
+  `;
+  return div;
+}
+
+function speakAdjAll(hira, presAff, presNeg, pastAff, pastNeg) {
+  speakSequence([hira, presAff, presNeg, pastAff, pastNeg], 450);
+}
+
+// --- Adjective playback (separate from verb playback) ---
+const adjPlayback = {
+  token: 0, active: false, isPaused: false,
+  items: [], index: 0, typeName: '', totalAdj: 0
+};
+
+function stopAdjPlayback() {
+  adjPlayback.token++;
+  adjPlayback.active = false;
+  adjPlayback.isPaused = false;
+  speechSynthesis.cancel();
+  document.getElementById('adj-playback-bar').style.display = 'none';
+  const pb = document.getElementById('adj-pause-btn');
+  if (pb) pb.textContent = '⏸ 暫停';
+}
+
+function toggleAdjPause() {
+  if (!adjPlayback.active) return;
+  const pb = document.getElementById('adj-pause-btn');
+  const statusEl = document.getElementById('adj-playback-status');
+  if (!adjPlayback.isPaused) {
+    adjPlayback.isPaused = true;
+    if (speechSynthesis.speaking) speechSynthesis.pause();
+    pb.textContent = '▶ 繼續';
+    statusEl.textContent = `⏸ 已暫停 (${adjPlayback.typeName})`;
+  } else {
+    adjPlayback.isPaused = false;
+    pb.textContent = '⏸ 暫停';
+    statusEl.textContent = `▶ 播放 ${adjPlayback.typeName} (${adjPlayback.totalAdj} 個形容詞)`;
+    if (speechSynthesis.paused && speechSynthesis.speaking) {
+      speechSynthesis.resume();
+    } else {
+      playNextAdjItem(adjPlayback.token);
+    }
+  }
+}
+
+function playAllAdjOfType(typeKey) {
+  const adjs = ADJECTIVES.filter(a => {
+    if (typeKey !== 'all' && a.type !== typeKey) return false;
+    if (adjFilterLesson !== 'all' && String(a.lesson) !== adjFilterLesson) return false;
+    return true;
+  });
+  if (adjs.length === 0) return;
+
+  const items = [];
+  adjs.forEach(a => {
+    const c = adjConjugate(a);
+    items.push({ text: a.hira,       label: `${a.kanji} (辞書形)` });
+    items.push({ text: c.presentAff, label: `${a.kanji} 現在肯定` });
+    items.push({ text: c.presentNeg, label: `${a.kanji} 現在否定` });
+    items.push({ text: c.pastAff,    label: `${a.kanji} 過去肯定` });
+    items.push({ text: c.pastNeg,    label: `${a.kanji} 過去否定` });
+  });
+
+  const typeName = typeKey === 'all' ? '全部形容詞' :
+                   typeKey === 'i'   ? 'い-adjectives' : 'な-adjectives';
+
+  speechSynthesis.cancel();
+  adjPlayback.token++;
+  adjPlayback.active = true;
+  adjPlayback.isPaused = false;
+  adjPlayback.items = items;
+  adjPlayback.index = 0;
+  adjPlayback.typeName = typeName;
+  adjPlayback.totalAdj = adjs.length;
+
+  const bar = document.getElementById('adj-playback-bar');
+  bar.style.display = 'flex';
+  document.getElementById('adj-pause-btn').textContent = '⏸ 暫停';
+  document.getElementById('adj-playback-status').textContent = `▶ 播放 ${typeName} (${adjs.length} 個形容詞)`;
+
+  playNextAdjItem(adjPlayback.token);
+}
+
+function playNextAdjItem(myToken) {
+  if (myToken !== adjPlayback.token || !adjPlayback.active) return;
+  if (adjPlayback.isPaused) return;
+
+  const statusEl = document.getElementById('adj-playback-status');
+  const progEl = document.getElementById('adj-playback-progress');
+
+  if (adjPlayback.index >= adjPlayback.items.length) {
+    statusEl.textContent = `✅ 完成 ${adjPlayback.typeName}`;
+    progEl.textContent = '';
+    adjPlayback.active = false;
+    setTimeout(() => {
+      if (!adjPlayback.active) document.getElementById('adj-playback-bar').style.display = 'none';
+    }, 1500);
+    return;
+  }
+
+  const item = adjPlayback.items[adjPlayback.index];
+  progEl.textContent = `${adjPlayback.index+1}/${adjPlayback.items.length} · ${item.label} · ${item.text}`;
+
+  const u = new SpeechSynthesisUtterance(item.text);
+  u.lang = 'ja-JP';
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  u.onend = () => {
+    if (myToken !== adjPlayback.token || !adjPlayback.active) return;
+    adjPlayback.index++;
+    const isAdjBoundary = (adjPlayback.index % 5 === 0);
+    setTimeout(() => playNextAdjItem(myToken), isAdjBoundary ? 700 : 350);
+  };
+  speechSynthesis.speak(u);
+}
+
+// ============================
+// KANA PAGES (table + practice)
+// ============================
+function switchKanaTab(btn, panelId) {
+  const parent = btn.closest('.page');
+  parent.querySelectorAll('.kana-tab').forEach(t => t.classList.remove('active'));
+  parent.querySelectorAll('.kana-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function flattenKana(set) {
+  const all = [];
+  ['basic','dakuten','handakuten'].forEach(k => {
+    set[k].rows.forEach(r => {
+      r.cells.forEach(cell => { if (cell) all.push({ char: cell[0], romaji: cell[1] }); });
+    });
+  });
+  set.combo.sections.forEach(s => {
+    s.rows.forEach(r => {
+      r.cells.forEach(cell => { if (cell) all.push({ char: cell[0], romaji: cell[1] }); });
+    });
+  });
+  return all;
+}
+
+function renderKanaTable(set, mountId, kind) {
+  const m = document.getElementById(mountId);
+  m.innerHTML = '';
+
+  // Basic / Dakuten / Handakuten — standard 5-column grid
+  ['basic','dakuten','handakuten'].forEach(k => {
+    const data = set[k];
+    const title = document.createElement('div');
+    title.className = 'kana-section-title';
+    title.textContent = data.title;
+    m.appendChild(title);
+    data.rows.forEach(r => {
+      if (r.label) {
+        const lb = document.createElement('div');
+        lb.className = 'kana-row-label';
+        lb.textContent = r.label;
+        m.appendChild(lb);
+      }
+      const grid = document.createElement('div');
+      grid.className = 'kana-grid';
+      r.cells.forEach(cell => {
+        const div = document.createElement('div');
+        if (!cell) {
+          div.className = 'kana-cell empty';
+        } else {
+          div.className = 'kana-cell';
+          div.innerHTML = `<div class="kana-char">${cell[0]}</div><div class="kana-romaji">${cell[1]}</div>`;
+          div.onclick = () => speak(cell[0]);
+        }
+        grid.appendChild(div);
+      });
+      m.appendChild(grid);
+    });
+  });
+
+  // Combo
+  const cTitle = document.createElement('div');
+  cTitle.className = 'kana-section-title';
+  cTitle.textContent = set.combo.title;
+  m.appendChild(cTitle);
+
+  // Combo header row
+  const hdr = document.createElement('div');
+  hdr.className = 'combo-grid';
+  const colNames = kind === 'hira' ? ['','や','ゆ','よ'] : ['','ャ','ュ','ョ'];
+  colNames.forEach(t => {
+    const c = document.createElement('div');
+    c.className = 'combo-header';
+    c.textContent = t;
+    hdr.appendChild(c);
+  });
+  m.appendChild(hdr);
+
+  set.combo.sections.forEach(sec => {
+    const sub = document.createElement('div');
+    sub.className = 'kana-row-label';
+    sub.style.fontWeight = '700';
+    sub.style.color = '#777';
+    sub.textContent = sec.sub;
+    m.appendChild(sub);
+    sec.rows.forEach(r => {
+      const grid = document.createElement('div');
+      grid.className = 'combo-grid';
+      const label = document.createElement('div');
+      label.className = 'combo-row-label';
+      label.textContent = r.base;
+      grid.appendChild(label);
+      r.cells.forEach(cell => {
+        const div = document.createElement('div');
+        div.className = 'kana-cell';
+        div.innerHTML = `<div class="kana-char">${cell[0]}</div><div class="kana-romaji">${cell[1]}</div>`;
+        div.onclick = () => speak(cell[0]);
+        grid.appendChild(div);
+      });
+      m.appendChild(grid);
+    });
+  });
+}
+
+// --- Practice state ---
+const practiceState = {};
+
+function startPractice(set, mountId, kind, direction) {
+  // direction: 'k2r' (kana → romaji, type) | 'r2k' (romaji → kana, choose)
+  const key = mountId;
+  practiceState[key] = {
+    pool: flattenKana(set),
+    kind: kind,
+    direction: direction,
+    correct: 0,
+    wrong: 0,
+    current: null,
+    mountId: mountId
+  };
+  nextPractice(key);
+}
+
+function nextPractice(key) {
+  const st = practiceState[key];
+  const pick = st.pool[Math.floor(Math.random() * st.pool.length)];
+  st.current = pick;
+  renderPractice(key);
+}
+
+function renderPractice(key) {
+  const st = practiceState[key];
+  const m = document.getElementById(st.mountId);
+  const kanaCls = st.kind === 'kata' ? 'katakana' : '';
+  m.innerHTML = `
+    <div class="practice-stats">
+      <span>✅ 對: <span class="ok" id="${key}-ok">${st.correct}</span></span>
+      <span>❌ 錯: <span class="ng" id="${key}-ng">${st.wrong}</span></span>
+      <span>📊 ${st.correct + st.wrong > 0 ? Math.round(100*st.correct/(st.correct+st.wrong)) : 0}%</span>
+    </div>
+    <div class="practice-card" id="${key}-card"></div>
+    <div class="practice-controls">
+      <button class="control-btn" onclick="skipPractice('${key}')">⏭ 跳過</button>
+      <button class="control-btn primary" onclick="speak('${st.current.char}')">🔊 再聽</button>
+    </div>
+  `;
+
+  const card = document.getElementById(key + '-card');
+  if (st.direction === 'k2r') {
+    // Kana → Romaji (type)
+    card.innerHTML = `
+      <div class="practice-prompt-kana ${kanaCls}" onclick="speak('${st.current.char}')">${st.current.char}</div>
+      <div style="color:#999; font-size:0.85em; margin-top:6px;">點字可以聽發音</div>
+      <input type="text" class="practice-input" id="${key}-input" placeholder="輸入羅馬字…" autocomplete="off" autocapitalize="off" spellcheck="false" onkeydown="if(event.key==='Enter') checkPracticeRomaji('${key}')">
+      <div class="practice-feedback" id="${key}-fb"></div>
+      <div style="margin-top:10px;"><button class="control-btn primary" onclick="checkPracticeRomaji('${key}')">確認</button></div>
+    `;
+    setTimeout(() => { const i = document.getElementById(key+'-input'); if (i) i.focus(); }, 50);
+  } else {
+    // Romaji → Kana (choose)
+    const correct = st.current;
+    const options = [correct];
+    while (options.length < 4) {
+      const r = st.pool[Math.floor(Math.random() * st.pool.length)];
+      if (!options.find(o => o.char === r.char)) options.push(r);
+    }
+    options.sort(() => Math.random() - 0.5);
+    card.innerHTML = `
+      <div class="practice-prompt-romaji">${correct.romaji}</div>
+      <div style="color:#999; font-size:0.85em; margin-top:6px;">選出正確的${st.kind === 'kata' ? '片假名' : '平假名'}</div>
+      <div class="practice-options" id="${key}-opts">
+        ${options.map((o,i) => `<button class="practice-option-btn ${kanaCls}" onclick="checkPracticeKana('${key}',${i},'${o.char}')">${o.char}</button>`).join('')}
+      </div>
+      <div class="practice-feedback" id="${key}-fb"></div>
+    `;
+  }
+  speak(st.current.char);
+}
+
+function checkPracticeRomaji(key) {
+  const st = practiceState[key];
+  const input = document.getElementById(key+'-input');
+  const fb = document.getElementById(key+'-fb');
+  const ans = input.value.trim().toLowerCase();
+  if (!ans) return;
+  if (ans === st.current.romaji) {
+    st.correct++;
+    input.classList.add('correct');
+    fb.className = 'practice-feedback correct';
+    fb.textContent = `⭕ 正確！${st.current.char} = ${st.current.romaji}`;
+    setTimeout(() => nextPractice(key), 700);
+  } else {
+    st.wrong++;
+    input.classList.add('wrong');
+    fb.className = 'practice-feedback wrong';
+    fb.textContent = `❌ 正解：${st.current.romaji}（你輸入：${ans}）`;
+    setTimeout(() => nextPractice(key), 1800);
+  }
+}
+
+function checkPracticeKana(key, optIdx, chosenChar) {
+  const st = practiceState[key];
+  const opts = document.getElementById(key+'-opts').children;
+  const fb = document.getElementById(key+'-fb');
+  const correct = st.current.char === chosenChar;
+  for (let i = 0; i < opts.length; i++) {
+    opts[i].disabled = true;
+    if (opts[i].textContent === st.current.char) opts[i].classList.add('correct');
+    else if (i === optIdx && !correct) opts[i].classList.add('wrong');
+  }
+  if (correct) {
+    st.correct++;
+    fb.className = 'practice-feedback correct';
+    fb.textContent = `⭕ 正確！${st.current.romaji} = ${st.current.char}`;
+    setTimeout(() => nextPractice(key), 800);
+  } else {
+    st.wrong++;
+    fb.className = 'practice-feedback wrong';
+    fb.textContent = `❌ 正解是 ${st.current.char}`;
+    setTimeout(() => nextPractice(key), 1800);
+  }
+}
+
+function skipPractice(key) {
+  nextPractice(key);
+}
+
+// ============================
+// PAGE ROUTING
+// ============================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (name === 'verbs') renderVerbs();
+  if (name === 'adjectives') renderAdjectives();
+  if (name === 'hiragana') {
+    renderKanaTable(HIRAGANA, 'hira-ref', 'hira');
+    startPractice(HIRAGANA, 'hira-p1', 'hira', 'k2r');
+    startPractice(HIRAGANA, 'hira-p2', 'hira', 'r2k');
+  }
+  if (name === 'katakana') {
+    renderKanaTable(KATAKANA, 'kata-ref', 'kata');
+    startPractice(KATAKANA, 'kata-p1', 'kata', 'k2r');
+    startPractice(KATAKANA, 'kata-p2', 'kata', 'r2k');
+  }
+  if (name.startsWith('lesson')) {
+    const n = parseInt(name.replace('lesson',''), 10);
+    if (LESSONS[n]) buildLessonContent(n);
+  }
+}
+
+// init
+window.addEventListener('load', () => {
+  renderVerbs();
+});
+</script>
+</body>
+</html>
