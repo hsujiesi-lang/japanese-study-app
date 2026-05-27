@@ -1137,88 +1137,62 @@ GRAMMARS['te-kudasai'] = {
     '要先把動詞變成 て形（規則請看 Verbs 頁面 p.150）。'
   ],
   examples: [
+    { jp:'日本語を話してください。',     en:'Please speak Japanese.' },
     { jp:'教科書を読んでください。',     en:'Please read the textbook.' },
     { jp:'ちょっと教えてください。',     en:'Please teach me a little.' },
     { jp:'まどを開けてください。',       en:'Please open the window.' },
-    { jp:'電気を消してください。',       en:'Please turn off the light.' },
-    { jp:'にもつを持ってください。',     en:'Please carry the baggage.' },
-    { jp:'ここに座ってください。',       en:'Please sit here.' },
-    { jp:'すぐ来てください。',           en:'Please come right away.' },
     { jp:'ゆっくり話してください。',     en:'Please speak slowly.' }
   ],
-  // Exercises — types: 'conj' (verb → te-form), 'fill' (fill-in-blank), 'translate' (Eng→JP)
+  // === Exercises from textbook p.156-157 ===
   exercises: [
-    // ---- Conjugation drills (dict form → te-form) ----
-    { type:'conj', prompt:'食べる', en:'to eat',       answers:['食べて','たべて'] },
-    { type:'conj', prompt:'飲む',   en:'to drink',     answers:['飲んで','のんで'] },
-    { type:'conj', prompt:'読む',   en:'to read',      answers:['読んで','よんで'] },
-    { type:'conj', prompt:'書く',   en:'to write',     answers:['書いて','かいて'] },
-    { type:'conj', prompt:'行く',   en:'to go (例外!)', answers:['行って','いって'] },
-    { type:'conj', prompt:'話す',   en:'to speak',     answers:['話して','はなして'] },
-    { type:'conj', prompt:'待つ',   en:'to wait',      answers:['待って','まって'] },
-    { type:'conj', prompt:'撮る',   en:'to take (pic)', answers:['撮って','とって'] },
-    { type:'conj', prompt:'聞く',   en:'to listen',    answers:['聞いて','きいて'] },
-    { type:'conj', prompt:'泳ぐ',   en:'to swim',      answers:['泳いで','およいで'] },
-    { type:'conj', prompt:'見る',   en:'to see',       answers:['見て','みて'] },
-    { type:'conj', prompt:'起きる', en:'to get up',    answers:['起きて','おきて'] },
+    // -- II A. te-form drills (15 verbs from textbook p.156 I A) --
+    { type:'conj', prompt:'たべる', en:'to eat',       answers:['たべて','食べて'] },
+    { type:'conj', prompt:'かう',   en:'to buy',       answers:['かって','買って'] },
+    { type:'conj', prompt:'よむ',   en:'to read',      answers:['よんで','読んで'] },
+    { type:'conj', prompt:'かく',   en:'to write',     answers:['かいて','書いて'] },
+    { type:'conj', prompt:'くる',   en:'to come',      answers:['きて','来て'] },
+    { type:'conj', prompt:'まつ',   en:'to wait',      answers:['まって','待って'] },
+    { type:'conj', prompt:'あそぶ', en:'to play',      answers:['あそんで','遊んで'] },
+    { type:'conj', prompt:'とる',   en:'to take',      answers:['とって','撮って'] },
     { type:'conj', prompt:'する',   en:'to do',        answers:['して'] },
-    { type:'conj', prompt:'来る',   en:'to come',      answers:['来て','きて'] },
-    // L6 verbs focus
-    { type:'conj', prompt:'開ける', en:'to open',      answers:['開けて','あけて'] },
-    { type:'conj', prompt:'閉める', en:'to close',     answers:['閉めて','しめて'] },
-    { type:'conj', prompt:'教える', en:'to teach',     answers:['教えて','おしえて'] },
-    { type:'conj', prompt:'消す',   en:'to turn off',  answers:['消して','けして'] },
-    { type:'conj', prompt:'つける', en:'to turn on',   answers:['つけて'] },
-    { type:'conj', prompt:'座る',   en:'to sit',       answers:['座って','すわって'] },
-    { type:'conj', prompt:'立つ',   en:'to stand',     answers:['立って','たって'] },
-    { type:'conj', prompt:'使う',   en:'to use',       answers:['使って','つかって'] },
-    { type:'conj', prompt:'持つ',   en:'to hold',      answers:['持って','もって'] },
-    { type:'conj', prompt:'手伝う', en:'to help',      answers:['手伝って','てつだって'] },
-    { type:'conj', prompt:'休む',   en:'to rest',      answers:['休んで','やすんで'] },
-    { type:'conj', prompt:'急ぐ',   en:'to hurry',     answers:['急いで','いそいで'] },
-    { type:'conj', prompt:'返す',   en:'to return (a thing)', answers:['返して','かえして'] },
-    { type:'conj', prompt:'借りる', en:'to borrow',    answers:['借りて','かりて'] },
-    { type:'conj', prompt:'忘れる', en:'to forget',    answers:['忘れて','わすれて'] },
-    { type:'conj', prompt:'入る',   en:'to enter',     answers:['入って','はいって'] },
-    { type:'conj', prompt:'遊ぶ',   en:'to play',      answers:['遊んで','あそんで'] },
-    { type:'conj', prompt:'電話する', en:'to call',    answers:['電話して','でんわして'] },
+    { type:'conj', prompt:'いそぐ', en:'to hurry',     answers:['いそいで','急いで'] },
+    { type:'conj', prompt:'いく',   en:'to go (例外!)', answers:['いって','行って'] },
+    { type:'conj', prompt:'ねる',   en:'to sleep',     answers:['ねて','寝て'] },
+    { type:'conj', prompt:'しぬ',   en:'to die',       answers:['しんで','死んで'] },
+    { type:'conj', prompt:'はなす', en:'to speak',     answers:['はなして','話して'] },
+    { type:'conj', prompt:'かえる', en:'to return',    answers:['かえって','帰って'] },
 
-    // ---- Fill-in-the-blank ----
-    { type:'fill', prompt:'水を____ください。', en:'Please drink water.',          answers:['飲んで','のんで'] },
-    { type:'fill', prompt:'本を____ください。', en:'Please read the book.',        answers:['読んで','よんで'] },
-    { type:'fill', prompt:'まどを____ください。', en:'Please open the window.',    answers:['開けて','あけて'] },
-    { type:'fill', prompt:'電気を____ください。', en:'Please turn off the light.', answers:['消して','けして'] },
-    { type:'fill', prompt:'ここに____ください。', en:'Please sit here.',           answers:['座って','すわって'] },
-    { type:'fill', prompt:'ちょっと____ください。', en:'Please teach me a little.', answers:['教えて','おしえて'] },
-    { type:'fill', prompt:'にもつを____ください。', en:'Please carry the baggage.', answers:['持って','もって'] },
-    { type:'fill', prompt:'ゆっくり____ください。', en:'Please speak slowly.',     answers:['話して','はなして'] },
-    { type:'fill', prompt:'すぐ____ください。',   en:'Please come right away.',    answers:['来て','きて'] },
-    { type:'fill', prompt:'教科書を____ください。', en:'Please read the textbook.', answers:['読んで','よんで'] },
-    { type:'fill', prompt:'もう一回____ください。', en:'Please say it once more.', answers:['言って','いって','話して','はなして'] },
-    { type:'fill', prompt:'写真を____ください。', en:'Please take a picture.',    answers:['撮って','とって'] },
-    { type:'fill', prompt:'本を____ください。',  en:'Please return the book.',    answers:['返して','かえして'] },
-
-    // ---- Full sentence translation ----
-    { type:'translate', prompt:'Please drink coffee.',
-      answers:['コーヒーを飲んでください。','コーヒーを飲んでください','コーヒーをのんでください','コーヒーをのんでください。','コーヒーを飲んで下さい','コーヒーをのんで下さい'] },
-    { type:'translate', prompt:'Please wait a little.',
-      answers:['ちょっと待ってください。','ちょっと待ってください','ちょっとまってください','ちょっとまってください。'] },
-    { type:'translate', prompt:'Please come here.',
-      answers:['ここに来てください。','ここに来てください','ここにきてください','ここにきてください。','ここへ来てください','ここへきてください'] },
-    { type:'translate', prompt:'Please turn on the air conditioner.',
-      answers:['エアコンをつけてください。','エアコンをつけてください'] },
-    { type:'translate', prompt:'Please use this pen.',
-      answers:['このペンを使ってください。','このペンをつかってください','このペンを使ってください','このペンをつかってください。'] },
-    { type:'translate', prompt:'Please help me.',
-      answers:['手伝ってください。','手伝ってください','てつだってください','てつだってください。','私を手伝ってください','私をてつだってください'] },
-    { type:'translate', prompt:'Please write your name.',
-      answers:['名前を書いてください。','名前を書いてください','なまえをかいてください','なまえをかいてください。'] },
+    // -- II A. Polite requests (textbook p.156-157, 11 items) --
+    { type:'translate', prompt:'(Example) Please speak Japanese.',
+      answers:['日本語を話してください。','日本語を話してください','にほんごを話してください','にほんごをはなしてください'] },
+    { type:'translate', prompt:'1. Please stand up.',
+      answers:['立ってください。','立ってください','たってください','たってください。'] },
+    { type:'translate', prompt:'2. Please listen.',
+      answers:['聞いてください。','聞いてください','きいてください','きいてください。'] },
+    { type:'translate', prompt:'3. Please read the book.',
+      answers:['本を読んでください。','本を読んでください','ほんをよんでください','ほんをよんでください。'] },
+    { type:'translate', prompt:'4. Please look at page 35.',
+      answers:['35ページを見てください。','35ページを見てください','三十五ページを見てください','さんじゅうごページを見てください','35ページをみてください'] },
+    { type:'translate', prompt:'5. Please bring the textbook.',
+      answers:['教科書を持ってきてください。','教科書を持ってきてください','きょうかしょを持ってきてください','きょうかしょをもってきてください'] },
+    { type:'translate', prompt:'6. Please teach me kanji.',
+      answers:['漢字を教えてください。','漢字を教えてください','かんじを教えてください','かんじをおしえてください'] },
+    { type:'translate', prompt:'7. Please return my book.',
+      answers:['私の本を返してください。','私の本を返してください','わたしの本を返してください','わたしのほんをかえしてください','本を返してください'] },
+    { type:'translate', prompt:'8. Please speak slowly.',
+      answers:['ゆっくり話してください。','ゆっくり話してください','ゆっくりはなしてください','ゆっくりはなしてください。'] },
+    { type:'translate', prompt:'9. Please come with me.',
+      answers:['一緒に来てください。','一緒に来てください','いっしょに来てください','いっしょにきてください','私と一緒に来てください'] },
+    { type:'translate', prompt:'10. Please call me tomorrow.',
+      answers:['あした電話してください。','あした電話してください','あしたでんわしてください','あしたでんわしてください。','明日電話してください'] },
+    { type:'translate', prompt:'11. Please bring your friend.',
+      answers:['友だちを連れてきてください。','友だちを連れてきてください','ともだちを連れてきてください','ともだちをつれてきてください'] },
   ]
 };
 
 // ----- Grammar 3: Describing Two Activities -----
 GRAMMARS['te-two'] = {
-  title: 'Grammar 3 ｜ Describing Two Activities (て形連接)',
+  title: 'Grammar 3 ｜ 朝起きて、コーヒーを飲みます (Two Activities)',
   explanation: [
     '<b>用法：</b>用 <b>て形</b> 把兩個動作連起來，相當於英文的「..., and ...」。',
     '時態由<b>最後一個動詞</b>決定（最後動詞是過去式 → 整句過去式）。',
@@ -1226,33 +1200,46 @@ GRAMMARS['te-two'] = {
     'て形 也可以更鬆散地連接：第一句描述第二句的<b>方式或情況</b>（例：バスに乗って、会社に行きます ＝搭巴士去公司）。'
   ],
   examples: [
+    { jp:'朝起きて、コーヒーを飲みます。',          en:'I get up in the morning and drink coffee.' },
     { jp:'図書館に行って、本を借ります。',          en:'I will go to the library and borrow some books.' },
     { jp:'今日は、六時に起きて、勉強しました。',    en:'Today I got up at 6 and studied.' },
     { jp:'食堂に行って、昼ご飯を食べましょう。',    en:"Let's go to the cafeteria and have lunch." },
     { jp:'バスに乗って、会社に行きます。',          en:'I take the bus and go to work.' },
-    { jp:'教科書を忘れて、すみません。',            en:"I'm sorry for forgetting the textbook." },
     { jp:'うちに帰って、テレビを見ます。',          en:'I will go home and watch TV.' },
   ],
+  // === Exercises from textbook p.158 III B (verbs to te-form) ===
   exercises: [
-    { type:'fill', prompt:'うちに____、テレビを見ました。', en:'I went home and watched TV.', answers:['帰って','かえって'] },
-    { type:'fill', prompt:'六時に____、勉強しました。',     en:'I got up at 6 and studied.',  answers:['起きて','おきて'] },
-    { type:'fill', prompt:'バスに____、会社に行きます。',   en:'I take the bus to work.',      answers:['乗って','のって'] },
-    { type:'fill', prompt:'図書館に____、本を借ります。',   en:'I go to the library and borrow books.', answers:['行って','いって'] },
-    { type:'fill', prompt:'シャワーを____、寝ます。',       en:'I take a shower and go to sleep.', answers:['浴びて','あびて'] },
-    { type:'fill', prompt:'コーヒーを____、新聞を読みます。', en:'I drink coffee and read the newspaper.', answers:['飲んで','のんで'] },
-    { type:'fill', prompt:'電気を____、寝ました。',         en:'I turned off the light and went to sleep.', answers:['消して','けして'] },
-    { type:'translate', prompt:"Let's go to the cafeteria and eat lunch.",
-      answers:['食堂に行って、昼ご飯を食べましょう。','食堂に行って、昼ご飯を食べましょう','しょくどうに行って、ひるごはんを食べましょう','しょくどうにいって、ひるごはんをたべましょう'] },
+    // III B: change dict form → te-form so it can join another clause
+    { type:'conj', prompt:'朝起きる', en:'(example) → 朝起きて、新聞を読みます。',
+      answers:['朝起きて','あさおきて'] },
+    { type:'conj', prompt:'友だちのうちに行く', en:'1. → ...、ご飯を食べます。',
+      answers:['友だちのうちに行って','ともだちのうちに行って','友だちのうちにいって','ともだちのうちにいって'] },
+    { type:'conj', prompt:'うちに帰る', en:'2. → ...、テレビを見ます。',
+      answers:['うちに帰って','うちにかえって'] },
+    { type:'conj', prompt:'電車を降りる', en:'3. → ...、バスに乗ります。',
+      answers:['電車を降りて','でんしゃをおりて','電車をおりて'] },
+    { type:'conj', prompt:'友だちに会う', en:'4. → ...、コーヒーを飲みます。',
+      answers:['友だちに会って','ともだちに会って','友だちにあって','ともだちにあって'] },
+    { type:'conj', prompt:'自転車を借りる', en:'5. → ...、大学に行きます。',
+      answers:['自転車を借りて','じてんしゃをかりて','自転車をかりて'] },
+    { type:'conj', prompt:'大学に行く', en:'6. → ...、勉強します。',
+      answers:['大学に行って','だいがくに行って','大学にいって','だいがくにいって'] },
+
+    // Sentence translation using て連接
+    { type:'translate', prompt:'I get up in the morning and drink coffee.',
+      answers:['朝起きて、コーヒーを飲みます。','朝起きて、コーヒーを飲みます','あさおきて、コーヒーをのみます'] },
     { type:'translate', prompt:'I will go home and watch TV.',
       answers:['うちに帰って、テレビを見ます。','うちに帰って、テレビを見ます','うちにかえって、テレビを見ます','うちにかえって、テレビをみます'] },
-    { type:'translate', prompt:'I will get up at 6 and study.',
-      answers:['六時に起きて、勉強します。','六時に起きて、勉強します','ろくじに起きて、勉強します','ろくじにおきて、べんきょうします'] },
+    { type:'translate', prompt:"Let's go to the cafeteria and eat lunch.",
+      answers:['食堂に行って、昼ご飯を食べましょう。','食堂に行って、昼ご飯を食べましょう','しょくどうに行って、ひるごはんを食べましょう','しょくどうにいって、ひるごはんをたべましょう'] },
+    { type:'translate', prompt:'I take the bus and go to work.',
+      answers:['バスに乗って、会社に行きます。','バスに乗って、会社に行きます','バスにのって、かいしゃに行きます','バスにのって、かいしゃにいきます'] },
   ]
 };
 
 // ----- Grammar 4: 〜てもいいです -----
 GRAMMARS['te-mo-ii'] = {
-  title: 'Grammar 4 ｜ 〜てもいいです (May I...?)',
+  title: 'Grammar 4 ｜ 写真を撮ってもいいですか (May I...?)',
   explanation: [
     '<b>用法：</b>動詞 <b>て形 + もいいです</b> ＝ 「可以…」(陳述允許)。',
     '<b>問句：てもいいですか</b> ＝ 「我可以…嗎？」',
@@ -1260,34 +1247,43 @@ GRAMMARS['te-mo-ii'] = {
     '不能單獨用 もいいです（て 必須是動詞變化的一部分）。'
   ],
   examples: [
-    { jp:'教科書を見てもいいですよ。',         en:'You may use the textbook.' },
-    { jp:'トイレに行ってもいいですか。',       en:'May I go to the bathroom?' },
-    { jp:'まどを開けてもいいですか。',         en:'May I open the window?' },
-    { jp:'ここに座ってもいいですか。',         en:'May I sit here?' },
     { jp:'写真を撮ってもいいですか。',         en:'May I take a picture?' },
+    { jp:'ええ、いいですよ。どうぞ。',         en:'Yes, sure. Go ahead.' },
+    { jp:'すみません。ちょっと……。',           en:"Sorry, that's a bit ..." },
+    { jp:'教科書を見てもいいですよ。',         en:'You may use the textbook.' },
+    { jp:'まどを開けてもいいですか。',         en:'May I open the window?' }
   ],
+  // === Exercises from textbook p.160 IV C (situations) + IV A ===
   exercises: [
+    // IV C — situations needing permission (textbook p.160)
+    { type:'translate', prompt:'1. (in class) You need to go to the bathroom.',
+      answers:['トイレに行ってもいいですか。','トイレに行ってもいいですか','トイレにいってもいいですか','トイレにいってもいいですか。'] },
+    { type:'translate', prompt:'2. (in class) You feel sick and want to go home.',
+      answers:['うちに帰ってもいいですか。','うちに帰ってもいいですか','うちにかえってもいいですか','うちにかえってもいいですか。'] },
+    { type:'translate', prompt:'3. You forgot homework; want to bring it tomorrow.',
+      answers:['あした宿題を持ってきてもいいですか。','あした宿題を持ってきてもいいですか','あしたしゅくだいを持ってきてもいいですか','明日宿題を持ってきてもいいですか'] },
+    { type:'translate', prompt:'4. You want to ask in English (cannot phrase in Japanese).',
+      answers:['英語で話してもいいですか。','英語で話してもいいですか','えいごで話してもいいですか','えいごではなしてもいいですか','英語で聞いてもいいですか'] },
+    { type:'translate', prompt:'5. You missed class; want to borrow your friend\'s textbook.',
+      answers:['友だちの教科書を借りてもいいですか。','友だちの教科書を借りてもいいですか','教科書を借りてもいいですか','ともだちの教科書を借りてもいいですか'] },
+    { type:'translate', prompt:'6. The room is dark; you want to turn on the light.',
+      answers:['電気をつけてもいいですか。','電気をつけてもいいですか','でんきをつけてもいいですか','でんきをつけてもいいですか。'] },
+    { type:'translate', prompt:"7. You're invited to a party; want to bring a friend.",
+      answers:['友だちを連れてきてもいいですか。','友だちを連れてきてもいいですか','ともだちを連れてきてもいいですか','ともだちをつれてきてもいいですか'] },
+
+    // IV A — picture-based permission asks (textbook p.159)
+    { type:'translate', prompt:'(at temple) May I take a picture?',
+      answers:['写真を撮ってもいいですか。','写真を撮ってもいいですか','しゃしんを撮ってもいいですか','しゃしんをとってもいいですか'] },
     { type:'fill', prompt:'まどを____もいいですか。',     en:'May I open the window?',      answers:['開けて','あけて'] },
-    { type:'fill', prompt:'ここに____もいいですか。',     en:'May I sit here?',             answers:['座って','すわって'] },
-    { type:'fill', prompt:'写真を____もいいですか。',     en:'May I take a picture?',       answers:['撮って','とって'] },
-    { type:'fill', prompt:'教科書を____もいいですか。',   en:'May I look at the textbook?', answers:['見て','みて'] },
-    { type:'fill', prompt:'シャワーを____もいいですか。', en:'May I take a shower?',        answers:['浴びて','あびて'] },
     { type:'fill', prompt:'エアコンを____もいいですか。', en:'May I turn on the AC?',       answers:['つけて'] },
-    { type:'fill', prompt:'電気を____もいいですか。',     en:'May I turn off the light?',   answers:['消して','けして'] },
-    { type:'translate', prompt:'May I use this textbook?',
-      answers:['この教科書を使ってもいいですか。','このきょうかしょを使ってもいいですか','この教科書を使ってもいいですか','このきょうかしょをつかってもいいですか'] },
-    { type:'translate', prompt:'May I turn on the air conditioner?',
-      answers:['エアコンをつけてもいいですか。','エアコンをつけてもいいですか'] },
-    { type:'translate', prompt:'May I sit here?',
-      answers:['ここに座ってもいいですか。','ここに座ってもいいですか','ここにすわってもいいですか'] },
-    { type:'translate', prompt:'May I borrow this book?',
-      answers:['この本を借りてもいいですか。','この本を借りてもいいですか','この本をかりてもいいですか','このほんをかりてもいいですか'] },
+    { type:'fill', prompt:'教科書を____もいいですか。',   en:'May I look at the textbook?', answers:['見て','みて'] },
+    { type:'fill', prompt:'ここに____もいいですか。',     en:'May I sit here?',             answers:['座って','すわって'] },
   ]
 };
 
 // ----- Grammar 5: 〜てはいけません -----
 GRAMMARS['te-wa-ikemasen'] = {
-  title: 'Grammar 5 ｜ 〜てはいけません (Must not...)',
+  title: 'Grammar 5 ｜ 食べてはいけません (Must not...)',
   explanation: [
     '<b>用法：</b>動詞 <b>て形 + はいけません</b> ＝ 「不可以…／不準…」。是<b>強烈禁止</b>。',
     '常用於規則、規定、教導等情境。',
@@ -1295,29 +1291,42 @@ GRAMMARS['te-wa-ikemasen'] = {
     '較柔軟的「請別…」會在 Lesson 8 學到（〜ないでください）。'
   ],
   examples: [
+    { jp:'食べてはいけません。',                 en:'You must not eat.' },
     { jp:'ここで写真を撮ってはいけません。',     en:'You must not take pictures here.' },
     { jp:'ここでたばこを吸ってはいけません。',   en:'You must not smoke here.' },
-    { jp:'授業中に電話してはいけません。',       en:'You must not make phone calls during class.' },
-    { jp:'図書館で食べてはいけません。',         en:'You must not eat in the library.' },
+    { jp:'図書館で電話してはいけません。',       en:'You must not make phone calls in the library.' },
   ],
+  // === Exercises from textbook p.161 V B (library rules) ===
   exercises: [
-    { type:'fill', prompt:'ここで写真を____はいけません。',   en:'You must not take pictures here.', answers:['撮って','とって'] },
-    { type:'fill', prompt:'ここでたばこを____はいけません。', en:'You must not smoke here.',         answers:['吸って','すって'] },
-    { type:'fill', prompt:'授業中に____はいけません。',       en:'You must not make calls in class.', answers:['電話して','でんわして'] },
-    { type:'fill', prompt:'図書館で____はいけません。',       en:'You must not eat in the library.',  answers:['食べて','たべて'] },
-    { type:'fill', prompt:'ここに____はいけません。',         en:'You must not enter here.',          answers:['入って','はいって'] },
-    { type:'translate', prompt:'You must not smoke here.',
-      answers:['ここでたばこを吸ってはいけません。','ここでたばこを吸ってはいけません','ここでたばこをすってはいけません','ここでたばこをすってはいけません。'] },
-    { type:'translate', prompt:'You must not take pictures here.',
-      answers:['ここで写真を撮ってはいけません。','ここで写真を撮ってはいけません','ここでしゃしんをとってはいけません'] },
-    { type:'translate', prompt:'You must not use the computer.',
-      answers:['パソコンを使ってはいけません。','パソコンを使ってはいけません','パソコンをつかってはいけません'] },
+    // V B: Library rules — turn each into 〜てはいけません
+    { type:'translate', prompt:'(Example) 図書館で電話する → ',
+      answers:['図書館で電話してはいけません。','図書館で電話してはいけません','としょかんで電話してはいけません','としょかんででんわしてはいけません'] },
+    { type:'translate', prompt:'1. 図書館で話す → ',
+      answers:['図書館で話してはいけません。','図書館で話してはいけません','としょかんで話してはいけません','としょかんではなしてはいけません'] },
+    { type:'translate', prompt:'2. 図書館で昼ご飯を食べる → ',
+      answers:['図書館で昼ご飯を食べてはいけません。','図書館で昼ご飯を食べてはいけません','としょかんでひるごはんを食べてはいけません','としょかんでひるごはんをたべてはいけません'] },
+    { type:'translate', prompt:'3. 図書館でコーヒーを飲む → ',
+      answers:['図書館でコーヒーを飲んではいけません。','図書館でコーヒーを飲んではいけません','としょかんでコーヒーを飲んではいけません','としょかんでコーヒーをのんではいけません'] },
+    { type:'translate', prompt:'4. 図書館でパソコンを使う → ',
+      answers:['図書館でパソコンを使ってはいけません。','図書館でパソコンを使ってはいけません','としょかんでパソコンを使ってはいけません','としょかんでパソコンをつかってはいけません'] },
+    { type:'translate', prompt:'5. 十八歳の人はたばこを吸う → ',
+      answers:['十八歳の人はたばこを吸ってはいけません。','十八歳の人はたばこを吸ってはいけません','じゅうはっさいの人はたばこを吸ってはいけません','じゅうはっさいのひとはたばこをすってはいけません'] },
+    { type:'translate', prompt:'6. 十八歳の人はお酒を飲む → ',
+      answers:['十八歳の人はお酒を飲んではいけません。','十八歳の人はお酒を飲んではいけません','じゅうはっさいの人はお酒を飲んではいけません','じゅうはっさいのひとはおさけをのんではいけません'] },
+
+    // V A: Ban activities in a rowdy class
+    { type:'fill', prompt:'(教室で)　____はいけません。', en:'(in class) You must not eat.',
+      answers:['食べて','たべて'] },
+    { type:'fill', prompt:'(教室で)　____はいけません。', en:'(in class) You must not talk.',
+      answers:['話して','はなして'] },
+    { type:'fill', prompt:'(教室で)　____はいけません。', en:'(in class) You must not sleep.',
+      answers:['寝て','ねて'] },
   ]
 };
 
 // ----- Grammar 6: 〜から (because) -----
 GRAMMARS['kara'] = {
-  title: 'Grammar 6 ｜ 〜から (because)',
+  title: 'Grammar 6 ｜ 勉強します。あしたテストがありますから。(because)',
   explanation: [
     '<b>用法：</b>句子 + <b>から</b> ＝ 「因為…」，說明原因或理由。',
     '<b>結構：</b>(情況／提議／判斷)。(原因)<b>から</b>。',
@@ -1325,28 +1334,38 @@ GRAMMARS['kara'] = {
     'から 接 です／ます 句（如：高いです<b>から</b>、行きます<b>から</b>）。'
   ],
   examples: [
-    { jp:'私は今晩勉強します。あしたテストがありますから。', en:"I'll study tonight, because we have an exam tomorrow." },
+    { jp:'勉強します。あしたテストがありますから。',         en:'I will study, because we have an exam tomorrow.' },
     { jp:'バスに乗りましょう。タクシーは高いですから。',     en:"Let's go by bus, because taxis are expensive." },
     { jp:'いそぎましょう。バスが来ますから。',               en:"Let's hurry, because the bus is coming." },
-    { jp:'今日はうちに帰ります。いそがしいですから。',       en:"I'll go home today, because I'm busy." },
+    { jp:'私は昼ご飯を食べません。あまりお金がありませんから。', en:"I won't eat lunch, because I don't have much money." },
   ],
+  // === Exercises from textbook p.161 VI A & B ===
   exercises: [
-    { type:'fill', prompt:'いそぎましょう。バスが来ます____。',         en:"Let's hurry, because the bus is coming.", answers:['から'] },
-    { type:'fill', prompt:'今晩勉強します。あしたテストがあります____。', en:"I'll study tonight, because we have an exam tomorrow.", answers:['から'] },
-    { type:'fill', prompt:'バスに乗りましょう。タクシーは____。',       en:"Let's take the bus, because taxis are expensive.", answers:['高いですから','たかいですから'] },
-    { type:'fill', prompt:'うちで休みます。____ですから。',             en:"I'll rest at home, because I'm not feeling well (tough situation).", answers:['たいへん','大変'] },
-    { type:'translate', prompt:"I'll study tonight, because we have an exam tomorrow.",
-      answers:['今晩勉強します。あしたテストがありますから。','こんばん勉強します。あしたテストがありますから','こんばんべんきょうします。あしたテストがありますから'] },
-    { type:'translate', prompt:"Let's hurry, because the bus is coming.",
-      answers:['いそぎましょう。バスが来ますから。','いそぎましょう。バスが来ますから','いそぎましょう。バスがきますから'] },
-    { type:'translate', prompt:"Let's take a bus, because taxis are expensive.",
-      answers:['バスに乗りましょう。タクシーは高いですから。','バスにのりましょう。タクシーはたかいですから'] },
+    // VI A: Add reasons (model answers — these have many possible reasons; we use natural ones)
+    { type:'translate', prompt:'(Example) 勉強します。→ Add reason: "because we have an exam tomorrow"',
+      answers:['勉強します。あしたテストがありますから。','勉強します。あしたテストがありますから','勉強します。明日テストがありますから','べんきょうします。あしたテストがありますから'] },
+    { type:'translate', prompt:'1. 先週は大変でした。 + reason: "because I had a lot of work / tests"  (e.g., テストがたくさんありました)',
+      answers:['先週は大変でした。テストがたくさんありましたから。','先週は大変でした。テストがたくさんありましたから','先週は大変でした。仕事がたくさんありましたから','せんしゅうは大変でした。テストがたくさんありましたから'] },
+    { type:'translate', prompt:'2. あの映画を見ません。 + reason: "because it\'s boring"',
+      answers:['あの映画を見ません。つまらないですから。','あの映画を見ません。つまらないですから','あの映画を見ません。つまらないですから。','あのえいがを見ません。つまらないですから'] },
+    { type:'translate', prompt:'3. よくあのレストランに行きます。 + reason: "because it\'s delicious"',
+      answers:['よくあのレストランに行きます。おいしいですから。','よくあのレストランに行きます。おいしいですから','よくあのレストランにいきます。おいしいですから'] },
+    { type:'translate', prompt:'4. きのうクラスを休みました。 + reason: "because I was sick / not feeling well" (use 大変)',
+      answers:['きのうクラスを休みました。大変でしたから。','きのうクラスを休みました。大変でしたから','きのうクラスをやすみました。大変でしたから','昨日クラスを休みました。大変でしたから'] },
+    { type:'translate', prompt:'6. 友だちに教科書を借りました。 + reason: "because I forgot my textbook"',
+      answers:['友だちに教科書を借りました。教科書を忘れましたから。','友だちに教科書を借りました。教科書を忘れましたから','ともだちに教科書を借りました。教科書を忘れましたから','友だちに教科書をかりました。教科書をわすれましたから'] },
+
+    // VI B style: provide situation, fill in から
+    { type:'fill', prompt:'いそぎましょう。バスが来ます____。',           en:"Let's hurry, because the bus is coming.", answers:['から'] },
+    { type:'fill', prompt:'勉強します。あしたテストがあります____。',     en:"I'll study, because we have an exam tomorrow.", answers:['から'] },
+    { type:'fill', prompt:'昼ご飯を食べません。お金がありません____。',   en:"I won't eat lunch, because I don't have money.", answers:['から'] },
+    { type:'fill', prompt:'バスに乗りましょう。タクシーは高いです____。', en:"Let's take the bus, because taxis are expensive.", answers:['から'] },
   ]
 };
 
 // ----- Grammar 7: 〜ましょうか (Offering Assistance) -----
 GRAMMARS['mashou-ka'] = {
-  title: 'Grammar 7 ｜ 〜ましょうか (Offering Assistance)',
+  title: 'Grammar 7 ｜ テレビを消しましょうか (Offering Assistance)',
   explanation: [
     '<b>用法：</b>動詞ます形的 ます → <b>ましょうか</b>。',
     'Lesson 5 學過：「<b>(一起) …吧？</b>」(邀請)。例：一緒に図書館で勉強しましょうか。',
@@ -1354,26 +1373,48 @@ GRAMMARS['mashou-ka'] = {
     '看到別人有困難時：荷物を持ちましょうか。(我幫你拿吧？)'
   ],
   examples: [
-    { jp:'(私が) やりましょうか。',         en:"I'll do it (shall I?)." },
+    { jp:'テレビを消しましょうか。',         en:'Shall I turn off the TV?' },
+    { jp:'すみません。お願いします。',       en:'Sorry, please do.' },
+    { jp:'いいえ、大丈夫です。',             en:"No, it's all right." },
     { jp:'荷物を持ちましょうか。',           en:'Shall I carry your bag?' },
     { jp:'まどを開けましょうか。',           en:'Shall I open the window?' },
-    { jp:'電気を消しましょうか。',           en:'Shall I turn off the light?' },
-    { jp:'手伝いましょうか。',               en:'Shall I help you?' },
+    { jp:'手伝いましょうか。',               en:'Shall I help you?' }
   ],
+  // === Exercises from textbook p.162-163 VII A & B ===
   exercises: [
+    // VII A: Picture-based offers (textbook p.162)
+    { type:'translate', prompt:'(Example) (someone is watching TV intently while you study) → ',
+      answers:['テレビを消しましょうか。','テレビを消しましょうか','テレビをけしましょうか','テレビを消しましょうか。'] },
+    { type:'translate', prompt:'1. (someone looks hot near a window) → ',
+      answers:['まどを開けましょうか。','まどを開けましょうか','まどをあけましょうか','窓を開けましょうか','窓をあけましょうか'] },
+    { type:'translate', prompt:'2. (someone is doing dishes) → Shall I help?',
+      answers:['手伝いましょうか。','手伝いましょうか','てつだいましょうか','てつだいましょうか。'] },
+    { type:'translate', prompt:'4. (heavy bag) → Shall I carry the bag?',
+      answers:['荷物を持ちましょうか。','荷物を持ちましょうか','にもつを持ちましょうか','にもつをもちましょうか'] },
+    { type:'translate', prompt:"6. (dark room while studying) → Shall I turn on the light?",
+      answers:['電気をつけましょうか。','電気をつけましょうか','でんきをつけましょうか','でんきをつけましょうか。'] },
+    { type:'translate', prompt:'7. (couple wanting photo together) → Shall I take a picture?',
+      answers:['写真を撮りましょうか。','写真を撮りましょうか','しゃしんを撮りましょうか','しゃしんをとりましょうか'] },
+    { type:'translate', prompt:'8. (window open, someone cold) → Shall I close the window?',
+      answers:['まどを閉めましょうか。','まどを閉めましょうか','まどをしめましょうか','窓を閉めましょうか','窓をしめましょうか'] },
+
+    // VII B: Conversation situations (textbook p.163)
+    { type:'translate', prompt:'1. (partner looks cold) → Shall I close the window?',
+      answers:['まどを閉めましょうか。','まどを閉めましょうか','まどをしめましょうか','窓を閉めましょうか','エアコンを消しましょうか'] },
+    { type:'translate', prompt:'2. (partner has trouble with Japanese homework) → Shall I help?',
+      answers:['手伝いましょうか。','手伝いましょうか','てつだいましょうか'] },
+    { type:'translate', prompt:"3. (you're speaking English but partner doesn't understand) → Shall I speak in Japanese?",
+      answers:['日本語で話しましょうか。','日本語で話しましょうか','にほんごで話しましょうか','にほんごではなしましょうか'] },
+    { type:'translate', prompt:'4. (you enter a dark room where partner is studying) → Shall I turn on the light?',
+      answers:['電気をつけましょうか。','電気をつけましょうか','でんきをつけましょうか'] },
+    { type:'translate', prompt:"5. (partner forgot glasses, can't read menu) → Shall I read (it)?",
+      answers:['読みましょうか。','読みましょうか','よみましょうか','メニューを読みましょうか','メニューをよみましょうか'] },
+
+    // Fill-in-the-blank quick drills
     { type:'fill', prompt:'荷物を____か。',   en:'Shall I carry your bag?',     answers:['持ちましょう','もちましょう'] },
     { type:'fill', prompt:'まどを____か。',   en:'Shall I open the window?',    answers:['開けましょう','あけましょう'] },
     { type:'fill', prompt:'電気を____か。',   en:'Shall I turn off the light?', answers:['消しましょう','けしましょう'] },
-    { type:'fill', prompt:'エアコンを____か。', en:'Shall I turn on the AC?',   answers:['つけましょう'] },
     { type:'fill', prompt:'____か。',         en:"Shall I help you?",          answers:['手伝いましょう','てつだいましょう'] },
-    { type:'translate', prompt:'Shall I carry your bag?',
-      answers:['荷物を持ちましょうか。','荷物を持ちましょうか','にもつを持ちましょうか','にもつをもちましょうか'] },
-    { type:'translate', prompt:'Shall I help you?',
-      answers:['手伝いましょうか。','手伝いましょうか','てつだいましょうか'] },
-    { type:'translate', prompt:'Shall I open the window?',
-      answers:['まどを開けましょうか。','まどを開けましょうか','まどをあけましょうか'] },
-    { type:'translate', prompt:"Shall we go to the cafe?",
-      answers:['カフェに行きましょうか。','カフェに行きましょうか','カフェにいきましょうか'] },
   ]
 };
 
