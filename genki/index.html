@@ -262,6 +262,32 @@
   }
   .search-box:focus { border-color: #FF7043; }
 
+  /* Lesson collapsible section */
+  .lesson-section {
+    background: white; border-radius: 14px; margin: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;
+    border: 1px solid #FFE0B2;
+  }
+  .lesson-section-header {
+    background: linear-gradient(135deg,#FF7043 0%,#FF8A65 100%);
+    color: white; padding: 14px 16px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .lesson-section-header h3 {
+    font-size: 1.05em; margin: 0; display: flex; align-items: center; gap: 8px;
+  }
+  .lesson-section-header .toggle-arrow {
+    font-size: 0.85em; transition: transform 0.2s;
+  }
+  .lesson-section.collapsed .toggle-arrow { transform: rotate(-90deg); }
+  .lesson-section-body { padding: 4px 0 12px; }
+  .lesson-section.collapsed .lesson-section-body { display: none; }
+  .lesson-section-desc {
+    padding: 10px 16px; color: #888; font-size: 0.85em; line-height: 1.5;
+    background: #FFF8F0; border-bottom: 1px solid #FFECB3;
+  }
+
   /* Vocab list */
   .vocab-section-title {
     background: #E8EAF6; color: #37474F; padding: 10px 16px;
@@ -1708,11 +1734,8 @@ function vocabSectionHTML(num) {
   const allItems = [];
   groups.forEach(g => g.items.forEach(it => allItems.push(it)));
 
-  let html = `
-    <div class="lesson-intro">
-      <h3>📚 単語 Vocabulary</h3>
-      <p style="color:#888;font-size:0.85em;">點任何單字或喇叭按鈕可以聽發音。動詞請看 <b>動詞まとめ</b>，形容詞請看 <b>形容詞まとめ</b>。</p>
-    </div>
+  let inner = `
+    <div class="lesson-section-desc">點任何單字或喇叭按鈕可以聽發音。動詞請看 <b>動詞まとめ</b>，形容詞請看 <b>形容詞まとめ</b>。</div>
     <button class="vocab-play-all-btn" onclick="playLessonVocab(${num})">▶ 連續播放 Lesson ${num} 全部單字 (${allItems.length} 個)</button>
     <div id="lesson-playback-bar-${num}" style="display:none; background:#5C6BC0; color:white; padding:10px 16px; margin:8px 16px; border-radius:10px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:60px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
       <div style="flex:1; min-width:0;">
@@ -1727,13 +1750,13 @@ function vocabSectionHTML(num) {
   `;
 
   groups.forEach(g => {
-    html += `<div class="vocab-section-title">${g.title} <span class="count">${g.items.length} 個</span></div>`;
-    html += `<div class="vocab-grid">`;
+    inner += `<div class="vocab-section-title">${g.title} <span class="count">${g.items.length} 個</span></div>`;
+    inner += `<div class="vocab-grid">`;
     g.items.forEach(item => {
       const display = item.kanji && item.kanji.length > 0 ? item.kanji : item.hira;
       const hiraSub = item.kanji && item.kanji.length > 0 && item.kanji !== item.hira
         ? `<span class="vocab-hira">[${item.hira}]</span>` : '';
-      html += `
+      inner += `
         <div class="vocab-card ${g.cls}" onclick="speak('${item.hira}')">
           <div class="vocab-jp">
             <div class="vocab-main">${display}${hiraSub}</div>
@@ -1743,10 +1766,23 @@ function vocabSectionHTML(num) {
         </div>
       `;
     });
-    html += `</div>`;
+    inner += `</div>`;
   });
 
-  return html;
+  // Wrap everything inside one collapsible section
+  return `
+    <div class="lesson-section" id="vocab-section-${num}">
+      <div class="lesson-section-header" onclick="toggleLessonSection('vocab-section-${num}')">
+        <h3>📚 単語 Vocabulary <span style="opacity:0.85; font-size:0.85em; font-weight:500;">(${allItems.length} 個)</span></h3>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="lesson-section-body">${inner}</div>
+    </div>
+  `;
+}
+
+function toggleLessonSection(id) {
+  document.getElementById(id).classList.toggle('collapsed');
 }
 
 // Per-lesson playback state
