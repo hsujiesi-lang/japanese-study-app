@@ -262,6 +262,111 @@
   }
   .search-box:focus { border-color: #FF7043; }
 
+  /* Grammar practice */
+  .grammar-explain {
+    padding: 14px 16px; background: #FFFDE7; color: #555;
+    line-height: 1.7; font-size: 0.92em;
+    border-left: 4px solid #FBC02D; margin: 0 16px 12px;
+    border-radius: 0 8px 8px 0;
+  }
+  .grammar-explain p { margin-bottom: 6px; }
+  .grammar-examples {
+    padding: 0 16px; margin-bottom: 12px;
+  }
+  .grammar-examples h4 {
+    color: #FF7043; margin: 10px 0 8px; font-size: 0.95em;
+  }
+  .grammar-example {
+    background: white; border: 1px solid #FFE0B2; border-radius: 10px;
+    padding: 10px 14px; margin-bottom: 6px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .grammar-example:active { background: #FFF3E0; }
+  .grammar-example .ex-jp {
+    font-size: 1.05em; color: #37474F; font-weight: 600;
+  }
+  .grammar-example .ex-en {
+    font-size: 0.82em; color: #999; margin-top: 2px;
+  }
+  .grammar-example .ex-speak {
+    background: #FFF3E0; border: none; color: #E65100;
+    border-radius: 50%; width: 32px; height: 32px;
+    font-size: 1em; cursor: pointer; flex-shrink: 0;
+  }
+
+  .practice-zone {
+    background: #FFF8F0; border-radius: 12px;
+    padding: 16px; margin: 0 16px 12px;
+  }
+  .practice-zone-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .practice-zone-header h4 {
+    color: #E65100; font-size: 1em;
+  }
+  .practice-zone-stats { font-size: 0.82em; color: #555; }
+  .practice-zone-stats .ok { color: #2E7D32; font-weight: 700; }
+  .practice-zone-stats .ng { color: #C62828; font-weight: 700; }
+
+  .exercise-card {
+    background: white; border-radius: 12px;
+    padding: 18px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .exercise-type-tag {
+    display: inline-block; background: #FFE0B2; color: #BF360C;
+    padding: 3px 10px; border-radius: 12px; font-size: 0.75em;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .exercise-type-tag.conj      { background: #E3F2FD; color: #1565C0; }
+  .exercise-type-tag.fill      { background: #FFF9C4; color: #F57F17; }
+  .exercise-type-tag.translate { background: #F8BBD0; color: #AD1457; }
+
+  .exercise-prompt {
+    font-size: 1.4em; color: #37474F; font-weight: 700;
+    margin: 6px 0 4px; line-height: 1.4;
+  }
+  .exercise-en {
+    font-size: 0.85em; color: #888; margin-bottom: 12px;
+    font-style: italic;
+  }
+  .exercise-input {
+    width: 100%; padding: 12px 14px; font-size: 1.2em;
+    border: 2px solid #FFE0B2; border-radius: 10px; outline: none;
+    font-family: 'Hiragino Sans','Noto Sans JP',sans-serif;
+    text-align: center; margin-bottom: 10px;
+  }
+  .exercise-input:focus { border-color: #FF7043; }
+  .exercise-input.correct { border-color: #4CAF50; background: #E8F5E9; }
+  .exercise-input.wrong   { border-color: #F44336; background: #FFEBEE; }
+
+  .exercise-buttons {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .exercise-buttons button {
+    flex: 1; min-width: 70px; padding: 10px 12px;
+    border-radius: 10px; border: none; font-size: 0.92em;
+    font-weight: 700; cursor: pointer;
+  }
+  .ex-btn-submit { background: #FF7043; color: white; }
+  .ex-btn-submit:active { background: #E64A19; }
+  .ex-btn-show   { background: #FFE0B2; color: #BF360C; }
+  .ex-btn-skip   { background: white; color: #757575; border: 1.5px solid #DDD !important; }
+
+  .exercise-feedback {
+    margin-top: 12px; padding: 10px 12px; border-radius: 8px;
+    font-size: 0.92em; line-height: 1.5;
+    display: none;
+  }
+  .exercise-feedback.show { display: block; }
+  .exercise-feedback.correct { background: #C8E6C9; color: #2E7D32; }
+  .exercise-feedback.wrong   { background: #FFCDD2; color: #C62828; }
+  .exercise-feedback .answer-shown { font-weight: 700; font-size: 1.1em; }
+
+  .input-hint {
+    color: #999; font-size: 0.78em; margin-bottom: 6px;
+  }
+
   /* Lesson collapsible section */
   .lesson-section {
     background: white; border-radius: 14px; margin: 16px;
@@ -1017,6 +1122,97 @@ const VERBS = [
   { lesson:6, type:'irregular', kanji:'連れてくる', hira:'つれてくる', en:'to bring (a person)', particles:['を'], note:'' },
   { lesson:6, type:'irregular', kanji:'持ってくる', hira:'もってくる', en:'to bring (a thing)', particles:['を'], note:'' },
 ];
+
+// ============================
+// GRAMMAR PRACTICE — Lesson 6 / Grammar 2: 〜てください
+// ============================
+const TE_KUDASAI = {
+  title: 'Grammar 2 ｜ 〜てください (Please do...)',
+  explanation: [
+    '<b>用法：</b>動詞的 <b>て形</b> + <b>ください</b>，意思是「請（為我）做某事」。',
+    '是禮貌客氣的請求方式，最常用於日常請求。',
+    '對家人或很熟的朋友，可以省略 <b>ください</b>，只用 て形 (例：<i>まどを開けて。</i>)。',
+    '要先把動詞變成 て形（規則請看 Verbs 頁面 p.150）。'
+  ],
+  examples: [
+    { jp:'教科書を読んでください。',     en:'Please read the textbook.' },
+    { jp:'ちょっと教えてください。',     en:'Please teach me a little.' },
+    { jp:'まどを開けてください。',       en:'Please open the window.' },
+    { jp:'電気を消してください。',       en:'Please turn off the light.' },
+    { jp:'にもつを持ってください。',     en:'Please carry the baggage.' },
+    { jp:'ここに座ってください。',       en:'Please sit here.' },
+    { jp:'すぐ来てください。',           en:'Please come right away.' },
+    { jp:'ゆっくり話してください。',     en:'Please speak slowly.' }
+  ],
+  // Exercises — types: 'conj' (verb → te-form), 'fill' (fill-in-blank), 'translate' (Eng→JP)
+  exercises: [
+    // ---- Conjugation drills (dict form → te-form) ----
+    { type:'conj', prompt:'食べる', en:'to eat',       answers:['食べて','たべて'] },
+    { type:'conj', prompt:'飲む',   en:'to drink',     answers:['飲んで','のんで'] },
+    { type:'conj', prompt:'読む',   en:'to read',      answers:['読んで','よんで'] },
+    { type:'conj', prompt:'書く',   en:'to write',     answers:['書いて','かいて'] },
+    { type:'conj', prompt:'行く',   en:'to go (例外!)', answers:['行って','いって'] },
+    { type:'conj', prompt:'話す',   en:'to speak',     answers:['話して','はなして'] },
+    { type:'conj', prompt:'待つ',   en:'to wait',      answers:['待って','まって'] },
+    { type:'conj', prompt:'撮る',   en:'to take (pic)', answers:['撮って','とって'] },
+    { type:'conj', prompt:'聞く',   en:'to listen',    answers:['聞いて','きいて'] },
+    { type:'conj', prompt:'泳ぐ',   en:'to swim',      answers:['泳いで','およいで'] },
+    { type:'conj', prompt:'見る',   en:'to see',       answers:['見て','みて'] },
+    { type:'conj', prompt:'起きる', en:'to get up',    answers:['起きて','おきて'] },
+    { type:'conj', prompt:'する',   en:'to do',        answers:['して'] },
+    { type:'conj', prompt:'来る',   en:'to come',      answers:['来て','きて'] },
+    // L6 verbs focus
+    { type:'conj', prompt:'開ける', en:'to open',      answers:['開けて','あけて'] },
+    { type:'conj', prompt:'閉める', en:'to close',     answers:['閉めて','しめて'] },
+    { type:'conj', prompt:'教える', en:'to teach',     answers:['教えて','おしえて'] },
+    { type:'conj', prompt:'消す',   en:'to turn off',  answers:['消して','けして'] },
+    { type:'conj', prompt:'つける', en:'to turn on',   answers:['つけて'] },
+    { type:'conj', prompt:'座る',   en:'to sit',       answers:['座って','すわって'] },
+    { type:'conj', prompt:'立つ',   en:'to stand',     answers:['立って','たって'] },
+    { type:'conj', prompt:'使う',   en:'to use',       answers:['使って','つかって'] },
+    { type:'conj', prompt:'持つ',   en:'to hold',      answers:['持って','もって'] },
+    { type:'conj', prompt:'手伝う', en:'to help',      answers:['手伝って','てつだって'] },
+    { type:'conj', prompt:'休む',   en:'to rest',      answers:['休んで','やすんで'] },
+    { type:'conj', prompt:'急ぐ',   en:'to hurry',     answers:['急いで','いそいで'] },
+    { type:'conj', prompt:'返す',   en:'to return (a thing)', answers:['返して','かえして'] },
+    { type:'conj', prompt:'借りる', en:'to borrow',    answers:['借りて','かりて'] },
+    { type:'conj', prompt:'忘れる', en:'to forget',    answers:['忘れて','わすれて'] },
+    { type:'conj', prompt:'入る',   en:'to enter',     answers:['入って','はいって'] },
+    { type:'conj', prompt:'遊ぶ',   en:'to play',      answers:['遊んで','あそんで'] },
+    { type:'conj', prompt:'電話する', en:'to call',    answers:['電話して','でんわして'] },
+
+    // ---- Fill-in-the-blank ----
+    { type:'fill', prompt:'水を____ください。', en:'Please drink water.',          answers:['飲んで','のんで'] },
+    { type:'fill', prompt:'本を____ください。', en:'Please read the book.',        answers:['読んで','よんで'] },
+    { type:'fill', prompt:'まどを____ください。', en:'Please open the window.',    answers:['開けて','あけて'] },
+    { type:'fill', prompt:'電気を____ください。', en:'Please turn off the light.', answers:['消して','けして'] },
+    { type:'fill', prompt:'ここに____ください。', en:'Please sit here.',           answers:['座って','すわって'] },
+    { type:'fill', prompt:'ちょっと____ください。', en:'Please teach me a little.', answers:['教えて','おしえて'] },
+    { type:'fill', prompt:'にもつを____ください。', en:'Please carry the baggage.', answers:['持って','もって'] },
+    { type:'fill', prompt:'ゆっくり____ください。', en:'Please speak slowly.',     answers:['話して','はなして'] },
+    { type:'fill', prompt:'すぐ____ください。',   en:'Please come right away.',    answers:['来て','きて'] },
+    { type:'fill', prompt:'教科書を____ください。', en:'Please read the textbook.', answers:['読んで','よんで'] },
+    { type:'fill', prompt:'もう一回____ください。', en:'Please say it once more.', answers:['言って','いって','話して','はなして'] },
+    { type:'fill', prompt:'写真を____ください。', en:'Please take a picture.',    answers:['撮って','とって'] },
+    { type:'fill', prompt:'本を____ください。',  en:'Please return the book.',    answers:['返して','かえして'] },
+
+    // ---- Full sentence translation ----
+    { type:'translate', prompt:'Please drink coffee.',
+      answers:['コーヒーを飲んでください。','コーヒーを飲んでください','コーヒーをのんでください','コーヒーをのんでください。','コーヒーを飲んで下さい','コーヒーをのんで下さい'] },
+    { type:'translate', prompt:'Please wait a little.',
+      answers:['ちょっと待ってください。','ちょっと待ってください','ちょっとまってください','ちょっとまってください。'] },
+    { type:'translate', prompt:'Please come here.',
+      answers:['ここに来てください。','ここに来てください','ここにきてください','ここにきてください。','ここへ来てください','ここへきてください'] },
+    { type:'translate', prompt:'Please turn on the air conditioner.',
+      answers:['エアコンをつけてください。','エアコンをつけてください'] },
+    { type:'translate', prompt:'Please use this pen.',
+      answers:['このペンを使ってください。','このペンをつかってください','このペンを使ってください','このペンをつかってください。'] },
+    { type:'translate', prompt:'Please help me.',
+      answers:['手伝ってください。','手伝ってください','てつだってください','てつだってください。','私を手伝ってください','私をてつだってください'] },
+    { type:'translate', prompt:'Please write your name.',
+      answers:['名前を書いてください。','名前を書いてください','なまえをかいてください','なまえをかいてください。'] },
+  ]
+};
 
 // ============================
 // LESSON VOCABULARY (non-verb words)
@@ -1785,6 +1981,172 @@ function toggleLessonSection(id) {
   document.getElementById(id).classList.toggle('collapsed');
 }
 
+// ============================
+// GRAMMAR PRACTICE — 〜てください
+// ============================
+const tePracticeState = { correct: 0, wrong: 0, history: [], current: null, attempts: 0 };
+
+function teKudasaiSectionHTML() {
+  const g = TE_KUDASAI;
+  const explainHtml = g.explanation.map(p => `<p>${p}</p>`).join('');
+  const examplesHtml = g.examples.map(ex => `
+    <div class="grammar-example" onclick="speak('${ex.jp}')">
+      <div>
+        <div class="ex-jp">${ex.jp}</div>
+        <div class="ex-en">${ex.en}</div>
+      </div>
+      <button class="ex-speak" onclick="event.stopPropagation(); speak('${ex.jp}')">🔊</button>
+    </div>
+  `).join('');
+
+  return `
+    <div class="lesson-section" id="te-kudasai-section">
+      <div class="lesson-section-header" onclick="toggleLessonSection('te-kudasai-section')">
+        <h3>📝 ${g.title}</h3>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="lesson-section-body">
+        <div class="grammar-explain">${explainHtml}</div>
+        <div class="grammar-examples">
+          <h4>📖 例文 Examples</h4>
+          ${examplesHtml}
+        </div>
+        <div class="practice-zone">
+          <div class="practice-zone-header">
+            <h4>✏️ 練習 Practice</h4>
+            <div class="practice-zone-stats">
+              ✅<span class="ok" id="te-stat-ok">0</span> ・
+              ❌<span class="ng" id="te-stat-ng">0</span>
+            </div>
+          </div>
+          <div id="te-exercise-area"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Normalize answer for comparison (trim, remove trailing 。)
+function normalizeAns(s) {
+  return s.replace(/\s+/g,'').replace(/。$/,'').replace(/ください/g,'ください').trim();
+}
+
+function pickNextExercise() {
+  const pool = TE_KUDASAI.exercises;
+  // Avoid immediate repeat
+  let pick;
+  do {
+    pick = pool[Math.floor(Math.random() * pool.length)];
+  } while (pool.length > 1 && tePracticeState.current === pick);
+  tePracticeState.current = pick;
+  tePracticeState.attempts = 0;
+  renderExercise();
+}
+
+function renderExercise() {
+  const ex = tePracticeState.current;
+  if (!ex) return;
+  const area = document.getElementById('te-exercise-area');
+  if (!area) return;
+
+  const tagText = ex.type === 'conj' ? '🔤 て形變化' :
+                  ex.type === 'fill' ? '✏️ 填空 (動詞 て形)' :
+                  '📝 句子翻譯';
+
+  let promptHtml = '';
+  let inputHint = '';
+  if (ex.type === 'conj') {
+    // Show dict form big, ask for te-form (no ください needed)
+    promptHtml = `
+      <div class="exercise-prompt"><span style="color:#FF7043;">${ex.prompt}</span> → ?</div>
+      <div class="exercise-en">${ex.en} · 寫出 <b>て形</b>（不用加 ください）</div>
+    `;
+    inputHint = '範例：たべる → たべて／食べて';
+  } else if (ex.type === 'fill') {
+    promptHtml = `
+      <div class="exercise-prompt">${ex.prompt}</div>
+      <div class="exercise-en">${ex.en} · 在 ___ 填入動詞 <b>て形</b>（不含 ください）</div>
+    `;
+    inputHint = '範例：水を____ください → 飲んで／のんで';
+  } else { // translate
+    promptHtml = `
+      <div class="exercise-prompt" style="font-size:1.15em;">${ex.prompt}</div>
+      <div class="exercise-en">寫出完整的日文句子（含 ください）</div>
+    `;
+    inputHint = '範例：水を飲んでください 或 みずをのんでください';
+  }
+
+  area.innerHTML = `
+    <div class="exercise-card">
+      <span class="exercise-type-tag ${ex.type}">${tagText}</span>
+      ${promptHtml}
+      <div class="input-hint">💡 ${inputHint}</div>
+      <input type="text" class="exercise-input" id="te-ex-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter') checkExercise()">
+      <div class="exercise-buttons">
+        <button class="ex-btn-submit" onclick="checkExercise()">✅ 確認</button>
+        <button class="ex-btn-show"   onclick="showExerciseAnswer()">👀 看答案</button>
+        <button class="ex-btn-skip"   onclick="nextExercise()">⏭ 跳過</button>
+      </div>
+      <div class="exercise-feedback" id="te-ex-feedback"></div>
+    </div>
+  `;
+  setTimeout(() => {
+    const inp = document.getElementById('te-ex-input');
+    if (inp) inp.focus();
+  }, 50);
+}
+
+function checkExercise() {
+  const ex = tePracticeState.current;
+  const inp = document.getElementById('te-ex-input');
+  const fb = document.getElementById('te-ex-feedback');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const userAns = normalizeAns(raw);
+  const accepted = ex.answers.map(normalizeAns);
+
+  tePracticeState.attempts++;
+
+  if (accepted.includes(userAns)) {
+    // Correct (only count first attempt as fully correct)
+    if (tePracticeState.attempts === 1) tePracticeState.correct++;
+    inp.classList.add('correct');
+    fb.className = 'exercise-feedback show correct';
+    fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${ex.answers[0]}</span>`;
+    speak(ex.answers[0]);
+    updateStats();
+    setTimeout(nextExercise, 1500);
+  } else {
+    if (tePracticeState.attempts === 1) tePracticeState.wrong++;
+    inp.classList.add('wrong');
+    fb.className = 'exercise-feedback show wrong';
+    fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
+    updateStats();
+  }
+}
+
+function showExerciseAnswer() {
+  const ex = tePracticeState.current;
+  const fb = document.getElementById('te-ex-feedback');
+  if (tePracticeState.attempts === 0) tePracticeState.wrong++;
+  fb.className = 'exercise-feedback show wrong';
+  fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也可以：${ex.answers.slice(1).join('、')}</span>` : ''}`;
+  speak(ex.answers[0]);
+  updateStats();
+  setTimeout(nextExercise, 2500);
+}
+
+function nextExercise() {
+  pickNextExercise();
+}
+
+function updateStats() {
+  const ok = document.getElementById('te-stat-ok');
+  const ng = document.getElementById('te-stat-ng');
+  if (ok) ok.textContent = tePracticeState.correct;
+  if (ng) ng.textContent = tePracticeState.wrong;
+}
+
 // Per-lesson playback state
 const lessonPlayback = {};
 
@@ -1899,7 +2261,9 @@ function buildLessonContent(num) {
   // For lessons that have a vocab list only (no flashcards / quiz),
   // render just the vocab section under the grammar intro.
   if (VOCAB[num] && num === 6) {
-    container.innerHTML = vocabSectionHTML(num);
+    container.innerHTML = vocabSectionHTML(num) + teKudasaiSectionHTML();
+    // initialize first practice exercise (the section starts expanded)
+    setTimeout(pickNextExercise, 50);
     return;
   }
 
