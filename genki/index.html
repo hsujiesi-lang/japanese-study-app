@@ -115,10 +115,16 @@
   .verb-jp {
     font-size: 1.4em; font-weight: 700; color: #37474F;
     cursor: pointer; user-select: none;
+    display: inline-flex; flex-direction: column; align-items: flex-start;
+    line-height: 1.15;
   }
   .verb-jp:active { color: #FF7043; }
+  .verb-jp .kanji-row { display: flex; align-items: baseline; gap: 8px; }
   .verb-jp .kanji { font-size: 1.1em; }
-  .verb-jp .hira { color: #999; font-size: 0.7em; margin-left: 6px; }
+  .verb-jp .hira {
+    color: #999; font-size: 0.55em; margin-top: 2px;
+    font-weight: 500; letter-spacing: 0.5px;
+  }
   .speaker-icon {
     display: inline-block; margin-left: 6px; font-size: 0.7em;
     color: #FF7043; vertical-align: middle;
@@ -435,10 +441,12 @@
   .vocab-card.naadj      { border-left-color: #00897B; }
   .vocab-card .vocab-jp { min-width: 0; flex: 1; }
   .vocab-card .vocab-main {
-    font-size: 1.15em; font-weight: 700; color: #37474F;
+    font-size: 1.2em; font-weight: 700; color: #37474F;
+    line-height: 1.2;
   }
   .vocab-card .vocab-hira {
-    font-size: 0.78em; color: #999; margin-left: 6px;
+    font-size: 0.72em; color: #999; margin-top: 2px;
+    font-weight: 500; letter-spacing: 0.5px;
   }
   .vocab-card .vocab-en {
     font-size: 0.85em; color: #666; margin-top: 2px;
@@ -1950,12 +1958,16 @@ function verbCard(v) {
 
   const typeLabel = v.type === 'ru' ? 'Ru-verb' : (v.type === 'u' ? 'U-verb' : 'Irregular');
 
+  const hasKanji = v.kanji && v.kanji !== v.hira;
+  const hiraLine = hasKanji ? `<span class="hira">${v.hira}</span>` : '';
   div.innerHTML = `
     <div class="verb-header">
       <div class="verb-jp" onclick="speakVerbAll('${v.hira}','${c.presentAff}','${c.presentNeg}','${c.pastAff}','${c.pastNeg}','${te}')" title="連續播放：辞書形 → 現在肯定 → 現在否定 → 過去肯定 → 過去否定 → て形">
-        <span class="kanji">${v.kanji}</span>
-        <span class="hira">[${v.hira}]</span>
-        <span class="speaker-icon">🔊 全部</span>
+        <div class="kanji-row">
+          <span class="kanji">${v.kanji}</span>
+          <span class="speaker-icon">🔊 全部</span>
+        </div>
+        ${hiraLine}
       </div>
       <div class="verb-en">${v.en}</div>
     </div>
@@ -2168,13 +2180,14 @@ function vocabSectionHTML(num) {
     inner += `<div class="vocab-section-title">${g.title} <span class="count">${g.items.length} 個</span></div>`;
     inner += `<div class="vocab-grid">`;
     g.items.forEach(item => {
-      const display = item.kanji && item.kanji.length > 0 ? item.kanji : item.hira;
-      const hiraSub = item.kanji && item.kanji.length > 0 && item.kanji !== item.hira
-        ? `<span class="vocab-hira">[${item.hira}]</span>` : '';
+      const hasKanji = item.kanji && item.kanji.length > 0 && item.kanji !== item.hira;
+      const display = hasKanji ? item.kanji : item.hira;
+      const hiraSub = hasKanji ? `<div class="vocab-hira">${item.hira}</div>` : '';
       inner += `
         <div class="vocab-card ${g.cls}" onclick="speak('${item.hira}')">
           <div class="vocab-jp">
-            <div class="vocab-main">${display}${hiraSub}</div>
+            <div class="vocab-main">${display}</div>
+            ${hiraSub}
             <div class="vocab-en">${item.en}</div>
           </div>
           <button class="vocab-speak" onclick="event.stopPropagation(); speak('${item.hira}')">🔊</button>
@@ -2690,13 +2703,17 @@ function adjCard(a) {
   const irrTag = a.irregular ? '<span class="adj-irregular-tag">⚠ 不規則</span>' : '';
   const naMarker = a.type === 'na' ? '<span class="badge badge-particle">(な)</span>' : '';
 
+  const aHasKanji = a.kanji && a.kanji !== a.hira;
+  const aHiraLine = aHasKanji ? `<span class="hira">${a.hira}</span>` : '';
   div.innerHTML = `
     <div class="verb-header">
       <div class="verb-jp" onclick="speakAdjAll('${a.hira}','${c.presentAff}','${c.presentNeg}','${c.pastAff}','${c.pastNeg}')" title="連續播放：辞書形 → 現在肯定 → 現在否定 → 過去肯定 → 過去否定">
-        <span class="kanji">${a.kanji}</span>
-        <span class="hira">[${a.hira}]</span>
-        <span class="speaker-icon">🔊 全部</span>
-        ${irrTag}
+        <div class="kanji-row">
+          <span class="kanji">${a.kanji}</span>
+          <span class="speaker-icon">🔊 全部</span>
+          ${irrTag}
+        </div>
+        ${aHiraLine}
       </div>
       <div class="verb-en">${a.en}</div>
     </div>
