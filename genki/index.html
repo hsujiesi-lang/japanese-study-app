@@ -306,8 +306,12 @@
   .grammar-example .ex-jp {
     font-size: 1.05em; color: #37474F; font-weight: 600;
   }
+  .grammar-example .ex-reading {
+    font-size: 0.78em; color: #999; margin-top: 2px;
+    letter-spacing: 0.5px; font-weight: 500;
+  }
   .grammar-example .ex-en {
-    font-size: 0.82em; color: #999; margin-top: 2px;
+    font-size: 0.82em; color: #999; margin-top: 4px; font-style: italic;
   }
   .grammar-example .ex-speak {
     background: #FFF3E0; border: none; color: #E65100;
@@ -1160,11 +1164,11 @@ GRAMMARS['te-kudasai'] = {
     '要先把動詞變成 て形（規則請看 Verbs 頁面 p.150）。'
   ],
   examples: [
-    { jp:'日本語を話してください。',     en:'Please speak Japanese.' },
-    { jp:'教科書を読んでください。',     en:'Please read the textbook.' },
-    { jp:'ちょっと教えてください。',     en:'Please teach me a little.' },
-    { jp:'まどを開けてください。',       en:'Please open the window.' },
-    { jp:'ゆっくり話してください。',     en:'Please speak slowly.' }
+    { jp:'日本語を話してください。',     reading:'にほんごをはなしてください。',   en:'Please speak Japanese.' },
+    { jp:'教科書を読んでください。',     reading:'きょうかしょをよんでください。', en:'Please read the textbook.' },
+    { jp:'ちょっと教えてください。',     reading:'ちょっとおしえてください。',     en:'Please teach me a little.' },
+    { jp:'まどを開けてください。',       reading:'まどをあけてください。',         en:'Please open the window.' },
+    { jp:'ゆっくり話してください。',     reading:'ゆっくりはなしてください。',     en:'Please speak slowly.' }
   ],
   // === Exercises from textbook p.156-157 ===
   exercises: [
@@ -1223,12 +1227,12 @@ GRAMMARS['te-two'] = {
     'て形 也可以更鬆散地連接：第一句描述第二句的<b>方式或情況</b>（例：バスに乗って、会社に行きます ＝搭巴士去公司）。'
   ],
   examples: [
-    { jp:'朝起きて、コーヒーを飲みます。',          en:'I get up in the morning and drink coffee.' },
-    { jp:'図書館に行って、本を借ります。',          en:'I will go to the library and borrow some books.' },
-    { jp:'今日は、六時に起きて、勉強しました。',    en:'Today I got up at 6 and studied.' },
-    { jp:'食堂に行って、昼ご飯を食べましょう。',    en:"Let's go to the cafeteria and have lunch." },
-    { jp:'バスに乗って、会社に行きます。',          en:'I take the bus and go to work.' },
-    { jp:'うちに帰って、テレビを見ます。',          en:'I will go home and watch TV.' },
+    { jp:'朝起きて、コーヒーを飲みます。',          reading:'あさおきて、コーヒーをのみます。',           en:'I get up in the morning and drink coffee.' },
+    { jp:'図書館に行って、本を借ります。',          reading:'としょかんにいって、ほんをかります。',       en:'I will go to the library and borrow some books.' },
+    { jp:'今日は、六時に起きて、勉強しました。',    reading:'きょうは、ろくじにおきて、べんきょうしました。', en:'Today I got up at 6 and studied.' },
+    { jp:'食堂に行って、昼ご飯を食べましょう。',    reading:'しょくどうにいって、ひるごはんをたべましょう。', en:"Let's go to the cafeteria and have lunch." },
+    { jp:'バスに乗って、会社に行きます。',          reading:'バスにのって、かいしゃにいきます。',         en:'I take the bus and go to work.' },
+    { jp:'うちに帰って、テレビを見ます。',          reading:'うちにかえって、テレビをみます。',           en:'I will go home and watch TV.' },
   ],
   // === Exercises from textbook p.158 III B (verbs to te-form) ===
   exercises: [
@@ -1270,11 +1274,11 @@ GRAMMARS['te-mo-ii'] = {
     '不能單獨用 もいいです（て 必須是動詞變化的一部分）。'
   ],
   examples: [
-    { jp:'写真を撮ってもいいですか。',         en:'May I take a picture?' },
-    { jp:'ええ、いいですよ。どうぞ。',         en:'Yes, sure. Go ahead.' },
-    { jp:'すみません。ちょっと……。',           en:"Sorry, that's a bit ..." },
-    { jp:'教科書を見てもいいですよ。',         en:'You may use the textbook.' },
-    { jp:'まどを開けてもいいですか。',         en:'May I open the window?' }
+    { jp:'写真を撮ってもいいですか。',         reading:'しゃしんをとってもいいですか。',         en:'May I take a picture?' },
+    { jp:'ええ、いいですよ。どうぞ。',         reading:'ええ、いいですよ。どうぞ。',             en:'Yes, sure. Go ahead.' },
+    { jp:'すみません。ちょっと……。',           reading:'すみません。ちょっと……。',               en:"Sorry, that's a bit ..." },
+    { jp:'教科書を見てもいいですよ。',         reading:'きょうかしょをみてもいいですよ。',       en:'You may use the textbook.' },
+    { jp:'まどを開けてもいいですか。',         reading:'まどをあけてもいいですか。',             en:'May I open the window?' }
   ],
   // === Exercises from textbook p.160 IV C (situations) + IV A ===
   exercises: [
@@ -1314,10 +1318,10 @@ GRAMMARS['te-wa-ikemasen'] = {
     '較柔軟的「請別…」會在 Lesson 8 學到（〜ないでください）。'
   ],
   examples: [
-    { jp:'食べてはいけません。',                 en:'You must not eat.' },
-    { jp:'ここで写真を撮ってはいけません。',     en:'You must not take pictures here.' },
-    { jp:'ここでたばこを吸ってはいけません。',   en:'You must not smoke here.' },
-    { jp:'図書館で電話してはいけません。',       en:'You must not make phone calls in the library.' },
+    { jp:'食べてはいけません。',                 reading:'たべてはいけません。',                   en:'You must not eat.' },
+    { jp:'ここで写真を撮ってはいけません。',     reading:'ここでしゃしんをとってはいけません。',   en:'You must not take pictures here.' },
+    { jp:'ここでたばこを吸ってはいけません。',   reading:'ここでたばこをすってはいけません。',     en:'You must not smoke here.' },
+    { jp:'図書館で電話してはいけません。',       reading:'としょかんででんわしてはいけません。',   en:'You must not make phone calls in the library.' },
   ],
   // === Exercises from textbook p.161 V B (library rules) ===
   exercises: [
@@ -1357,10 +1361,10 @@ GRAMMARS['kara'] = {
     'から 接 です／ます 句（如：高いです<b>から</b>、行きます<b>から</b>）。'
   ],
   examples: [
-    { jp:'勉強します。あしたテストがありますから。',         en:'I will study, because we have an exam tomorrow.' },
-    { jp:'バスに乗りましょう。タクシーは高いですから。',     en:"Let's go by bus, because taxis are expensive." },
-    { jp:'いそぎましょう。バスが来ますから。',               en:"Let's hurry, because the bus is coming." },
-    { jp:'私は昼ご飯を食べません。あまりお金がありませんから。', en:"I won't eat lunch, because I don't have much money." },
+    { jp:'勉強します。あしたテストがありますから。',         reading:'べんきょうします。あしたテストがありますから。',           en:'I will study, because we have an exam tomorrow.' },
+    { jp:'バスに乗りましょう。タクシーは高いですから。',     reading:'バスにのりましょう。タクシーはたかいですから。',           en:"Let's go by bus, because taxis are expensive." },
+    { jp:'いそぎましょう。バスが来ますから。',               reading:'いそぎましょう。バスがきますから。',                       en:"Let's hurry, because the bus is coming." },
+    { jp:'私は昼ご飯を食べません。あまりお金がありませんから。', reading:'わたしはひるごはんをたべません。あまりおかねがありませんから。', en:"I won't eat lunch, because I don't have much money." },
   ],
   // === Exercises from textbook p.161 VI A & B ===
   exercises: [
@@ -1396,12 +1400,12 @@ GRAMMARS['mashou-ka'] = {
     '看到別人有困難時：荷物を持ちましょうか。(我幫你拿吧？)'
   ],
   examples: [
-    { jp:'テレビを消しましょうか。',         en:'Shall I turn off the TV?' },
-    { jp:'すみません。お願いします。',       en:'Sorry, please do.' },
-    { jp:'いいえ、大丈夫です。',             en:"No, it's all right." },
-    { jp:'荷物を持ちましょうか。',           en:'Shall I carry your bag?' },
-    { jp:'まどを開けましょうか。',           en:'Shall I open the window?' },
-    { jp:'手伝いましょうか。',               en:'Shall I help you?' }
+    { jp:'テレビを消しましょうか。',         reading:'テレビをけしましょうか。',       en:'Shall I turn off the TV?' },
+    { jp:'すみません。お願いします。',       reading:'すみません。おねがいします。',   en:'Sorry, please do.' },
+    { jp:'いいえ、大丈夫です。',             reading:'いいえ、だいじょうぶです。',     en:"No, it's all right." },
+    { jp:'荷物を持ちましょうか。',           reading:'にもつをもちましょうか。',       en:'Shall I carry your bag?' },
+    { jp:'まどを開けましょうか。',           reading:'まどをあけましょうか。',         en:'Shall I open the window?' },
+    { jp:'手伝いましょうか。',               reading:'てつだいましょうか。',           en:'Shall I help you?' }
   ],
   // === Exercises from textbook p.162-163 VII A & B ===
   exercises: [
@@ -2235,10 +2239,12 @@ function grammarSectionHTML(id) {
   const explainHtml = g.explanation.map(p => `<p>${p}</p>`).join('');
   const examplesHtml = g.examples.map(ex => {
     const safe = ex.jp.replace(/'/g, "\\'");
+    const readingLine = ex.reading ? `<div class="ex-reading">${ex.reading}</div>` : '';
     return `
       <div class="grammar-example" onclick="speak('${safe}')">
-        <div>
+        <div style="flex:1; min-width:0;">
           <div class="ex-jp">${ex.jp}</div>
+          ${readingLine}
           <div class="ex-en">${ex.en}</div>
         </div>
         <button class="ex-speak" onclick="event.stopPropagation(); speak('${safe}')">🔊</button>
