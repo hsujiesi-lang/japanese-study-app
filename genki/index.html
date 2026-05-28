@@ -9,10 +9,25 @@
 <title>げんき Lessons 1-6 練習</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { background: #EFE9DD; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
-    background: #FFF8F0; color: #333; min-height: 100vh;
+    color: #333; min-height: 100vh;
     -webkit-text-size-adjust: 100%;
+    font-size: 17px;  /* base bumped from default 16px */
+    line-height: 1.5;
+  }
+  /* Desktop: constrain whole app to a phone-like width so reading is comfortable */
+  .page {
+    background: #FFF8F0;
+    max-width: 720px;
+    margin: 0 auto;
+    min-height: 100vh;
+    box-shadow: 0 0 24px rgba(0,0,0,0.08);
+  }
+  /* Push sticky elements to align with the centered page */
+  @media (min-width: 760px) {
+    body { padding-top: 0; }
   }
   header {
     background: linear-gradient(135deg, #FF7043 0%, #FF8A65 100%);
