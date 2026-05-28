@@ -283,6 +283,32 @@
   }
   .search-box:focus { border-color: #FF7043; }
 
+  /* Verb practice mode tabs */
+  .verb-mode-tabs {
+    display: flex; background: white; padding: 6px;
+    margin: 12px 16px 0; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    gap: 4px;
+  }
+  .verb-mode-tab {
+    flex: 1; background: transparent; border: none; padding: 9px;
+    border-radius: 8px; font-size: 0.9em; font-weight: 700;
+    color: #757575; cursor: pointer;
+  }
+  .verb-mode-tab.active { background: #FF7043; color: white; }
+
+  .verb-q-form-tag {
+    display: inline-block; background: #E3F2FD; color: #1565C0;
+    padding: 4px 12px; border-radius: 12px; font-size: 0.82em;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .verb-q-en {
+    font-size: 1.5em; color: #37474F; font-weight: 700; margin: 4px 0 2px;
+  }
+  .verb-q-spec {
+    font-size: 1.05em; color: #FF7043; font-weight: 700; margin-bottom: 4px;
+  }
+  .verb-q-meta { font-size: 0.82em; color: #999; margin-bottom: 12px; }
+
   /* Grammar practice */
   .grammar-explain {
     padding: 14px 16px; background: #FFFDE7; color: #555;
@@ -745,17 +771,41 @@
     <button class="filter-chip" data-lesson="6" onclick="setFilter(this,'lesson','6')">L6</button>
   </div>
 
-  <div class="particle-info">
-    💡 <b>提示</b>：點擊任何日文字可以聽發音。卡片左邊顏色：<b style="color:#5C6BC0">藍=Ru</b>，<b style="color:#26A69A">綠=U</b>，<b style="color:#AB47BC">紫=Irregular</b>
+  <div class="verb-mode-tabs">
+    <button class="verb-mode-tab active" id="verb-tab-ref" onclick="setVerbMode('reference')">📋 列表 Reference</button>
+    <button class="verb-mode-tab" id="verb-tab-prac" onclick="setVerbMode('practice')">✏️ 練習 Practice</button>
   </div>
 
-  <div style="padding:0 16px; margin-bottom:8px;">
-    <button onclick="playFilteredVerbs()" id="play-filtered-btn" style="width:100%; background:linear-gradient(135deg,#FF7043 0%,#E64A19 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(255,112,67,0.3);">
-      ▶ 播放目前篩選的 <span id="filtered-count">0</span> 個動詞 (全部變化形)
-    </button>
+  <!-- Reference mode -->
+  <div id="verb-reference-mode">
+    <div class="particle-info">
+      💡 <b>提示</b>：點擊任何日文字可以聽發音。卡片左邊顏色：<b style="color:#5C6BC0">藍=Ru</b>，<b style="color:#26A69A">綠=U</b>，<b style="color:#AB47BC">紫=Irregular</b>
+    </div>
+    <div style="padding:0 16px; margin-bottom:8px;">
+      <button onclick="playFilteredVerbs()" id="play-filtered-btn" style="width:100%; background:linear-gradient(135deg,#FF7043 0%,#E64A19 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(255,112,67,0.3);">
+        ▶ 播放目前篩選的 <span id="filtered-count">0</span> 個動詞 (全部變化形)
+      </button>
+    </div>
+    <div id="verb-list"></div>
   </div>
 
-  <div id="verb-list"></div>
+  <!-- Practice mode -->
+  <div id="verb-practice-mode" style="display:none;">
+    <div class="particle-info">
+      ✏️ <b>主動練習</b>：看英文意思＋指定變化，打出日文（漢字或平假名都可）。會依上方的 <b>類型／課程</b> 篩選出題。
+    </div>
+    <div class="practice-zone" style="margin-top:8px;">
+      <div class="practice-zone-header">
+        <h4>✏️ 動詞活用練習</h4>
+        <div class="practice-zone-stats">
+          ✅<span class="ok" id="vp-stat-ok">0</span> ・
+          ❌<span class="ng" id="vp-stat-ng">0</span>
+        </div>
+      </div>
+      <div id="vp-area"></div>
+    </div>
+  </div>
+
   <div class="bottom-pad"></div>
 </div>
 
@@ -1607,6 +1657,46 @@ function formsFromStem(stem) {
   };
 }
 
+// Conjugate ANY dictionary-form string (kanji OR hira) given the verb type.
+// Returns { presentAff, presentNeg, pastAff, pastNeg, te }.
+// Works for kanji because the okurigana (trailing kana) matches the hira ending,
+// with special handling for 来る/くる.
+function conjugateAny(dict, type) {
+  // Explicit irregulars
+  if (dict === 'する') return { presentAff:'します', presentNeg:'しません', pastAff:'しました', pastNeg:'しませんでした', te:'して' };
+  if (dict === 'くる') return { presentAff:'きます', presentNeg:'きません', pastAff:'きました', pastNeg:'きませんでした', te:'きて' };
+  if (dict === '来る') return { presentAff:'来ます', presentNeg:'来ません', pastAff:'来ました', pastNeg:'来ませんでした', te:'来て' };
+  if (type === 'irregular') {
+    if (dict.endsWith('する')) { const p = dict.slice(0,-2); return { presentAff:p+'します', presentNeg:p+'しません', pastAff:p+'しました', pastNeg:p+'しませんでした', te:p+'して' }; }
+    if (dict.endsWith('くる')) { const p = dict.slice(0,-2); return { presentAff:p+'きます', presentNeg:p+'きません', pastAff:p+'きました', pastNeg:p+'きませんでした', te:p+'きて' }; }
+  }
+  if (type === 'ru') {
+    const s = dict.slice(0, -1);
+    return { presentAff:s+'ます', presentNeg:s+'ません', pastAff:s+'ました', pastNeg:s+'ませんでした', te:s+'て' };
+  }
+  // u-verb
+  const last = dict.slice(-1);
+  const s = dict.slice(0, -1);
+  const stem = s + (U_ENDINGS[last] || last);
+  let te;
+  if (dict === 'いく' || dict === '行く') te = s + 'って';
+  else if (last==='う'||last==='つ'||last==='る') te = s + 'って';
+  else if (last==='む'||last==='ぶ'||last==='ぬ') te = s + 'んで';
+  else if (last==='く') te = s + 'いて';
+  else if (last==='ぐ') te = s + 'いで';
+  else if (last==='す') te = s + 'して';
+  else te = s + 'て';
+  return { presentAff:stem+'ます', presentNeg:stem+'ません', pastAff:stem+'ました', pastNeg:stem+'ませんでした', te };
+}
+
+// Accepted answers (hira + kanji variants) for a given verb & form key
+function verbFormAnswers(verb, formKey) {
+  const hira = conjugateAny(verb.hira, verb.type);
+  const kanji = conjugateAny(verb.kanji, verb.type);
+  const set = new Set([hira[formKey], kanji[formKey]]);
+  return Array.from(set);
+}
+
 // ============================
 // TE-FORM (Genki p.150 rules)
 // ============================
@@ -1897,6 +1987,164 @@ function renderVerbs() {
   if (fcEl) fcEl.textContent = filtered.length;
   const btn = document.getElementById('play-filtered-btn');
   if (btn) btn.disabled = filtered.length === 0;
+}
+
+// ============================
+// VERB ACTIVE PRACTICE (type the Japanese form)
+// ============================
+const VERB_FORMS = [
+  { key:'presentAff', label:'現在 Present ・ 肯定 Affirmative', short:'～ます' },
+  { key:'presentNeg', label:'現在 Present ・ 否定 Negative',    short:'～ません' },
+  { key:'pastAff',    label:'過去 Past ・ 肯定 Affirmative',    short:'～ました' },
+  { key:'pastNeg',    label:'過去 Past ・ 否定 Negative',       short:'～ませんでした' },
+  { key:'te',         label:'て形 Te-form',                     short:'～て' },
+];
+
+const verbPractice = {
+  correct: 0, wrong: 0, current: null, attempts: 0,
+  revealed: false, advanceArmed: false
+};
+
+function setVerbMode(mode) {
+  const refMode = document.getElementById('verb-reference-mode');
+  const pracMode = document.getElementById('verb-practice-mode');
+  const refTab = document.getElementById('verb-tab-ref');
+  const pracTab = document.getElementById('verb-tab-prac');
+  if (mode === 'practice') {
+    refMode.style.display = 'none';
+    pracMode.style.display = 'block';
+    refTab.classList.remove('active');
+    pracTab.classList.add('active');
+    pickVerbQuestion();
+  } else {
+    refMode.style.display = 'block';
+    pracMode.style.display = 'none';
+    pracTab.classList.remove('active');
+    refTab.classList.add('active');
+  }
+}
+
+function verbPoolForPractice() {
+  return VERBS.filter(v => {
+    if (filterType !== 'all' && v.type !== filterType) return false;
+    if (filterLesson !== 'all' && String(v.lesson) !== filterLesson) return false;
+    return true;
+  });
+}
+
+function pickVerbQuestion() {
+  const pool = verbPoolForPractice();
+  const area = document.getElementById('vp-area');
+  if (pool.length === 0) {
+    area.innerHTML = `<div class="exercise-card" style="text-align:center; color:#999;">這個篩選沒有動詞，請調整上方的類型／課程篩選。</div>`;
+    return;
+  }
+  const verb = pool[Math.floor(Math.random() * pool.length)];
+  const form = VERB_FORMS[Math.floor(Math.random() * VERB_FORMS.length)];
+  verbPractice.current = { verb, form };
+  verbPractice.attempts = 0;
+  verbPractice.revealed = false;
+  verbPractice.advanceArmed = false;
+  renderVerbQuestion();
+}
+
+function renderVerbQuestion() {
+  const { verb, form } = verbPractice.current;
+  const area = document.getElementById('vp-area');
+  const typeLabel = verb.type === 'ru' ? 'Ru-verb' : (verb.type === 'u' ? 'U-verb' : 'Irregular');
+  area.innerHTML = `
+    <div class="exercise-card">
+      <span class="verb-q-form-tag">${form.short}　${form.label}</span>
+      <div class="verb-q-en">${verb.en}</div>
+      <div class="verb-q-spec">→ 寫出「${form.label}」</div>
+      <div class="verb-q-meta">L${verb.lesson} ・ ${typeLabel} ・ 辞書形提示：點「看答案」</div>
+      <div class="input-hint">💡 漢字或平假名都可（例：食べます／たべます）</div>
+      <input type="text" class="exercise-input" id="vp-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入日文…" onkeydown="if(event.key==='Enter'){event.preventDefault(); handleVerbEnter();}">
+      <div class="exercise-buttons">
+        <button class="ex-btn-submit" onclick="checkVerbAnswer()">✅ 確認</button>
+        <button class="ex-btn-show"   onclick="showVerbAnswer()">👀 看答案</button>
+        <button class="ex-btn-skip"   onclick="pickVerbQuestion()">⏭ 跳過</button>
+      </div>
+      <div class="exercise-feedback" id="vp-fb"></div>
+    </div>
+  `;
+  setTimeout(() => { const i = document.getElementById('vp-input'); if (i) i.focus(); }, 50);
+}
+
+function checkVerbAnswer() {
+  const { verb, form } = verbPractice.current;
+  const inp = document.getElementById('vp-input');
+  const fb = document.getElementById('vp-fb');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const accepted = verbFormAnswers(verb, form.key).map(normalizeAns);
+  const userAns = normalizeAns(raw);
+  verbPractice.attempts++;
+
+  const answers = verbFormAnswers(verb, form.key);
+  if (accepted.includes(userAns)) {
+    if (verbPractice.attempts === 1) verbPractice.correct++;
+    inp.classList.add('correct');
+    inp.readOnly = true;
+    fb.className = 'exercise-feedback show correct';
+    fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${answers[0]}</span>
+      <div style="margin-top:6px; color:#2E7D32; font-size:0.88em; font-weight:600;">↵ 再按一次 Enter 進入下一題</div>`;
+    speak(answers[0]);
+    updateVerbStats();
+    verbPractice.revealed = true;
+    verbPractice.advanceArmed = true;
+    inp.focus();
+  } else {
+    if (verbPractice.attempts === 1) verbPractice.wrong++;
+    inp.classList.add('wrong');
+    fb.className = 'exercise-feedback show wrong';
+    fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
+    updateVerbStats();
+  }
+}
+
+function showVerbAnswer() {
+  const { verb, form } = verbPractice.current;
+  const inp = document.getElementById('vp-input');
+  const fb = document.getElementById('vp-fb');
+  if (verbPractice.attempts === 0) verbPractice.wrong++;
+  if (inp) inp.readOnly = true;
+  const answers = verbFormAnswers(verb, form.key);
+  const dict = verb.kanji + (verb.kanji !== verb.hira ? `（${verb.hira}）` : '');
+  fb.className = 'exercise-feedback show wrong';
+  fb.innerHTML = `📖 正解：<span class="answer-shown">${answers[0]}</span>${answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${answers.slice(1).join('、')}</span>` : ''}
+    <div style="margin-top:4px; font-size:0.82em; opacity:0.85;">辞書形：${dict}</div>
+    <div style="margin-top:8px; color:#C62828; font-size:0.88em; font-weight:600;">↵ 按 Enter 兩下進入下一題</div>`;
+  speak(answers[0]);
+  updateVerbStats();
+  verbPractice.revealed = true;
+  verbPractice.advanceArmed = false;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (inp) setTimeout(() => inp.focus(), 0);
+}
+
+function handleVerbEnter() {
+  if (!verbPractice.revealed) { checkVerbAnswer(); return; }
+  if (!verbPractice.advanceArmed) {
+    verbPractice.advanceArmed = true;
+    const fb = document.getElementById('vp-fb');
+    if (fb && !fb.querySelector('div[data-arm]')) {
+      const note = document.createElement('div');
+      note.setAttribute('data-arm','1');
+      note.style.cssText = 'margin-top:6px; color:#E64A19; font-weight:700; font-size:0.92em;';
+      note.innerHTML = '↵ 再按一次 Enter 進入下一題';
+      fb.appendChild(note);
+    }
+    return;
+  }
+  pickVerbQuestion();
+}
+
+function updateVerbStats() {
+  const ok = document.getElementById('vp-stat-ok');
+  const ng = document.getElementById('vp-stat-ng');
+  if (ok) ok.textContent = verbPractice.correct;
+  if (ng) ng.textContent = verbPractice.wrong;
 }
 
 // Play all verbs that match the current filters (type + lesson + search)
