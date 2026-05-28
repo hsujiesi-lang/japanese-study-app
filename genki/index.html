@@ -2366,7 +2366,7 @@ function checkGrammarExercise(id) {
   if (accepted.includes(userAns)) {
     if (state.attempts === 1) state.correct++;
     inp.classList.add('correct');
-    inp.disabled = true;  // lock so further typing won't change the answer
+    inp.readOnly = true;  // lock typing but allow focus + Enter keydown
     fb.className = 'exercise-feedback show correct';
     fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${ex.answers[0]}</span>
       <div style="margin-top:6px; color:#2E7D32; font-size:0.88em; font-weight:600;">↵ 再按一次 Enter 進入下一題</div>`;
@@ -2392,7 +2392,7 @@ function showGrammarAnswer(id) {
   const inp = document.getElementById(`g-ex-input-${id}`);
   const fb = document.getElementById(`g-ex-fb-${id}`);
   if (state.attempts === 0) state.wrong++;
-  if (inp) inp.disabled = true;
+  if (inp) inp.readOnly = true;  // readOnly (not disabled) so it can still receive focus+keydown
   fb.className = 'exercise-feedback show wrong';
   fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${ex.answers.slice(1).join('、')}</span>` : ''}
     <div style="margin-top:8px; color:#C62828; font-size:0.88em; font-weight:600;">↵ 按 Enter 兩下進入下一題</div>`;
@@ -2401,7 +2401,9 @@ function showGrammarAnswer(id) {
   // Reveal but not armed — needs two Enters (one to arm, one to advance)
   state.revealed = true;
   state.advanceArmed = false;
-  if (inp) inp.focus();
+  // Critical: move focus away from the 看答案 button so Enter doesn't re-trigger it
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (inp) setTimeout(() => inp.focus(), 0);
 }
 
 function nextGrammarExercise(id) {
