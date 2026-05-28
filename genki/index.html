@@ -2220,7 +2220,11 @@ const grammarPracticeStates = {};  // keyed by grammar id
 
 function getGrammarState(id) {
   if (!grammarPracticeStates[id]) {
-    grammarPracticeStates[id] = { correct: 0, wrong: 0, current: null, attempts: 0 };
+    grammarPracticeStates[id] = {
+      correct: 0, wrong: 0, current: null, attempts: 0,
+      revealed: false,      // answer has been finalized (correct submit OR 看答案 clicked)
+      advanceArmed: false   // next Enter will advance to the next question
+    };
   }
   return grammarPracticeStates[id];
 }
@@ -2283,6 +2287,8 @@ function pickNextGrammarExercise(id) {
   } while (g.exercises.length > 1 && state.current === pick);
   state.current = pick;
   state.attempts = 0;
+  state.revealed = false;
+  state.advanceArmed = false;
   renderGrammarExercise(id);
 }
 
@@ -2324,7 +2330,7 @@ function renderGrammarExercise(id) {
       <span class="exercise-type-tag ${ex.type}">${tagText}</span>
       ${promptHtml}
       <div class="input-hint">💡 ${inputHint}</div>
-      <input type="text" class="exercise-input" id="g-ex-input-${id}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter') checkGrammarExercise('${id}')">
+      <input type="text" class="exercise-input" id="g-ex-input-${id}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter'){event.preventDefault(); handleExerciseEnter('${id}');}" oninput="onExerciseInput('${id}')">
       <div class="exercise-buttons">
         <button class="ex-btn-submit" onclick="checkGrammarExercise('${id}')">✅ 確認</button>
         <button class="ex-btn-show"   onclick="showGrammarAnswer('${id}')">👀 看答案</button>
@@ -2354,34 +2360,84 @@ function checkGrammarExercise(id) {
   if (accepted.includes(userAns)) {
     if (state.attempts === 1) state.correct++;
     inp.classList.add('correct');
+    inp.disabled = true;  // lock so further typing won't change the answer
     fb.className = 'exercise-feedback show correct';
-    fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${ex.answers[0]}</span>`;
+    fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${ex.answers[0]}</span>
+      <div style="margin-top:6px; color:#2E7D32; font-size:0.88em; font-weight:600;">↵ 再按一次 Enter 進入下一題</div>`;
     speak(ex.answers[0]);
     updateGrammarStats(id);
-    setTimeout(() => nextGrammarExercise(id), 1500);
+    // Reveal + arm advance — next Enter goes to next question (2 enters total: submit + advance)
+    state.revealed = true;
+    state.advanceArmed = true;
+    inp.focus();
   } else {
     if (state.attempts === 1) state.wrong++;
     inp.classList.add('wrong');
     fb.className = 'exercise-feedback show wrong';
     fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
     updateGrammarStats(id);
+    // Stay open for retry — not revealed
   }
 }
 
 function showGrammarAnswer(id) {
   const state = getGrammarState(id);
   const ex = state.current;
+  const inp = document.getElementById(`g-ex-input-${id}`);
   const fb = document.getElementById(`g-ex-fb-${id}`);
   if (state.attempts === 0) state.wrong++;
+  if (inp) inp.disabled = true;
   fb.className = 'exercise-feedback show wrong';
-  fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${ex.answers.slice(1).join('、')}</span>` : ''}`;
+  fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${ex.answers.slice(1).join('、')}</span>` : ''}
+    <div style="margin-top:8px; color:#C62828; font-size:0.88em; font-weight:600;">↵ 按 Enter 兩下進入下一題</div>`;
   speak(ex.answers[0]);
   updateGrammarStats(id);
-  setTimeout(() => nextGrammarExercise(id), 2500);
+  // Reveal but not armed — needs two Enters (one to arm, one to advance)
+  state.revealed = true;
+  state.advanceArmed = false;
+  if (inp) inp.focus();
 }
 
 function nextGrammarExercise(id) {
   pickNextGrammarExercise(id);
+}
+
+// Enter key handler: routes between submit / arm / advance based on state
+function handleExerciseEnter(id) {
+  const state = getGrammarState(id);
+  if (!state.revealed) {
+    // Still answering — Enter submits
+    checkGrammarExercise(id);
+    return;
+  }
+  if (!state.advanceArmed) {
+    // First Enter after 看答案 — arm advance
+    state.advanceArmed = true;
+    const fb = document.getElementById(`g-ex-fb-${id}`);
+    if (fb) {
+      // Replace the prompt to be even more explicit
+      const armNotice = fb.querySelector('div[data-arm]');
+      if (!armNotice) {
+        const note = document.createElement('div');
+        note.setAttribute('data-arm','1');
+        note.style.cssText = 'margin-top:6px; color:#E64A19; font-weight:700; font-size:0.92em;';
+        note.innerHTML = '↵ 再按一次 Enter 進入下一題';
+        fb.appendChild(note);
+      }
+    }
+    return;
+  }
+  // Armed — advance
+  nextGrammarExercise(id);
+}
+
+// If user starts typing again after revealed (rare), disarm advance
+function onExerciseInput(id) {
+  const state = getGrammarState(id);
+  if (state.revealed) {
+    // Once revealed/locked, input is disabled, so this rarely fires; safe no-op
+    return;
+  }
 }
 
 function updateGrammarStats(id) {
