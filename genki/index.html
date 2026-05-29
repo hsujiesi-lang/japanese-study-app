@@ -1799,18 +1799,24 @@ if ('speechSynthesis' in window) {
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
+  // Guard: if the engine was left in a paused state by a previous playback,
+  // it silently queues without speaking. Resume to unstick it.
+  try { speechSynthesis.resume(); } catch(e){}
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'ja-JP';
   if (jaVoice) u.voice = jaVoice;
   u.rate = 0.9;
   u.pitch = 1.0;
   speechSynthesis.speak(u);
+  // Some browsers (Chrome) need a resume nudge right after speak()
+  try { speechSynthesis.resume(); } catch(e){}
 }
 
 // Speak a sequence of texts, one after another, with a short pause
 function speakSequence(texts, gapMs) {
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}
   const pause = (typeof gapMs === 'number') ? gapMs : 350;
   let i = 0;
   const speakNext = () => {
@@ -1854,6 +1860,7 @@ function stopPlayback() {
   playback.active = false;
   playback.isPaused = false;
   speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}  // never leave engine paused
   document.getElementById('playback-bar').style.display = 'none';
   const pb = document.getElementById('pause-btn');
   if (pb) pb.textContent = '⏸ 暫停';
@@ -2903,6 +2910,7 @@ function stopLessonPlayback(num) {
   state.active = false;
   state.isPaused = false;
   speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}  // never leave engine paused
   const bar = document.getElementById(`lesson-playback-bar-${num}`);
   if (bar) bar.style.display = 'none';
 }
@@ -3188,6 +3196,7 @@ function stopAdjPlayback() {
   adjPlayback.active = false;
   adjPlayback.isPaused = false;
   speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}  // never leave engine paused
   document.getElementById('adj-playback-bar').style.display = 'none';
   const pb = document.getElementById('adj-pause-btn');
   if (pb) pb.textContent = '⏸ 暫停';
