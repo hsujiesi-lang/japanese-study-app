@@ -687,6 +687,7 @@
   <header>
     <h1>げんき I</h1>
     <div class="subtitle">Lessons 1〜6 練習アプリ</div>
+    <button onclick="speechDiagnostic()" style="margin-top:10px; background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:18px; padding:6px 16px; font-size:0.82em; font-weight:600; cursor:pointer;">🔊 測試發音 / 診斷</button>
   </header>
   <main>
     <div class="hub-grid">
@@ -1789,15 +1790,45 @@ let jaVoice = null;
 function loadVoices() {
   const voices = speechSynthesis.getVoices();
   jaVoice = voices.find(v => v.lang === 'ja-JP') ||
-           voices.find(v => v.lang.startsWith('ja')) || null;
+           voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ja')) || null;
 }
 if ('speechSynthesis' in window) {
   loadVoices();
   speechSynthesis.onvoiceschanged = loadVoices;
 }
 
+// Diagnostic: report voice availability and try a test phrase
+function speechDiagnostic() {
+  if (!('speechSynthesis' in window)) {
+    alert('⚠️ 這個瀏覽器不支援語音合成 (speechSynthesis)。');
+    return;
+  }
+  const voices = speechSynthesis.getVoices();
+  const ja = voices.filter(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
+  const msg =
+    `語音診斷：\n` +
+    `・總語音數：${voices.length}\n` +
+    `・日文語音數：${ja.length}\n` +
+    (ja.length ? `・使用：${ja[0].name} (${ja[0].lang})\n` : '・⚠️ 找不到日文語音！\n') +
+    `\n現在會嘗試唸「こんにちは」。如果沒聲音：\n` +
+    `1) 完全關閉 Chrome 再重開（不是只關分頁）\n` +
+    `2) 確認電腦沒靜音、音量正常\n` +
+    `3) 檢查 chrome://settings 沒有封鎖音訊`;
+  alert(msg);
+  loadVoices();
+  speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}
+  const u = new SpeechSynthesisUtterance('こんにちは');
+  u.lang = 'ja-JP';
+  if (jaVoice) u.voice = jaVoice;
+  u.onerror = (e) => alert('語音錯誤：' + (e.error || 'unknown') + '\n通常代表 Chrome 語音引擎當掉了，請完全重啟 Chrome。');
+  speechSynthesis.speak(u);
+  try { speechSynthesis.resume(); } catch(e){}
+}
+
 function speak(text) {
   if (!('speechSynthesis' in window)) return;
+  if (!jaVoice) loadVoices();  // re-fetch in case voices loaded after page init
   speechSynthesis.cancel();
   // Guard: if the engine was left in a paused state by a previous playback,
   // it silently queues without speaking. Resume to unstick it.
