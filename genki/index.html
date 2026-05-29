@@ -2059,7 +2059,7 @@ function renderVerbQuestion() {
       <div class="verb-q-spec">→ 寫出「${form.label}」</div>
       <div class="verb-q-meta">L${verb.lesson} ・ ${typeLabel} ・ 辞書形提示：點「看答案」</div>
       <div class="input-hint">💡 漢字或平假名都可（例：食べます／たべます）</div>
-      <input type="text" class="exercise-input" id="vp-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入日文…" onkeydown="if(event.key==='Enter'){event.preventDefault(); handleVerbEnter();}">
+      <input type="text" class="exercise-input" id="vp-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入日文…" onkeydown="if(event.key==='Enter' && !event.isComposing && event.keyCode!==229){event.preventDefault(); handleVerbEnter();}">
       <div class="exercise-buttons">
         <button class="ex-btn-submit" onclick="checkVerbAnswer()">✅ 確認</button>
         <button class="ex-btn-show"   onclick="showVerbAnswer()">👀 看答案</button>
@@ -2584,7 +2584,7 @@ function renderGrammarExercise(id) {
       <span class="exercise-type-tag ${ex.type}">${tagText}</span>
       ${promptHtml}
       <div class="input-hint">💡 ${inputHint}</div>
-      <input type="text" class="exercise-input" id="g-ex-input-${id}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter'){event.preventDefault(); handleExerciseEnter('${id}');}" oninput="onExerciseInput('${id}')">
+      <input type="text" class="exercise-input" id="g-ex-input-${id}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入答案…" onkeydown="if(event.key==='Enter' && !event.isComposing && event.keyCode!==229){event.preventDefault(); handleExerciseEnter('${id}');}" oninput="onExerciseInput('${id}')">
       <div class="exercise-buttons">
         <button class="ex-btn-submit" onclick="checkGrammarExercise('${id}')">✅ 確認</button>
         <button class="ex-btn-show"   onclick="showGrammarAnswer('${id}')">👀 看答案</button>
