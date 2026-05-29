@@ -487,6 +487,20 @@
     font-size: 1.1em; cursor: pointer; flex-shrink: 0;
   }
   .vocab-card .vocab-speak:active { background: #FFE0B2; }
+  .vocab-card .vocab-pin {
+    background: #F0F0F0; border: none; border-radius: 50%;
+    width: 34px; height: 34px; font-size: 0.95em; cursor: pointer;
+    flex-shrink: 0; filter: grayscale(1) opacity(0.45);
+    transition: filter 0.15s, background 0.15s;
+  }
+  .vocab-card .vocab-pin.active {
+    background: #FFE0B2; filter: none;
+  }
+  .vocab-card .vocab-pin:active { background: #FFCC80; }
+  .vocab-card.pinned {
+    border-left-color: #FF7043; background: #FFFBF7;
+    box-shadow: 0 1px 4px rgba(255,112,67,0.18);
+  }
 
   .vocab-play-all-btn {
     display: block; width: calc(100% - 32px); margin: 8px 16px 12px;
@@ -2399,23 +2413,89 @@ const LESSONS = {
 // ============================
 // VOCAB RENDER (non-verb word list with audio)
 // ============================
-function vocabSectionHTML(num) {
+function vocabGroups(num) {
   const vocab = VOCAB[num];
-  if (!vocab) return '';
-
-  const groups = [
+  if (!vocab) return [];
+  return [
     { key:'nouns',         title:'📦 名詞 Nouns',          cls:'noun',   items:vocab.nouns || [] },
     { key:'naAdjectives',  title:'🎨 な-形容詞',           cls:'naadj',  items:vocab.naAdjectives || [] },
     { key:'adverbs',       title:'💬 副詞・表現 Adverbs / Expressions', cls:'adverb', items:vocab.adverbs || [] },
   ].filter(g => g.items.length > 0);
+}
 
-  // Build a flat list for the "play all" button
-  const allItems = [];
-  groups.forEach(g => g.items.forEach(it => allItems.push(it)));
+// --- Pin persistence (localStorage) ---
+function getPinnedVocab(num) {
+  try {
+    const raw = localStorage.getItem('genki-vocab-pinned-' + num);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch(e) { return new Set(); }
+}
+function togglePinVocab(num, hira) {
+  const pinned = getPinnedVocab(num);
+  if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
+  try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
+  renderVocabBody(num);
+}
 
-  let inner = `
-    <div class="lesson-section-desc">點任何單字或喇叭按鈕可以聽發音。動詞請看 <b>動詞まとめ</b>，形容詞請看 <b>形容詞まとめ</b>。</div>
-    <button class="vocab-play-all-btn" onclick="playLessonVocab(${num})">▶ 連續播放 Lesson ${num} 全部單字 (${allItems.length} 個)</button>
+function vocabCardHTML(num, item, cls, isPinned) {
+  const hasKanji = item.kanji && item.kanji.length > 0 && item.kanji !== item.hira;
+  const display = hasKanji ? item.kanji : item.hira;
+  const hiraSub = hasKanji ? `<div class="vocab-hira">${item.hira}</div>` : '';
+  const safe = item.hira.replace(/'/g, "\\'");
+  return `
+    <div class="vocab-card ${cls} ${isPinned ? 'pinned' : ''}" onclick="speak('${safe}')">
+      <button class="vocab-pin ${isPinned ? 'active' : ''}" onclick="event.stopPropagation(); togglePinVocab(${num},'${safe}')" title="${isPinned ? '取消釘選' : '釘選置頂'}">📌</button>
+      <div class="vocab-jp">
+        <div class="vocab-main">${display}</div>
+        ${hiraSub}
+        <div class="vocab-en">${item.en}</div>
+      </div>
+      <button class="vocab-speak" onclick="event.stopPropagation(); speak('${safe}')">🔊</button>
+    </div>
+  `;
+}
+
+// Render just the vocab card body (called on load + whenever pins change)
+function renderVocabBody(num) {
+  const body = document.getElementById(`vocab-body-${num}`);
+  if (!body) return;
+  const groups = vocabGroups(num);
+  const pinned = getPinnedVocab(num);
+
+  let html = '';
+
+  // Pinned section at the very top
+  const pinnedItems = [];
+  groups.forEach(g => g.items.forEach(it => { if (pinned.has(it.hira)) pinnedItems.push({ item: it, cls: g.cls }); }));
+  if (pinnedItems.length > 0) {
+    html += `<div class="vocab-section-title" style="background:#FFE0B2; color:#E65100;">📌 釘選 Pinned <span class="count">${pinnedItems.length} 個</span></div>`;
+    html += `<div class="vocab-grid">`;
+    pinnedItems.forEach(({ item, cls }) => { html += vocabCardHTML(num, item, cls, true); });
+    html += `</div>`;
+  }
+
+  // Regular groups (excluding pinned items, which now live in the pinned section)
+  groups.forEach(g => {
+    const rest = g.items.filter(it => !pinned.has(it.hira));
+    if (rest.length === 0) return;
+    html += `<div class="vocab-section-title">${g.title} <span class="count">${rest.length} 個</span></div>`;
+    html += `<div class="vocab-grid">`;
+    rest.forEach(item => { html += vocabCardHTML(num, item, g.cls, false); });
+    html += `</div>`;
+  });
+
+  body.innerHTML = html;
+}
+
+function vocabSectionHTML(num) {
+  const vocab = VOCAB[num];
+  if (!vocab) return '';
+  const groups = vocabGroups(num);
+  const allCount = groups.reduce((n, g) => n + g.items.length, 0);
+
+  const header = `
+    <div class="lesson-section-desc">點任何單字或喇叭按鈕可以聽發音。點 <b>📌</b> 可以把不熟的單字釘選到最上面。動詞請看 <b>動詞まとめ</b>，形容詞請看 <b>形容詞まとめ</b>。</div>
+    <button class="vocab-play-all-btn" onclick="playLessonVocab(${num})">▶ 連續播放 Lesson ${num} 全部單字 (${allCount} 個)</button>
     <div id="lesson-playback-bar-${num}" style="display:none; background:#5C6BC0; color:white; padding:10px 16px; margin:8px 16px; border-radius:10px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:60px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
       <div style="flex:1; min-width:0;">
         <div id="lesson-playback-status-${num}" style="font-weight:600;">▶ 播放中…</div>
@@ -2426,37 +2506,16 @@ function vocabSectionHTML(num) {
         <button onclick="stopLessonPlayback(${num})" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:16px; padding:6px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
       </div>
     </div>
+    <div id="vocab-body-${num}"></div>
   `;
 
-  groups.forEach(g => {
-    inner += `<div class="vocab-section-title">${g.title} <span class="count">${g.items.length} 個</span></div>`;
-    inner += `<div class="vocab-grid">`;
-    g.items.forEach(item => {
-      const hasKanji = item.kanji && item.kanji.length > 0 && item.kanji !== item.hira;
-      const display = hasKanji ? item.kanji : item.hira;
-      const hiraSub = hasKanji ? `<div class="vocab-hira">${item.hira}</div>` : '';
-      inner += `
-        <div class="vocab-card ${g.cls}" onclick="speak('${item.hira}')">
-          <div class="vocab-jp">
-            <div class="vocab-main">${display}</div>
-            ${hiraSub}
-            <div class="vocab-en">${item.en}</div>
-          </div>
-          <button class="vocab-speak" onclick="event.stopPropagation(); speak('${item.hira}')">🔊</button>
-        </div>
-      `;
-    });
-    inner += `</div>`;
-  });
-
-  // Wrap everything inside one collapsible section (collapsed by default)
   return `
     <div class="lesson-section collapsed" id="vocab-section-${num}">
       <div class="lesson-section-header" onclick="toggleLessonSection('vocab-section-${num}')">
-        <h3>📚 単語 Vocabulary <span style="opacity:0.85; font-size:0.85em; font-weight:500;">(${allItems.length} 個)</span></h3>
+        <h3>📚 単語 Vocabulary <span style="opacity:0.85; font-size:0.85em; font-weight:500;">(${allCount} 個)</span></h3>
         <span class="toggle-arrow">▼</span>
       </div>
-      <div class="lesson-section-body">${inner}</div>
+      <div class="lesson-section-body">${header}</div>
     </div>
   `;
 }
@@ -2821,6 +2880,7 @@ function buildLessonContent(num) {
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
+    renderVocabBody(num);  // fill vocab cards (respects pinned order)
     // initialize the first exercise for each grammar topic
     setTimeout(() => {
       grammarIds.forEach(id => pickNextGrammarExercise(id));
