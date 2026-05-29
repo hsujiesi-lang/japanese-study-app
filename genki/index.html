@@ -107,6 +107,15 @@
   .verb-card.ru { border-left-color: #5C6BC0; }
   .verb-card.u { border-left-color: #26A69A; }
   .verb-card.irregular { border-left-color: #AB47BC; }
+  .verb-card.pinned { background: #FFFBF7; box-shadow: 0 1px 6px rgba(255,112,67,0.2); }
+  .verb-pin {
+    background: #F0F0F0; border: none; border-radius: 50%;
+    width: 32px; height: 32px; font-size: 0.9em; cursor: pointer;
+    flex-shrink: 0; filter: grayscale(1) opacity(0.45);
+    transition: filter 0.15s, background 0.15s;
+  }
+  .verb-pin.active { background: #FFE0B2; filter: none; }
+  .verb-pin:active { background: #FFCC80; }
 
   .verb-header {
     display: flex; justify-content: space-between; align-items: baseline;
@@ -1973,6 +1982,21 @@ function setFilter(btn, kind, value) {
   renderVerbs();
 }
 
+// --- Verb pin persistence (localStorage) ---
+function verbKey(v) { return v.lesson + '-' + v.hira; }
+function getPinnedVerbs() {
+  try {
+    const raw = localStorage.getItem('genki-verb-pinned');
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch(e) { return new Set(); }
+}
+function togglePinVerb(key) {
+  const pinned = getPinnedVerbs();
+  if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
+  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
+  renderVerbs();
+}
+
 function renderVerbs() {
   const q = (document.getElementById('verb-search').value || '').trim().toLowerCase();
   const list = document.getElementById('verb-list');
@@ -1988,7 +2012,19 @@ function renderVerbs() {
     return true;
   });
 
-  filtered.forEach(v => list.appendChild(verbCard(v)));
+  const pinnedSet = getPinnedVerbs();
+  const pinnedVerbs = filtered.filter(v => pinnedSet.has(verbKey(v)));
+  const restVerbs   = filtered.filter(v => !pinnedSet.has(verbKey(v)));
+
+  if (pinnedVerbs.length > 0) {
+    const header = document.createElement('div');
+    header.className = 'vocab-section-title';
+    header.style.cssText = 'background:#FFE0B2; color:#E65100; margin:12px 16px 6px;';
+    header.innerHTML = `📌 釘選 Pinned <span class="count">${pinnedVerbs.length} 個</span>`;
+    list.appendChild(header);
+    pinnedVerbs.forEach(v => list.appendChild(verbCard(v, true)));
+  }
+  restVerbs.forEach(v => list.appendChild(verbCard(v, false)));
 
   // update stats based on full set
   document.getElementById('stat-ru').textContent = VERBS.filter(v=>v.type==='ru').length;
@@ -2211,18 +2247,19 @@ function playFilteredVerbs() {
   playNextItem(playback.token);
 }
 
-function verbCard(v) {
+function verbCard(v, isPinned) {
   const c = conjugate(v);
   const te = teForm(v);
   const teRule = teFormRule(v);
   const div = document.createElement('div');
-  div.className = 'verb-card ' + v.type;
+  div.className = 'verb-card ' + v.type + (isPinned ? ' pinned' : '');
 
   const particleBadges = v.particles.length === 0
     ? '<span class="badge badge-particle none">無</span>'
     : v.particles.map(p => `<span class="badge badge-particle" onclick="speak('${p}')">${p}</span>`).join('');
 
   const typeLabel = v.type === 'ru' ? 'Ru-verb' : (v.type === 'u' ? 'U-verb' : 'Irregular');
+  const key = verbKey(v);
 
   const hasKanji = v.kanji && v.kanji !== v.hira;
   const hiraLine = hasKanji ? `<span class="hira">${v.hira}</span>` : '';
@@ -2235,7 +2272,10 @@ function verbCard(v) {
         </div>
         ${hiraLine}
       </div>
-      <div class="verb-en">${v.en}</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="verb-en">${v.en}</div>
+        <button class="verb-pin ${isPinned ? 'active' : ''}" onclick="event.stopPropagation(); togglePinVerb('${key}')" title="${isPinned ? '取消釘選' : '釘選置頂'}">📌</button>
+      </div>
     </div>
     <div class="verb-meta">
       <span class="badge badge-lesson">L${v.lesson}</span>
