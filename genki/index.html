@@ -457,6 +457,32 @@
     font-weight: 700; cursor: pointer; flex-shrink: 0;
   }
   .pin-list-remove:active { background: #EF9A9A; }
+  .pin-list-speak {
+    background: #FFE0B2; color: #E65100; border: none;
+    width: 32px; height: 32px; border-radius: 50%;
+    font-size: 0.95em; font-weight: 700; cursor: pointer; flex-shrink: 0;
+  }
+  .pin-list-speak:active { background: #FFCC80; }
+  .pin-list-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .pin-list-play-all {
+    background: white; color: #E65100; border: 1.5px solid #FF7043;
+    border-radius: 14px; padding: 3px 12px; font-size: 0.78em;
+    font-weight: 700; cursor: pointer; margin-left: 8px;
+  }
+  .pin-list-play-all:active { background: #FFE0B2; }
+  .pin-list-verb .pin-list-text { flex-direction: column; align-items: stretch; }
+  .pin-form-chips {
+    display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px;
+  }
+  .pin-form-chip {
+    background: #FFE0B2; color: #BF360C; border: none;
+    padding: 4px 10px; border-radius: 10px;
+    font-size: 0.78em; cursor: pointer;
+    font-family: 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+    user-select: none;
+  }
+  .pin-form-chip:active { background: #FFCC80; }
+  .pin-form-chip b { color: #E65100; margin-right: 4px; font-size: 0.85em; }
 
   /* Lesson collapsible section */
   .lesson-section {
@@ -887,7 +913,17 @@
 
   <div class="lesson-intro">
     <h3>📋 釘選項目清單</h3>
-    <p style="color:#888; font-size:0.85em;">點 ✕ 可移除單一釘選</p>
+    <p style="color:#888; font-size:0.85em;">點 🔊 發音 ・ 點 ✕ 移除 ・ 點每個變化形可單獨播放</p>
+    <div id="pin-playback-bar" style="display:none; background:#5C6BC0; color:white; padding:10px 12px; border-radius:10px; margin-top:8px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:60px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
+      <div style="flex:1; min-width:0;">
+        <div id="pin-pb-status" style="font-weight:600;">▶ 播放中…</div>
+        <div id="pin-pb-progress" style="opacity:0.9; font-size:0.82em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+      </div>
+      <div style="display:flex; gap:6px; margin-left:10px; flex-shrink:0;">
+        <button id="pin-pause-btn" onclick="togglePinPause()" style="background:white; color:#5C6BC0; border:none; border-radius:14px; padding:5px 12px; font-weight:700; cursor:pointer;">⏸ 暫停</button>
+        <button onclick="stopPinPlayback()" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:14px; padding:5px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
+      </div>
+    </div>
     <div id="pin-list" style="margin-top:10px;"></div>
   </div>
 
@@ -2754,7 +2790,7 @@ function renderPinList() {
       if (pinnedSet.has(it.hira)) items.push(it);
     }));
     if (items.length === 0) return;
-    html += `<div class="pin-list-section-title">📚 Lesson ${num} 単語 (${items.length})</div>`;
+    html += `<div class="pin-list-section-title">📚 Lesson ${num} 単語 (${items.length}) <button class="pin-list-play-all" onclick="playPinnedVocab(${num})">▶ 連續播放</button></div>`;
     items.forEach(it => {
       const display = (it.kanji && it.kanji !== it.hira && it.kanji.length) ? `${it.kanji} [${it.hira}]` : it.hira;
       const safeHira = it.hira.replace(/'/g, "\\'");
@@ -2763,28 +2799,48 @@ function renderPinList() {
           <span class="pin-list-jp">${display}</span>
           <span class="pin-list-en">${it.en}</span>
         </div>
-        <button class="pin-list-remove" title="移除釘選" onclick="togglePinVocab(${num},'${safeHira}'); showPinManager();">✕</button>
+        <div class="pin-list-actions">
+          <button class="pin-list-speak" title="發音" onclick="speak('${safeHira}')">🔊</button>
+          <button class="pin-list-remove" title="移除釘選" onclick="togglePinVocab(${num},'${safeHira}'); showPinManager();">✕</button>
+        </div>
       </div>`;
     });
   });
 
-  // Verb pins
+  // Verb pins (show all 6 forms as clickable chips)
   const pinnedVerbsSet = getPinnedVerbs();
   if (pinnedVerbsSet.size > 0) {
     const verbList = VERBS.filter(v => pinnedVerbsSet.has(verbKey(v)));
     if (verbList.length > 0) {
-      html += `<div class="pin-list-section-title">📖 動詞 (${verbList.length})</div>`;
+      html += `<div class="pin-list-section-title">📖 動詞 (${verbList.length}) <button class="pin-list-play-all" onclick="playPinnedVerbs()">▶ 連續播放全部變化</button></div>`;
       verbList.forEach(v => {
         const display = (v.kanji && v.kanji !== v.hira) ? `${v.kanji} [${v.hira}]` : v.hira;
         const typeLabel = v.type === 'ru' ? 'Ru' : (v.type === 'u' ? 'U' : 'Irr');
         const safeKey = verbKey(v).replace(/'/g, "\\'");
-        html += `<div class="pin-list-item">
+        const c = conjugate(v);
+        const te = teForm(v);
+        const forms = [
+          { label: '辞書',   text: v.hira },
+          { label: '現·肯', text: c.presentAff },
+          { label: '現·否', text: c.presentNeg },
+          { label: '過·肯', text: c.pastAff },
+          { label: '過·否', text: c.pastNeg },
+          { label: 'て形',   text: te },
+        ];
+        const chips = forms.map(f => `<button class="pin-form-chip" onclick="speak('${f.text}')"><b>${f.label}</b>${f.text}</button>`).join('');
+        html += `<div class="pin-list-item pin-list-verb">
           <div class="pin-list-text">
-            <span class="pin-list-jp">${display}</span>
-            <span class="pin-list-en">${v.en}</span>
-            <span class="pin-list-meta">L${v.lesson} · ${typeLabel}</span>
+            <div>
+              <span class="pin-list-jp">${display}</span>
+              <span class="pin-list-en">${v.en}</span>
+              <span class="pin-list-meta">L${v.lesson} · ${typeLabel}</span>
+            </div>
+            <div class="pin-form-chips">${chips}</div>
           </div>
-          <button class="pin-list-remove" title="移除釘選" onclick="togglePinVerb('${safeKey}'); showPinManager();">✕</button>
+          <div class="pin-list-actions">
+            <button class="pin-list-speak" title="連續播放全部變化" onclick="speakVerbAll('${v.hira}','${c.presentAff}','${c.presentNeg}','${c.pastAff}','${c.pastNeg}','${te}')">🔊</button>
+            <button class="pin-list-remove" title="移除釘選" onclick="togglePinVerb('${safeKey}'); showPinManager();">✕</button>
+          </div>
         </div>`;
       });
     }
@@ -2792,6 +2848,122 @@ function renderPinList() {
 
   if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞頁點 📌 開始釘選。</p>';
   container.innerHTML = html;
+}
+
+// ============================
+// PIN PLAYBACK (with pause/resume/stop)
+// ============================
+const pinPlayback = { token: 0, active: false, isPaused: false, items: [], index: 0, total: 0, kind: '' };
+
+function startPinPlayback(items, kind) {
+  if (!items || items.length === 0) return;
+  speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}
+  pinPlayback.token++;
+  pinPlayback.active = true;
+  pinPlayback.isPaused = false;
+  pinPlayback.items = items;
+  pinPlayback.index = 0;
+  pinPlayback.total = items.length;
+  pinPlayback.kind = kind;
+  const bar = document.getElementById('pin-playback-bar');
+  if (bar) {
+    bar.style.display = 'flex';
+    document.getElementById('pin-pb-status').textContent = `▶ 播放 ${kind} (${items.length} 個)`;
+    document.getElementById('pin-pause-btn').textContent = '⏸ 暫停';
+  }
+  pinPlayNext(pinPlayback.token);
+}
+
+function pinPlayNext(myToken) {
+  if (myToken !== pinPlayback.token || !pinPlayback.active) return;
+  if (pinPlayback.isPaused) return;
+  const statEl = document.getElementById('pin-pb-status');
+  const progEl = document.getElementById('pin-pb-progress');
+  if (pinPlayback.index >= pinPlayback.items.length) {
+    pinPlayback.active = false;
+    if (statEl) statEl.textContent = `✅ 完成 ${pinPlayback.kind}`;
+    if (progEl) progEl.textContent = '';
+    setTimeout(() => {
+      const bar = document.getElementById('pin-playback-bar');
+      if (bar && !pinPlayback.active) bar.style.display = 'none';
+    }, 1500);
+    return;
+  }
+  const item = pinPlayback.items[pinPlayback.index];
+  if (progEl) progEl.textContent = `${pinPlayback.index+1}/${pinPlayback.items.length} · ${item.label} · ${item.text}`;
+  const u = new SpeechSynthesisUtterance(item.text);
+  u.lang = 'ja-JP';
+  if (jaVoice) u.voice = jaVoice;
+  u.rate = 0.9;
+  u.pitch = 1.0;
+  u.onend = () => {
+    if (myToken !== pinPlayback.token || !pinPlayback.active) return;
+    pinPlayback.index++;
+    const gap = item.boundary ? 700 : 350;
+    setTimeout(() => pinPlayNext(myToken), gap);
+  };
+  speechSynthesis.speak(u);
+}
+
+function togglePinPause() {
+  if (!pinPlayback.active) return;
+  const btn = document.getElementById('pin-pause-btn');
+  const stat = document.getElementById('pin-pb-status');
+  if (!pinPlayback.isPaused) {
+    pinPlayback.isPaused = true;
+    if (speechSynthesis.speaking) speechSynthesis.pause();
+    if (btn) btn.textContent = '▶ 繼續';
+    if (stat) stat.textContent = `⏸ 已暫停 (${pinPlayback.kind})`;
+  } else {
+    pinPlayback.isPaused = false;
+    if (btn) btn.textContent = '⏸ 暫停';
+    if (stat) stat.textContent = `▶ 播放 ${pinPlayback.kind} (${pinPlayback.total} 個)`;
+    if (speechSynthesis.paused && speechSynthesis.speaking) {
+      speechSynthesis.resume();
+    } else {
+      pinPlayNext(pinPlayback.token);
+    }
+  }
+}
+
+function stopPinPlayback() {
+  pinPlayback.token++;
+  pinPlayback.active = false;
+  pinPlayback.isPaused = false;
+  speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}
+  const bar = document.getElementById('pin-playback-bar');
+  if (bar) bar.style.display = 'none';
+  const btn = document.getElementById('pin-pause-btn');
+  if (btn) btn.textContent = '⏸ 暫停';
+}
+
+function playPinnedVocab(num) {
+  const pinnedSet = getPinnedVocab(num);
+  const items = [];
+  vocabGroups(num).forEach(g => g.items.forEach(it => {
+    if (pinnedSet.has(it.hira)) items.push({ text: it.hira, label: `${it.kanji || it.hira}` });
+  }));
+  startPinPlayback(items, `L${num} 釘選単語`);
+}
+
+function playPinnedVerbs() {
+  const pinnedSet = getPinnedVerbs();
+  const verbs = VERBS.filter(v => pinnedSet.has(verbKey(v)));
+  if (verbs.length === 0) return;
+  const items = [];
+  verbs.forEach(v => {
+    const c = conjugate(v);
+    const te = teForm(v);
+    items.push({ text: v.hira,       label: `${v.kanji} 辞書形` });
+    items.push({ text: c.presentAff, label: `${v.kanji} 現在肯定` });
+    items.push({ text: c.presentNeg, label: `${v.kanji} 現在否定` });
+    items.push({ text: c.pastAff,    label: `${v.kanji} 過去肯定` });
+    items.push({ text: c.pastNeg,    label: `${v.kanji} 過去否定` });
+    items.push({ text: te,           label: `${v.kanji} て形`, boundary: true });
+  });
+  startPinPlayback(items, '釘選動詞全部變化');
 }
 
 function clearAllPins() {
