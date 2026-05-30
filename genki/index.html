@@ -1580,6 +1580,268 @@ GRAMMARS['kara'] = {
   ]
 };
 
+// ============================
+// LESSON 1 GRAMMARS
+// ============================
+
+// ----- L1 Grammar 1: X は Y です -----
+GRAMMARS['l1-desu'] = {
+  title: 'Grammar 1 ｜ X は Y です (X is Y)',
+  explanation: [
+    '<b>用法：</b><b>X は Y です</b> = 「X 是 Y」。',
+    '<b>は</b> 是「主題助詞」(topic marker)，<b>讀作 wa</b>（不是 ha）。',
+    '<b>です</b> 是「是」(類似英文 be 動詞)，禮貌型結尾。',
+    '日文常常省略主語，所以 <i>がくせいです。</i> 就可以是「我是學生」。'
+  ],
+  examples: [
+    { jp:'メアリーさんはアメリカじんです。', reading:'メアリーさんはアメリカじんです。',          en:'Mary is American.' },
+    { jp:'たけしさんは日本人です。',         reading:'たけしさんはにほんじんです。',              en:'Takeshi is Japanese.' },
+    { jp:'メアリーさんは二年生です。',       reading:'メアリーさんはにねんせいです。',            en:'Mary is a second-year student.' },
+    { jp:'メアリーさんは十九歳です。',       reading:'メアリーさんはじゅうきゅうさいです。',      en:'Mary is 19 years old.' },
+    { jp:'専攻は日本語です。',               reading:'せんこうはにほんごです。',                  en:'My major is Japanese.' },
+  ],
+  // === Exercises from textbook p.46-47 I A/B/C ===
+  exercises: [
+    // I A: Nationalities
+    { type:'translate', prompt:'(Example) Mary is American.',
+      answers:['メアリーさんはアメリカ人です。','メアリーさんはアメリカ人です','メアリーさんはアメリカじんです','メアリーさんはアメリカじんです。'] },
+    { type:'translate', prompt:'1. Takeshi is Japanese.',
+      answers:['たけしさんは日本人です。','たけしさんは日本人です','たけしさんはにほんじんです','たけしさんはにほんじんです。'] },
+    { type:'translate', prompt:'2. Sora is Korean.',
+      answers:['ソラさんは韓国人です。','ソラさんは韓国人です','ソラさんはかんこくじんです','ソラさんはかんこくじんです。'] },
+    { type:'translate', prompt:'3. Robert is British.',
+      answers:['ロバートさんはイギリス人です。','ロバートさんはイギリス人です','ロバートさんはイギリスじんです','ロバートさんはイギリスじんです。'] },
+    { type:'translate', prompt:'4. Yamashita-sensei is Japanese.',
+      answers:['やましたせんせいは日本人です。','やましたせんせいは日本人です','やましたせんせいはにほんじんです','やましたせんせいはにほんじんです。','山下先生は日本人です'] },
+
+    // I B: Year in school
+    { type:'translate', prompt:'(Year in school) Mary → 2nd year',
+      answers:['メアリーさんは二年生です。','メアリーさんは二年生です','メアリーさんはにねんせいです','メアリーさんはにねんせいです。'] },
+    { type:'translate', prompt:'(Year in school) Takeshi → 4th year',
+      answers:['たけしさんは四年生です。','たけしさんは四年生です','たけしさんはよねんせいです','たけしさんはよねんせいです。'] },
+    { type:'translate', prompt:'(Year in school) Sora → 3rd year',
+      answers:['ソラさんは三年生です。','ソラさんは三年生です','ソラさんはさんねんせいです','ソラさんはさんねんせいです。'] },
+    { type:'translate', prompt:'(Year in school) Robert → 4th year',
+      answers:['ロバートさんは四年生です。','ロバートさんは四年生です','ロバートさんはよねんせいです','ロバートさんはよねんせいです。'] },
+
+    // I C: Age
+    { type:'translate', prompt:'(Age) Mary → 19',
+      answers:['メアリーさんは十九歳です。','メアリーさんは十九歳です','メアリーさんはじゅうきゅうさいです','メアリーさんはじゅうきゅうさいです。'] },
+    { type:'translate', prompt:'(Age) Takeshi → 22',
+      answers:['たけしさんは二十二歳です。','たけしさんは二十二歳です','たけしさんはにじゅうにさいです','たけしさんはにじゅうにさいです。'] },
+    { type:'translate', prompt:'(Age) Sora → 20',
+      answers:['ソラさんは二十歳です。','ソラさんは二十歳です','ソラさんははたちです','ソラさんははたちです。','ソラさんはにじゅっさいです','ソラさんはにじゅっさいです。','ソラさんはにじゅうさいです'] },
+    { type:'translate', prompt:'(Age) Yamashita-sensei → 47',
+      answers:['やましたせんせいは四十七歳です。','やましたせんせいは四十七歳です','やましたせんせいはよんじゅうななさいです','やましたせんせいはよんじゅうななさいです。'] },
+
+    // D-style: Self-introduction
+    { type:'translate', prompt:'I am Mary. (just say "Mary desu.")',
+      answers:['メアリーです。','メアリーです','わたしはメアリーです','わたしはメアリーです。'] },
+    { type:'translate', prompt:'(My) major is Japanese.',
+      answers:['専攻は日本語です。','専攻は日本語です','せんこうは日本語です','せんこうはにほんごです','せんこうはにほんごです。'] },
+  ]
+};
+
+// ----- L1 Grammar 2: Question Sentences (〜か) -----
+GRAMMARS['l1-q'] = {
+  title: 'Grammar 2 ｜ Question Sentences (〜か)',
+  explanation: [
+    '<b>用法：</b>句尾加 <b>か</b> 就變成疑問句。例：<i>がくせいです。</i> → <i>がくせいですか。</i>',
+    '日文疑問句通常<b>不加問號</b>（書寫慣例上用句點 「。」）。',
+    '回答：肯定 <b>はい、そうです。</b> ／ 否定 <b>いいえ、〜じゃないです。</b>（じゃないです 在 Lesson 2 學）',
+    '常用疑問詞：<b>なん</b> (what)、<b>なんじ</b> (what time)、<b>なんさい</b> (how old)、<b>なんねんせい</b> (what year)、<b>なんばん</b> (what number)。'
+  ],
+  examples: [
+    { jp:'メアリーさんはアメリカ人ですか。',  reading:'メアリーさんはアメリカじんですか。', en:'Is Mary American?' },
+    { jp:'はい、そうです。',                  reading:'はい、そうです。',                    en:'Yes, that\'s right.' },
+    { jp:'専攻は何ですか。',                  reading:'せんこうはなんですか。',              en:'What is your major?' },
+    { jp:'今何時ですか。',                    reading:'いまなんじですか。',                  en:'What time is it now?' },
+    { jp:'何歳ですか。',                      reading:'なんさいですか。',                    en:'How old are you?' },
+    { jp:'何年生ですか。',                    reading:'なんねんせいですか。',                en:'What year are you in college?' },
+    { jp:'電話番号は何番ですか。',            reading:'でんわばんごうはなんばんですか。',    en:'What is your phone number?' },
+  ],
+  // === Exercises from textbook p.47-49 II A/B/C ===
+  exercises: [
+    // II A: Convert statement to question
+    { type:'translate', prompt:'Ask: Is Mary American? (use メアリーさん)',
+      answers:['メアリーさんはアメリカ人ですか。','メアリーさんはアメリカ人ですか','メアリーさんはアメリカじんですか','メアリーさんはアメリカじんですか。'] },
+    { type:'translate', prompt:'Ask: Is Mary a first-year student?',
+      answers:['メアリーさんは一年生ですか。','メアリーさんは一年生ですか','メアリーさんはいちねんせいですか','メアリーさんはいちねんせいですか。'] },
+    { type:'translate', prompt:'Ask: Is Takeshi Japanese?',
+      answers:['たけしさんは日本人ですか。','たけしさんは日本人ですか','たけしさんはにほんじんですか','たけしさんはにほんじんですか。'] },
+    { type:'translate', prompt:'Ask: Is Takeshi 19 years old?',
+      answers:['たけしさんは十九歳ですか。','たけしさんは十九歳ですか','たけしさんはじゅうきゅうさいですか','たけしさんはじゅうきゅうさいですか。'] },
+    { type:'translate', prompt:'Ask: Is Sora American?',
+      answers:['ソラさんはアメリカ人ですか。','ソラさんはアメリカ人ですか','ソラさんはアメリカじんですか','ソラさんはアメリカじんですか。'] },
+    { type:'translate', prompt:'Ask: Is Robert a 4th-year student?',
+      answers:['ロバートさんは四年生ですか。','ロバートさんは四年生ですか','ロバートさんはよねんせいですか','ロバートさんはよねんせいですか。'] },
+    { type:'translate', prompt:'Ask: Is Robert 21 years old?',
+      answers:['ロバートさんは二十一歳ですか。','ロバートさんは二十一歳ですか','ロバートさんはにじゅういっさいですか','ロバートさんはにじゅういっさいですか。'] },
+    { type:'translate', prompt:'Ask: Is Yamashita-sensei Japanese?',
+      answers:['やましたせんせいは日本人ですか。','やましたせんせいは日本人ですか','やましたせんせいはにほんじんですか','やましたせんせいはにほんじんですか。'] },
+
+    // II B (a): Ask age
+    { type:'translate', prompt:'Ask: How old are you, Mary?',
+      answers:['メアリーさんは何歳ですか。','メアリーさんは何歳ですか','メアリーさんはなんさいですか','メアリーさんはなんさいですか。'] },
+    { type:'translate', prompt:'Ask: How old are you, Takeshi?',
+      answers:['たけしさんは何歳ですか。','たけしさんは何歳ですか','たけしさんはなんさいですか','たけしさんはなんさいですか。'] },
+
+    // II B (b): Ask year in school
+    { type:'translate', prompt:'Ask: What year are you in, Mary?',
+      answers:['メアリーさんは何年生ですか。','メアリーさんは何年生ですか','メアリーさんはなんねんせいですか','メアリーさんはなんねんせいですか。'] },
+    { type:'translate', prompt:'Ask: What year are you in, Sora?',
+      answers:['ソラさんは何年生ですか。','ソラさんは何年生ですか','ソラさんはなんねんせいですか','ソラさんはなんねんせいですか。'] },
+
+    // Common question words
+    { type:'translate', prompt:'What is your major?',
+      answers:['専攻は何ですか。','専攻は何ですか','せんこうは何ですか','せんこうはなんですか','せんこうはなんですか。'] },
+    { type:'translate', prompt:'What time is it now?',
+      answers:['今何時ですか。','今何時ですか','いま何時ですか','いまなんじですか','いまなんじですか。'] },
+    { type:'translate', prompt:'What is your phone number?',
+      answers:['電話番号は何番ですか。','電話番号は何番ですか','でんわばんごうは何番ですか','でんわばんごうはなんばんですか','でんわばんごうはなんばんですか。'] },
+
+    // II C: Mary's host family
+    { type:'translate', prompt:'Ask: Is your father an office worker?',
+      answers:['お父さんは会社員ですか。','お父さんは会社員ですか','おとうさんはかいしゃいんですか','おとうさんはかいしゃいんですか。'] },
+    { type:'translate', prompt:'Ask: How old is your father?',
+      answers:['お父さんは何歳ですか。','お父さんは何歳ですか','おとうさんはなんさいですか','おとうさんはなんさいですか。'] },
+    { type:'translate', prompt:'Ask: Is your mother a teacher?',
+      answers:['お母さんは先生ですか。','お母さんは先生ですか','おかあさんはせんせいですか','おかあさんはせんせいですか。'] },
+    { type:'translate', prompt:'Ask: Is your younger sister a college student?',
+      answers:['妹は大学生ですか。','妹は大学生ですか','いもうとは大学生ですか','いもうとはだいがくせいですか','いもうとはだいがくせいですか。'] },
+  ]
+};
+
+// ----- L1 Grammar 3: Noun の Noun -----
+GRAMMARS['l1-no'] = {
+  title: 'Grammar 3 ｜ Noun の Noun (N1 的／類別 N2)',
+  explanation: [
+    '<b>用法：</b><b>N1 の N2</b>。の 大致對應中文「的」或「之／類」。',
+    '<b>所屬：</b>わたし<b>の</b>かばん = 我的書包',
+    '<b>所屬機構：</b>アリゾナだいがく<b>の</b>がくせい = 亞利桑那大學的學生',
+    '<b>類型／領域：</b>にほんご<b>の</b>がくせい = (修)日語的學生',
+    '英文沒有 の 對應的字，要靠語感判斷是「所有」還是「分類」。'
+  ],
+  examples: [
+    { jp:'メアリーさんの電話番号',         reading:'メアリーさんのでんわばんごう',          en:"Mary's phone number" },
+    { jp:'アリゾナ大学の学生',             reading:'アリゾナだいがくのがくせい',            en:'a student at the University of Arizona' },
+    { jp:'日本語の学生',                   reading:'にほんごのがくせい',                    en:'a student of Japanese' },
+    { jp:'高校の先生',                     reading:'こうこうのせんせい',                    en:'high school teacher' },
+  ],
+  // === Exercises from textbook p.50-51 III A/B/C ===
+  exercises: [
+    // III A: Translate phrases with の
+    { type:'translate', prompt:'(Example) student of the Japanese language',
+      answers:['日本語の学生','日本語の学生。','にほんごのがくせい','日本語のがくせい'] },
+    { type:'translate', prompt:'1. my teacher',
+      answers:['わたしの先生','私の先生','わたしのせんせい','私のせんせい'] },
+    { type:'translate', prompt:'2. my telephone number',
+      answers:['わたしの電話番号','私の電話番号','わたしのでんわばんごう','私のでんわばんごう'] },
+    { type:'translate', prompt:'3. my name',
+      answers:['わたしの名前','私の名前','わたしのなまえ','私のなまえ'] },
+    { type:'translate', prompt:"4. Takeshi's major",
+      answers:['たけしさんの専攻','たけしさんのせんこう'] },
+    { type:'translate', prompt:"5. Mary's friend",
+      answers:['メアリーさんの友達','メアリーさんの友だち','メアリーさんのともだち'] },
+    { type:'translate', prompt:'6. student at the University of London',
+      answers:['ロンドン大学の学生','ロンドン大学の学生。','ロンドンだいがくのがくせい','ロンドンだいがくの学生'] },
+    { type:'translate', prompt:'7. teacher of the Japanese language',
+      answers:['日本語の先生','日本語の先生。','にほんごのせんせい','日本語のせんせい'] },
+    { type:'translate', prompt:'8. high school teacher',
+      answers:['高校の先生','高校の先生。','こうこうのせんせい','高校のせんせい'] },
+
+    // III B: School / Major sentences
+    { type:'translate', prompt:'Mary is a student at the University of Arizona.',
+      answers:['メアリーさんはアリゾナ大学の学生です。','メアリーさんはアリゾナ大学の学生です','メアリーさんはアリゾナだいがくのがくせいです','メアリーさんはアリゾナだいがくのがくせいです。'] },
+    { type:'translate', prompt:"Mary's major is Japanese.",
+      answers:['メアリーさんの専攻は日本語です。','メアリーさんの専攻は日本語です','メアリーさんのせんこうは日本語です','メアリーさんのせんこうはにほんごです','メアリーさんのせんこうはにほんごです。'] },
+    { type:'translate', prompt:"Takeshi's major is history.",
+      answers:['たけしさんの専攻は歴史です。','たけしさんの専攻は歴史です','たけしさんのせんこうはれきしです','たけしさんのせんこうはれきしです。'] },
+    { type:'translate', prompt:"Sora's major is computer.",
+      answers:['ソラさんの専攻はコンピューターです。','ソラさんの専攻はコンピューターです','ソラさんのせんこうはコンピューターです'] },
+    { type:'translate', prompt:"Robert's major is business.",
+      answers:['ロバートさんの専攻はビジネスです。','ロバートさんの専攻はビジネスです','ロバートさんのせんこうはビジネスです'] },
+
+    // III C answer-style questions converted
+    { type:'translate', prompt:"Ask: What is Takeshi's major?",
+      answers:['たけしさんの専攻は何ですか。','たけしさんの専攻は何ですか','たけしさんのせんこうは何ですか','たけしさんのせんこうはなんですか','たけしさんのせんこうはなんですか。'] },
+    { type:'translate', prompt:'Ask: Is Yamashita-sensei a teacher of Japan University?',
+      answers:['やましたせんせいは日本大学の先生ですか。','やましたせんせいは日本大学の先生ですか','やましたせんせいはにほんだいがくのせんせいですか','やましたせんせいはにほんだいがくのせんせいですか。','山下先生は日本大学の先生ですか'] },
+  ]
+};
+
+// ----- L1 Useful Expression: 電話番号 (Telephone Numbers) -----
+GRAMMARS['l1-phone'] = {
+  title: 'Useful Expression ｜ 電話番号 (Telephone Numbers)',
+  explanation: [
+    '<b>問電話：</b>電話番号は何番ですか。 (What is your phone number?)',
+    '<b>讀號碼：</b>一位一位讀，例：283-9547 → に・はち・さん・きゅう・ご・よん・なな',
+    '<b>數字常用變體：</b>4=よん、7=なな、9=きゅう（避免不吉利的 し/しち/く）',
+    '<b>確認：</b>「283-9547 ですね。」（〜ね 表確認）'
+  ],
+  examples: [
+    { jp:'電話番号は何番ですか。',  reading:'でんわばんごうはなんばんですか。', en:'What is your phone number?' },
+    { jp:'283-9547です。',          reading:'にはちさんきゅうごよんななです。', en:"It's 283-9547." },
+    { jp:'283-9547ですね。',        reading:'にはちさんきゅうごよんななですね。', en:"283-9547, right?" },
+    { jp:'はい、そうです。',        reading:'はい、そうです。',                  en:"Yes, that's right." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'What is your phone number?',
+      answers:['電話番号は何番ですか。','電話番号は何番ですか','でんわばんごうはなんばんですか','でんわばんごうはなんばんですか。'] },
+    { type:'translate', prompt:"Read aloud: 283-9547 (use commas or spaces between digits)",
+      answers:['にはちさんきゅうごよんなな','に はち さん きゅう ご よん なな','にはちさんきゅうごよんなな。'] },
+    { type:'translate', prompt:'(Confirming) 283-9547, right?',
+      answers:['283-9547ですね。','283-9547ですね','にはちさんきゅうごよんなな ですね','にはちさんきゅうごよんなな ですね。'] },
+    { type:'fill', prompt:'電話番号は____ですか。', en:'What is your phone number?', answers:['何番','なんばん'] },
+  ]
+};
+
+// ----- L1 Useful Expression: 時間 (Time) -----
+GRAMMARS['l1-time'] = {
+  title: 'Useful Expression ｜ 時間 (Time)',
+  explanation: [
+    '<b>問時間：</b>今何時ですか。 (What time is it now?)',
+    '<b>整點：</b>數字 + <b>じ</b>（注意：4 = よじ・7 = しちじ・9 = くじ，不規則！）',
+    '<b>半小時：</b>〜じ + <b>はん</b>（例：いちじはん = 1:30）',
+    '<b>分鐘：</b>〜ぷん／ふん（依數字而異）。1ぷん／2ふん／3ぷん／4ぷん／5ふん…',
+    '<b>上午／下午：</b><b>ごぜん</b> (AM) ／ <b>ごご</b> (PM)。例：ごぜんくじ = 上午 9 點'
+  ],
+  examples: [
+    { jp:'今何時ですか。',          reading:'いまなんじですか。',         en:'What time is it now?' },
+    { jp:'一時半です。',             reading:'いちじはんです。',           en:"It's 1:30." },
+    { jp:'午前九時十八分です。',     reading:'ごぜんくじじゅうはっぷんです。', en:"It's 9:18 AM." },
+    { jp:'午後三時です。',           reading:'ごごさんじです。',           en:"It's 3:00 PM." },
+    { jp:'すみません。今何時ですか。', reading:'すみません。いまなんじですか。', en:'Excuse me, what time is it?' },
+    { jp:'ありがとうございます。',   reading:'ありがとうございます。',     en:'Thank you very much.' },
+  ],
+  // Exercises from textbook p.52-53 V
+  exercises: [
+    { type:'translate', prompt:'What time is it now?',
+      answers:['今何時ですか。','今何時ですか','いま何時ですか','いまなんじですか','いまなんじですか。'] },
+    { type:'translate', prompt:"It's 1:30 (one-thirty).",
+      answers:['一時半です。','一時半です','いちじはんです','いちじはんです。'] },
+    { type:'translate', prompt:"It's 4:00.",
+      answers:['四時です。','四時です','よじです','よじです。'] },
+    { type:'translate', prompt:"It's 7:00.",
+      answers:['七時です。','七時です','しちじです','しちじです。'] },
+    { type:'translate', prompt:"It's 9:00.",
+      answers:['九時です。','九時です','くじです','くじです。'] },
+    { type:'translate', prompt:"It's 11:00.",
+      answers:['十一時です。','十一時です','じゅういちじです','じゅういちじです。'] },
+    { type:'translate', prompt:"It's 3:00 AM.",
+      answers:['午前三時です。','午前三時です','ごぜん三時です','ごぜんさんじです','ごぜんさんじです。'] },
+    { type:'translate', prompt:"It's 6:00 PM.",
+      answers:['午後六時です。','午後六時です','ごご六時です','ごごろくじです','ごごろくじです。'] },
+    { type:'translate', prompt:"It's 11:30 PM.",
+      answers:['午後十一時半です。','午後十一時半です','ごご十一時半です','ごごじゅういちじはんです','ごごじゅういちじはんです。'] },
+    { type:'translate', prompt:'Excuse me, what time is it now?',
+      answers:['すみません。今何時ですか。','すみません。今何時ですか','すみません、今何時ですか','すみません、いまなんじですか','すみません。いまなんじですか'] },
+    { type:'fill', prompt:'今____ですか。', en:'What time is it now?', answers:['何時','なんじ'] },
+    { type:'fill', prompt:'____三時です。', en:"It's 3:00 AM.", answers:['午前','ごぜん'] },
+    { type:'fill', prompt:'____三時です。', en:"It's 3:00 PM.", answers:['午後','ごご'] },
+  ]
+};
+
 // ----- Grammar 7: 〜ましょうか (Offering Assistance) -----
 GRAMMARS['mashou-ka'] = {
   title: 'Grammar 7 ｜ テレビを消しましょうか (Offering Assistance)',
@@ -3650,7 +3912,20 @@ function buildLessonContent(num) {
     return;
   }
 
-  // Other lessons with vocab data (e.g. Lesson 1) — show only the vocab section
+  // Lesson 1 — vocab + Grammar 1-3 + Phone + Time (each in its own collapsible section)
+  if (VOCAB[num] && num === 1) {
+    const grammarIds = ['l1-desu','l1-q','l1-no','l1-phone','l1-time'];
+    container.innerHTML =
+      vocabSectionHTML(num) +
+      grammarIds.map(id => grammarSectionHTML(id)).join('');
+    renderVocabBody(num);
+    setTimeout(() => {
+      grammarIds.forEach(id => pickNextGrammarExercise(id));
+    }, 50);
+    return;
+  }
+
+  // Other lessons with vocab data — show only the vocab section
   if (VOCAB[num]) {
     container.innerHTML = vocabSectionHTML(num);
     renderVocabBody(num);
