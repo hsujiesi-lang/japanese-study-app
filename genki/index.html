@@ -858,21 +858,27 @@
     <p id="pin-stats" style="font-size:1em; line-height:1.7;">載入中…</p>
     <button onclick="clearAllPins()" style="margin-top:10px; background:#E53935; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">🗑️ 清除所有釘選</button>
   </div>
-  <div class="lesson-intro">
-    <h3>📤 匯出 (跨裝置同步)</h3>
-    <p style="color:#666; font-size:0.88em;">把下面這段「同步碼」複製到另一台裝置，貼到下方「匯入」即可同步釘選。<br>因為這是純前端 App，沒辦法自動跨裝置，要靠你手動同步一次。</p>
-    <textarea id="pin-export" readonly style="width:100%; min-height:90px; margin-top:8px; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.85em; background:#FFF8F0;"></textarea>
-    <button onclick="copyPinCode()" style="margin-top:8px; background:#FF7043; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">📋 複製同步碼</button>
+
+  <div class="lesson-intro" id="cloud-sync-box">
+    <h3>☁️ 雲端同步（手機 ↔ 電腦自動互通）</h3>
+    <p style="color:#666; font-size:0.9em;">啟用後，釘選會自動同步到所有裝置 — 在任一裝置點 📌，幾秒後另一台也會更新。</p>
+    <div id="cloud-sync-content" style="margin-top:10px;"></div>
   </div>
-  <div class="lesson-intro">
-    <h3>📥 匯入</h3>
-    <p style="color:#666; font-size:0.88em;">貼上從其他裝置複製來的同步碼，按「套用」後會合併到目前的釘選。</p>
-    <textarea id="pin-import" placeholder="貼上同步碼…" style="width:100%; min-height:90px; margin-top:8px; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.85em;"></textarea>
-    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-      <button onclick="importPinCode('merge')" style="background:#FF7043; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">➕ 合併套用</button>
-      <button onclick="importPinCode('replace')" style="background:white; color:#FF7043; border:1.5px solid #FF7043; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">♻️ 完全取代</button>
+
+  <details class="lesson-intro" style="cursor:pointer;">
+    <summary style="font-weight:700; color:#FF7043; font-size:1em;">🛠️ 進階：手動匯出／匯入（離線備份）</summary>
+    <div style="margin-top:12px;">
+      <p style="color:#666; font-size:0.85em;">如果雲端同步失效，這裡可以手動複製同步碼。</p>
+      <textarea id="pin-export" readonly style="width:100%; min-height:80px; margin-top:8px; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.82em; background:#FFF8F0;"></textarea>
+      <button onclick="copyPinCode()" style="margin-top:6px; background:#FF7043; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;">📋 複製</button>
+      <textarea id="pin-import" placeholder="貼上同步碼…" style="width:100%; min-height:80px; margin-top:12px; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.82em;"></textarea>
+      <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+        <button onclick="importPinCode('merge')" style="background:#FF7043; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;">➕ 合併</button>
+        <button onclick="importPinCode('replace')" style="background:white; color:#FF7043; border:1.5px solid #FF7043; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;">♻️ 取代</button>
+      </div>
     </div>
-  </div>
+  </details>
+
   <div class="bottom-pad"></div>
 </div>
 
@@ -2165,6 +2171,7 @@ function togglePinVerb(key) {
   if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
   try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
   renderVerbs();
+  if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
 }
 
 function renderVerbs() {
@@ -2648,6 +2655,7 @@ function togglePinVocab(num, hira) {
   if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
   try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
   renderVocabBody(num);
+  if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
 }
 
 // ============================
@@ -2685,10 +2693,17 @@ function showPinManager() {
   document.getElementById('pin-stats').innerHTML =
     `${vocabLines}<br>${verbLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
 
-  // Build sync code: base64(JSON)
+  // Build manual sync code (advanced backup)
   let code = '';
   try { code = btoa(unescape(encodeURIComponent(JSON.stringify(data)))); } catch(e) { code = ''; }
-  document.getElementById('pin-export').value = code || '(沒有任何釘選)';
+  const exp = document.getElementById('pin-export');
+  if (exp) exp.value = code || '(沒有任何釘選)';
+
+  // Render cloud sync UI
+  renderCloudSyncBox();
+
+  // If sync is enabled, also try a fresh pull
+  if (cloudSync.id) pullFromCloud();
 }
 
 function clearAllPins() {
@@ -2716,6 +2731,21 @@ function copyPinCode() {
   }
 }
 
+function applyPinData(data, mode) {
+  if (mode === 'replace') {
+    knownVocabLessons().forEach(num => { try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){} });
+    try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
+  }
+  Object.entries(data.vocab || {}).forEach(([num, arr]) => {
+    const current = getPinnedVocab(num);
+    arr.forEach(k => current.add(k));
+    try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(current))); } catch(e){}
+  });
+  const verbs = getPinnedVerbs();
+  (data.verbs || []).forEach(k => verbs.add(k));
+  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(verbs))); } catch(e){}
+}
+
 function importPinCode(mode) {
   const raw = document.getElementById('pin-import').value.trim();
   if (!raw) { alert('請先貼上同步碼。'); return; }
@@ -2727,26 +2757,175 @@ function importPinCode(mode) {
     return;
   }
   if (!data || typeof data !== 'object') { alert('❌ 同步碼格式錯誤。'); return; }
-
-  if (mode === 'replace') {
-    knownVocabLessons().forEach(num => { try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){} });
-    try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
-  }
-
-  // Merge vocab pins per lesson
-  Object.entries(data.vocab || {}).forEach(([num, arr]) => {
-    const current = getPinnedVocab(num);
-    arr.forEach(k => current.add(k));
-    try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(current))); } catch(e){}
-  });
-  // Merge verb pins
-  const verbs = getPinnedVerbs();
-  (data.verbs || []).forEach(k => verbs.add(k));
-  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(verbs))); } catch(e){}
-
+  applyPinData(data, mode);
   alert((mode === 'replace' ? '♻️ 已完全取代為新的釘選。' : '➕ 已合併套用。') + '\n總計：' + pinCount(collectAllPins()) + ' 個釘選。');
   document.getElementById('pin-import').value = '';
   showPinManager();
+  refreshVisibleVocabAndVerbs();
+}
+
+// Re-render visible vocab/verb lists after pin changes
+function refreshVisibleVocabAndVerbs() {
+  if (document.getElementById('page-verbs') && document.getElementById('page-verbs').classList.contains('active')) renderVerbs();
+  knownVocabLessons().forEach(num => {
+    if (document.getElementById('vocab-body-' + num)) renderVocabBody(num);
+  });
+}
+
+// ============================
+// CLOUD SYNC (auto sync via JsonBlob — free anonymous KV)
+// ============================
+const JSONBLOB_API = 'https://jsonblob.com/api/jsonBlob';
+const cloudSync = {
+  id: null,
+  pushTimer: null,
+  syncing: false,
+  lastErr: null
+};
+try { cloudSync.id = localStorage.getItem('genki-sync-id') || null; } catch(e){}
+
+function setSyncStatus(msg, color) {
+  const el = document.getElementById('cloud-sync-status');
+  if (el) { el.textContent = msg || ''; el.style.color = color || '#888'; }
+}
+
+async function createCloudSync() {
+  const btn = document.getElementById('cloud-create-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '建立中…'; }
+  try {
+    const res = await fetch(JSONBLOB_API, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify(collectAllPins())
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const loc = res.headers.get('Location') || '';
+    const id = loc.split('/').pop();
+    if (!id) throw new Error('沒收到同步 ID');
+    cloudSync.id = id;
+    localStorage.setItem('genki-sync-id', id);
+    alert('✅ 雲端同步已啟用！\n你的同步 ID 已產生。在其他裝置貼上此 ID 即可同步。');
+    renderCloudSyncBox();
+  } catch(e) {
+    alert('❌ 啟用失敗：' + e.message + '\n網路問題或服務暫時不可用，請稍後再試。');
+    if (btn) { btn.disabled = false; btn.textContent = '✨ 啟用雲端同步'; }
+  }
+}
+
+async function joinCloudSync() {
+  const input = document.getElementById('cloud-join-input');
+  const id = (input.value || '').trim();
+  if (!id) { alert('請輸入同步 ID。'); return; }
+  try {
+    const res = await fetch(JSONBLOB_API + '/' + encodeURIComponent(id));
+    if (!res.ok) throw new Error('找不到此同步 ID (HTTP ' + res.status + ')');
+    const data = await res.json();
+    if (!data || typeof data !== 'object') throw new Error('資料格式錯誤');
+    applyPinData(data, 'merge');
+    cloudSync.id = id;
+    localStorage.setItem('genki-sync-id', id);
+    // push merged back (so both devices converge)
+    await pushToCloud(true);
+    alert('✅ 已加入同步！釘選已合併。');
+    renderCloudSyncBox();
+    showPinManager();
+    refreshVisibleVocabAndVerbs();
+  } catch(e) {
+    alert('❌ 加入失敗：' + e.message);
+  }
+}
+
+async function pushToCloud(immediate) {
+  if (!cloudSync.id || cloudSync.syncing) return;
+  cloudSync.syncing = true;
+  setSyncStatus('☁️ 同步中…', '#FF7043');
+  try {
+    const res = await fetch(JSONBLOB_API + '/' + encodeURIComponent(cloudSync.id), {
+      method: 'PUT',
+      headers: { 'Content-Type':'application/json', 'Accept':'application/json' },
+      body: JSON.stringify(collectAllPins())
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    cloudSync.lastErr = null;
+    setSyncStatus('✅ 已同步 ' + new Date().toLocaleTimeString(), '#2E7D32');
+  } catch(e) {
+    cloudSync.lastErr = e.message;
+    setSyncStatus('⚠️ 同步失敗：' + e.message, '#C62828');
+  } finally {
+    cloudSync.syncing = false;
+  }
+}
+
+async function pullFromCloud() {
+  if (!cloudSync.id) return;
+  setSyncStatus('☁️ 載入中…', '#FF7043');
+  try {
+    const res = await fetch(JSONBLOB_API + '/' + encodeURIComponent(cloudSync.id));
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    applyPinData(data, 'merge');
+    refreshVisibleVocabAndVerbs();
+    setSyncStatus('✅ 已同步 ' + new Date().toLocaleTimeString(), '#2E7D32');
+    // push back the merged version so all devices converge
+    schedulePushToCloud();
+  } catch(e) {
+    setSyncStatus('⚠️ 載入失敗：' + e.message, '#C62828');
+  }
+}
+
+function schedulePushToCloud() {
+  if (!cloudSync.id) return;
+  clearTimeout(cloudSync.pushTimer);
+  cloudSync.pushTimer = setTimeout(() => pushToCloud(false), 1500);
+}
+
+function disableCloudSync() {
+  if (!confirm('停用雲端同步嗎？目前裝置的釘選會保留，但不再自動同步。')) return;
+  cloudSync.id = null;
+  try { localStorage.removeItem('genki-sync-id'); } catch(e){}
+  renderCloudSyncBox();
+}
+
+function copySyncId() {
+  if (!cloudSync.id) return;
+  navigator.clipboard.writeText(cloudSync.id).then(
+    () => alert('✅ 已複製同步 ID。\n在另一台裝置貼上即可同步。'),
+    () => prompt('複製這段 ID：', cloudSync.id)
+  );
+}
+
+function renderCloudSyncBox() {
+  const box = document.getElementById('cloud-sync-content');
+  if (!box) return;
+  if (cloudSync.id) {
+    box.innerHTML = `
+      <div style="background:#E8F5E9; border:1.5px solid #4CAF50; border-radius:10px; padding:12px;">
+        <div style="font-weight:700; color:#2E7D32; margin-bottom:6px;">✅ 已啟用雲端同步</div>
+        <div style="font-family:monospace; font-size:0.95em; word-break:break-all; background:white; padding:8px 10px; border-radius:6px; margin:6px 0;">${cloudSync.id}</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <button onclick="copySyncId()" style="background:#4CAF50; color:white; border:none; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;">📋 複製 ID</button>
+          <button onclick="pullFromCloud()" style="background:white; color:#FF7043; border:1.5px solid #FF7043; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;">🔄 立即同步</button>
+          <button onclick="disableCloudSync()" style="background:white; color:#888; border:1.5px solid #DDD; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer;">🔌 停用</button>
+        </div>
+        <div id="cloud-sync-status" style="margin-top:8px; font-size:0.85em; color:#888;"></div>
+        <p style="margin-top:10px; color:#888; font-size:0.78em; line-height:1.5;">
+          📱 在其他裝置：開「📌 釘選管理」→ 貼上這個 ID 到下方「輸入既有同步 ID」→ 加入。<br>
+          💡 之後任何裝置點 📌，幾秒內所有裝置都會自動更新（需開著 App）。
+        </p>
+      </div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div style="background:#FFF8F0; border:1.5px solid #FFE0B2; border-radius:10px; padding:14px;">
+        <p style="color:#555; font-size:0.9em; margin-bottom:10px;">尚未啟用雲端同步。</p>
+        <button id="cloud-create-btn" onclick="createCloudSync()" style="background:linear-gradient(135deg,#FF7043 0%,#E64A19 100%); color:white; border:none; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer; font-size:1em;">✨ 啟用雲端同步</button>
+        <div style="margin:14px 0; text-align:center; color:#999; font-size:0.85em;">───── 或 ─────</div>
+        <div style="font-size:0.88em; color:#555; margin-bottom:6px;">輸入既有同步 ID（從其他裝置複製）：</div>
+        <input id="cloud-join-input" type="text" placeholder="貼上同步 ID…" style="width:100%; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.88em; box-sizing:border-box;">
+        <button onclick="joinCloudSync()" style="margin-top:8px; background:#FF7043; color:white; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer;">📥 加入同步</button>
+      </div>
+    `;
+  }
 }
 
 function vocabCardHTML(num, item, cls, isPinned) {
@@ -3824,6 +4003,15 @@ function showPage(name) {
 // init
 window.addEventListener('load', () => {
   renderVerbs();
+  // If cloud sync is enabled, pull latest pins in the background
+  if (cloudSync.id) {
+    setTimeout(() => pullFromCloud(), 300);
+  }
+});
+
+// Also pull when the tab becomes visible again (returning from another tab/app)
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && cloudSync.id) pullFromCloud();
 });
 </script>
 </body>
