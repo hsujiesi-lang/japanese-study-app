@@ -432,6 +432,32 @@
     color: #999; font-size: 0.78em; margin-bottom: 6px;
   }
 
+  /* Pin list (in Pin Manager page) */
+  .pin-list-section-title {
+    background: #FFE0B2; color: #E65100; padding: 8px 12px;
+    border-radius: 8px; font-weight: 700; font-size: 0.92em;
+    margin: 12px 0 6px;
+  }
+  .pin-list-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #FFFBF7; border: 1px solid #FFE0B2; border-radius: 8px;
+    padding: 8px 12px; margin-bottom: 6px; gap: 10px;
+  }
+  .pin-list-text { flex: 1; min-width: 0; }
+  .pin-list-jp { font-weight: 700; color: #BF360C; font-size: 1em; }
+  .pin-list-en { color: #888; font-size: 0.82em; margin-left: 6px; }
+  .pin-list-meta {
+    display: inline-block; background: #ECEFF1; color: #546E7A;
+    padding: 1px 6px; border-radius: 8px; font-size: 0.72em;
+    margin-left: 6px; font-weight: 600;
+  }
+  .pin-list-remove {
+    background: #FFCDD2; color: #C62828; border: none;
+    width: 28px; height: 28px; border-radius: 50%;
+    font-weight: 700; cursor: pointer; flex-shrink: 0;
+  }
+  .pin-list-remove:active { background: #EF9A9A; }
+
   /* Lesson collapsible section */
   .lesson-section {
     background: white; border-radius: 14px; margin: 16px;
@@ -857,6 +883,12 @@
     <h3>📊 目前釘選</h3>
     <p id="pin-stats" style="font-size:1em; line-height:1.7;">載入中…</p>
     <button onclick="clearAllPins()" style="margin-top:10px; background:#E53935; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">🗑️ 清除所有釘選</button>
+  </div>
+
+  <div class="lesson-intro">
+    <h3>📋 釘選項目清單</h3>
+    <p style="color:#888; font-size:0.85em;">點 ✕ 可移除單一釘選</p>
+    <div id="pin-list" style="margin-top:10px;"></div>
   </div>
 
   <div class="lesson-intro" id="cloud-sync-box">
@@ -2693,6 +2725,8 @@ function showPinManager() {
   document.getElementById('pin-stats').innerHTML =
     `${vocabLines}<br>${verbLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
 
+  renderPinList();
+
   // Build manual sync code (advanced backup)
   let code = '';
   try { code = btoa(unescape(encodeURIComponent(JSON.stringify(data)))); } catch(e) { code = ''; }
@@ -2704,6 +2738,60 @@ function showPinManager() {
 
   // If sync is enabled, also try a fresh pull
   if (cloudSync.id) pullFromCloud();
+}
+
+function renderPinList() {
+  const container = document.getElementById('pin-list');
+  if (!container) return;
+  let html = '';
+
+  // Vocab pins by lesson
+  knownVocabLessons().forEach(num => {
+    const pinnedSet = getPinnedVocab(num);
+    if (pinnedSet.size === 0) return;
+    const items = [];
+    vocabGroups(num).forEach(g => g.items.forEach(it => {
+      if (pinnedSet.has(it.hira)) items.push(it);
+    }));
+    if (items.length === 0) return;
+    html += `<div class="pin-list-section-title">📚 Lesson ${num} 単語 (${items.length})</div>`;
+    items.forEach(it => {
+      const display = (it.kanji && it.kanji !== it.hira && it.kanji.length) ? `${it.kanji} [${it.hira}]` : it.hira;
+      const safeHira = it.hira.replace(/'/g, "\\'");
+      html += `<div class="pin-list-item">
+        <div class="pin-list-text">
+          <span class="pin-list-jp">${display}</span>
+          <span class="pin-list-en">${it.en}</span>
+        </div>
+        <button class="pin-list-remove" title="移除釘選" onclick="togglePinVocab(${num},'${safeHira}'); showPinManager();">✕</button>
+      </div>`;
+    });
+  });
+
+  // Verb pins
+  const pinnedVerbsSet = getPinnedVerbs();
+  if (pinnedVerbsSet.size > 0) {
+    const verbList = VERBS.filter(v => pinnedVerbsSet.has(verbKey(v)));
+    if (verbList.length > 0) {
+      html += `<div class="pin-list-section-title">📖 動詞 (${verbList.length})</div>`;
+      verbList.forEach(v => {
+        const display = (v.kanji && v.kanji !== v.hira) ? `${v.kanji} [${v.hira}]` : v.hira;
+        const typeLabel = v.type === 'ru' ? 'Ru' : (v.type === 'u' ? 'U' : 'Irr');
+        const safeKey = verbKey(v).replace(/'/g, "\\'");
+        html += `<div class="pin-list-item">
+          <div class="pin-list-text">
+            <span class="pin-list-jp">${display}</span>
+            <span class="pin-list-en">${v.en}</span>
+            <span class="pin-list-meta">L${v.lesson} · ${typeLabel}</span>
+          </div>
+          <button class="pin-list-remove" title="移除釘選" onclick="togglePinVerb('${safeKey}'); showPinManager();">✕</button>
+        </div>`;
+      });
+    }
+  }
+
+  if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞頁點 📌 開始釘選。</p>';
+  container.innerHTML = html;
 }
 
 function clearAllPins() {
