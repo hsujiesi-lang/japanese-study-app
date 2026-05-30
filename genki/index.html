@@ -107,7 +107,12 @@
   .verb-card.ru { border-left-color: #5C6BC0; }
   .verb-card.u { border-left-color: #26A69A; }
   .verb-card.irregular { border-left-color: #AB47BC; }
-  .verb-card.pinned { background: #FFFBF7; box-shadow: 0 1px 6px rgba(255,112,67,0.2); }
+  .verb-card.pinned {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    box-shadow: 0 2px 10px rgba(255,112,67,0.3);
+    border-left: 5px solid #FF7043 !important;
+  }
+  .verb-card.pinned .kanji { color: #BF360C; }
   .verb-pin {
     background: #F0F0F0; border: none; border-radius: 50%;
     width: 32px; height: 32px; font-size: 0.9em; cursor: pointer;
@@ -507,9 +512,11 @@
   }
   .vocab-card .vocab-pin:active { background: #FFCC80; }
   .vocab-card.pinned {
-    border-left-color: #FF7043; background: #FFFBF7;
-    box-shadow: 0 1px 4px rgba(255,112,67,0.18);
+    border-left: 4px solid #FF7043;
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    box-shadow: 0 2px 8px rgba(255,112,67,0.3);
   }
+  .vocab-card.pinned .vocab-main { color: #BF360C; }
 
   .vocab-play-all-btn {
     display: block; width: calc(100% - 32px); margin: 8px 16px 12px;
@@ -701,6 +708,11 @@
         <div class="lesson-title">形容詞まとめ (Lessons 1〜6)</div>
         <div class="lesson-en">い／な · Present・Past · Aff・Neg · 發音</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('pinmanager')" style="background:linear-gradient(135deg,#FFF3E0 0%,#FFCC80 100%);">
+        <div class="lesson-num" style="color:#E65100">📌 PIN MANAGER</div>
+        <div class="lesson-title">釘選管理</div>
+        <div class="lesson-en">統計 · 清除 · 跨裝置匯出／匯入</div>
+      </div>
       <div class="hub-card" onclick="showPage('hiragana')" style="background:linear-gradient(135deg,#FFE4EC 0%,#FFB3C8 100%);">
         <div class="lesson-num" style="color:#C2185B">ひらがな</div>
         <div class="lesson-title">Hiragana 練習</div>
@@ -834,6 +846,36 @@
 </div>
 
 <!-- ============ LESSON PAGES ============ -->
+<!-- ============ PIN MANAGER PAGE ============ -->
+<div id="page-pinmanager" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>📌 釘選管理</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="lesson-intro">
+    <h3>📊 目前釘選</h3>
+    <p id="pin-stats" style="font-size:1em; line-height:1.7;">載入中…</p>
+    <button onclick="clearAllPins()" style="margin-top:10px; background:#E53935; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">🗑️ 清除所有釘選</button>
+  </div>
+  <div class="lesson-intro">
+    <h3>📤 匯出 (跨裝置同步)</h3>
+    <p style="color:#666; font-size:0.88em;">把下面這段「同步碼」複製到另一台裝置，貼到下方「匯入」即可同步釘選。<br>因為這是純前端 App，沒辦法自動跨裝置，要靠你手動同步一次。</p>
+    <textarea id="pin-export" readonly style="width:100%; min-height:90px; margin-top:8px; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.85em; background:#FFF8F0;"></textarea>
+    <button onclick="copyPinCode()" style="margin-top:8px; background:#FF7043; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">📋 複製同步碼</button>
+  </div>
+  <div class="lesson-intro">
+    <h3>📥 匯入</h3>
+    <p style="color:#666; font-size:0.88em;">貼上從其他裝置複製來的同步碼，按「套用」後會合併到目前的釘選。</p>
+    <textarea id="pin-import" placeholder="貼上同步碼…" style="width:100%; min-height:90px; margin-top:8px; padding:10px; border:1.5px solid #FFE0B2; border-radius:8px; font-family:monospace; font-size:0.85em;"></textarea>
+    <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+      <button onclick="importPinCode('merge')" style="background:#FF7043; color:white; border:none; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">➕ 合併套用</button>
+      <button onclick="importPinCode('replace')" style="background:white; color:#FF7043; border:1.5px solid #FF7043; padding:10px 16px; border-radius:10px; font-weight:700; cursor:pointer;">♻️ 完全取代</button>
+    </div>
+  </div>
+  <div class="bottom-pad"></div>
+</div>
+
 <!-- ============ ADJECTIVES PAGE ============ -->
 <div id="page-adjectives" class="page">
   <div class="top-nav">
@@ -1524,6 +1566,96 @@ GRAMMARS['mashou-ka'] = {
 // Lesson 6 — based on Genki textbook vocab list
 // ============================
 const VOCAB = {
+  1: {
+    groups: [
+      { key:'school', title:'🏫 School', cls:'noun', items: [
+        { kanji:'大学',     hira:'だいがく',     en:'college; university' },
+        { kanji:'高校',     hira:'こうこう',     en:'high school' },
+        { kanji:'学生',     hira:'がくせい',     en:'student' },
+        { kanji:'大学生',   hira:'だいがくせい', en:'college student' },
+        { kanji:'留学生',   hira:'りゅうがくせい', en:'international student' },
+        { kanji:'先生',     hira:'せんせい',     en:'teacher; Professor...' },
+        { kanji:'〜年生',   hira:'〜ねんせい',   en:'...year student' },
+        { kanji:'一年生',   hira:'いちねんせい', en:'first-year student' },
+        { kanji:'専攻',     hira:'せんこう',     en:'major' },
+      ]},
+      { key:'person', title:'👤 Person', cls:'noun', items: [
+        { kanji:'',         hira:'わたし',       en:'I' },
+        { kanji:'友達',     hira:'ともだち',     en:'friend' },
+        { kanji:'',         hira:'〜さん',       en:'Mr./Ms....' },
+        { kanji:'〜人',     hira:'〜じん',       en:'...people' },
+        { kanji:'日本人',   hira:'にほんじん',   en:'Japanese people' },
+      ]},
+      { key:'time', title:'⏰ Time', cls:'noun', items: [
+        { kanji:'今',       hira:'いま',         en:'now' },
+        { kanji:'午前',     hira:'ごぜん',       en:'A.M.' },
+        { kanji:'午後',     hira:'ごご',         en:'P.M.' },
+        { kanji:'〜時',     hira:'〜じ',         en:"o'clock" },
+        { kanji:'一時',     hira:'いちじ',       en:"one o'clock" },
+        { kanji:'半',       hira:'はん',         en:'half' },
+        { kanji:'二時半',   hira:'にじはん',     en:'half past two' },
+      ]},
+      { key:'others', title:'📚 Others', cls:'noun', items: [
+        { kanji:'日本',     hira:'にほん',       en:'Japan' },
+        { kanji:'',         hira:'アメリカ',     en:'U.S.A.' },
+        { kanji:'〜語',     hira:'〜ご',         en:'...language' },
+        { kanji:'日本語',   hira:'にほんご',     en:'Japanese language' },
+        { kanji:'〜歳',     hira:'〜さい',       en:'...years old' },
+        { kanji:'電話',     hira:'でんわ',       en:'telephone' },
+        { kanji:'〜番',     hira:'〜ばん',       en:'number...' },
+        { kanji:'番号',     hira:'ばんごう',     en:'number' },
+        { kanji:'名前',     hira:'なまえ',       en:'name' },
+        { kanji:'何',       hira:'なん／なに',   en:'what' },
+      ]},
+      { key:'expr', title:'💬 Expressions', cls:'adverb', items: [
+        { kanji:'',         hira:'あのう',       en:'um...' },
+        { kanji:'',         hira:'はい',         en:'yes' },
+        { kanji:'',         hira:'そうです',     en:"That's right." },
+        { kanji:'',         hira:'そうですか',   en:'I see.; Is that so?' },
+      ]},
+      { key:'countries', title:'🌏 Countries (Additional)', cls:'noun', items: [
+        { kanji:'',         hira:'イギリス',     en:'Britain' },
+        { kanji:'',         hira:'オーストラリア', en:'Australia' },
+        { kanji:'韓国',     hira:'かんこく',     en:'Korea' },
+        { kanji:'',         hira:'カナダ',       en:'Canada' },
+        { kanji:'中国',     hira:'ちゅうごく',   en:'China' },
+        { kanji:'',         hira:'インド',       en:'India' },
+        { kanji:'',         hira:'エジプト',     en:'Egypt' },
+        { kanji:'',         hira:'フィリピン',   en:'Philippines' },
+        { kanji:'',         hira:'マレーシア',   en:'Malaysia' },
+        { kanji:'',         hira:'シンガポール', en:'Singapore' },
+      ]},
+      { key:'majors', title:'🎓 Majors (Additional)', cls:'noun', items: [
+        { kanji:'',         hira:'アジアけんきゅう', en:'Asian studies' },
+        { kanji:'経済',     hira:'けいざい',     en:'economics' },
+        { kanji:'工学',     hira:'こうがく',     en:'engineering' },
+        { kanji:'国際関係', hira:'こくさいかんけい', en:'international relations' },
+        { kanji:'',         hira:'コンピューター', en:'computer' },
+        { kanji:'政治',     hira:'せいじ',       en:'politics' },
+        { kanji:'生物学',   hira:'せいぶつがく', en:'biology' },
+        { kanji:'',         hira:'ビジネス',     en:'business' },
+        { kanji:'文学',     hira:'ぶんがく',     en:'literature' },
+        { kanji:'歴史',     hira:'れきし',       en:'history' },
+      ]},
+      { key:'occupations', title:'💼 Occupations (Additional)', cls:'noun', items: [
+        { kanji:'医者',     hira:'いしゃ',       en:'doctor' },
+        { kanji:'会社員',   hira:'かいしゃいん', en:'office worker' },
+        { kanji:'看護師',   hira:'かんごし',     en:'nurse' },
+        { kanji:'高校生',   hira:'こうこうせい', en:'high school student' },
+        { kanji:'主婦',     hira:'しゅふ',       en:'housewife' },
+        { kanji:'大学院生', hira:'だいがくいんせい', en:'graduate student' },
+        { kanji:'弁護士',   hira:'べんごし',     en:'lawyer' },
+      ]},
+      { key:'family', title:'👨‍👩‍👧 Family (Additional)', cls:'noun', items: [
+        { kanji:'お母さん', hira:'おかあさん',   en:'mother' },
+        { kanji:'お父さん', hira:'おとうさん',   en:'father' },
+        { kanji:'お姉さん', hira:'おねえさん',   en:'older sister' },
+        { kanji:'お兄さん', hira:'おにいさん',   en:'older brother' },
+        { kanji:'妹',       hira:'いもうと',     en:'younger sister' },
+        { kanji:'弟',       hira:'おとうと',     en:'younger brother' },
+      ]},
+    ]
+  },
   6: {
     nouns: [
       { kanji:'漢字',     hira:'かんじ',       en:'kanji; Chinese character' },
@@ -2494,6 +2626,9 @@ const LESSONS = {
 function vocabGroups(num) {
   const vocab = VOCAB[num];
   if (!vocab) return [];
+  // New flexible format: vocab.groups = [{ key, title, cls, items }, ...]
+  if (vocab.groups) return vocab.groups.filter(g => g.items && g.items.length > 0);
+  // Legacy format (used by L6): nouns / naAdjectives / adverbs
   return [
     { key:'nouns',         title:'📦 名詞 Nouns',          cls:'noun',   items:vocab.nouns || [] },
     { key:'naAdjectives',  title:'🎨 な-形容詞',           cls:'naadj',  items:vocab.naAdjectives || [] },
@@ -2513,6 +2648,105 @@ function togglePinVocab(num, hira) {
   if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
   try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
   renderVocabBody(num);
+}
+
+// ============================
+// PIN MANAGER (stats / clear / export / import)
+// ============================
+function knownVocabLessons() {
+  return Object.keys(VOCAB).map(Number).sort((a,b)=>a-b);
+}
+
+function collectAllPins() {
+  const data = { vocab: {}, verbs: [] };
+  knownVocabLessons().forEach(num => {
+    const arr = Array.from(getPinnedVocab(num));
+    if (arr.length) data.vocab[num] = arr;
+  });
+  const v = Array.from(getPinnedVerbs());
+  if (v.length) data.verbs = v;
+  return data;
+}
+
+function pinCount(data) {
+  let n = 0;
+  Object.values(data.vocab || {}).forEach(arr => n += arr.length);
+  n += (data.verbs || []).length;
+  return n;
+}
+
+function showPinManager() {
+  const data = collectAllPins();
+  const vocabLines = knownVocabLessons().map(num => {
+    const arr = data.vocab[num] || [];
+    return `・L${num} 単語：<b>${arr.length}</b> 個`;
+  }).join('<br>');
+  const verbLine = `・動詞：<b>${(data.verbs||[]).length}</b> 個`;
+  document.getElementById('pin-stats').innerHTML =
+    `${vocabLines}<br>${verbLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
+
+  // Build sync code: base64(JSON)
+  let code = '';
+  try { code = btoa(unescape(encodeURIComponent(JSON.stringify(data)))); } catch(e) { code = ''; }
+  document.getElementById('pin-export').value = code || '(沒有任何釘選)';
+}
+
+function clearAllPins() {
+  if (!confirm('確定要清除所有釘選嗎？此動作無法復原。')) return;
+  knownVocabLessons().forEach(num => {
+    try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){}
+  });
+  try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
+  alert('已清除所有釘選。');
+  showPinManager();
+}
+
+function copyPinCode() {
+  const ta = document.getElementById('pin-export');
+  ta.select();
+  ta.setSelectionRange(0, 99999);
+  try {
+    navigator.clipboard.writeText(ta.value).then(
+      () => alert('✅ 已複製。請貼到另一台裝置。'),
+      () => { document.execCommand('copy'); alert('✅ 已複製。'); }
+    );
+  } catch(e) {
+    document.execCommand('copy');
+    alert('✅ 已複製。');
+  }
+}
+
+function importPinCode(mode) {
+  const raw = document.getElementById('pin-import').value.trim();
+  if (!raw) { alert('請先貼上同步碼。'); return; }
+  let data;
+  try {
+    data = JSON.parse(decodeURIComponent(escape(atob(raw))));
+  } catch(e) {
+    alert('❌ 同步碼格式錯誤，請確認複製完整。');
+    return;
+  }
+  if (!data || typeof data !== 'object') { alert('❌ 同步碼格式錯誤。'); return; }
+
+  if (mode === 'replace') {
+    knownVocabLessons().forEach(num => { try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){} });
+    try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
+  }
+
+  // Merge vocab pins per lesson
+  Object.entries(data.vocab || {}).forEach(([num, arr]) => {
+    const current = getPinnedVocab(num);
+    arr.forEach(k => current.add(k));
+    try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(current))); } catch(e){}
+  });
+  // Merge verb pins
+  const verbs = getPinnedVerbs();
+  (data.verbs || []).forEach(k => verbs.add(k));
+  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(verbs))); } catch(e){}
+
+  alert((mode === 'replace' ? '♻️ 已完全取代為新的釘選。' : '➕ 已合併套用。') + '\n總計：' + pinCount(collectAllPins()) + ' 個釘選。');
+  document.getElementById('pin-import').value = '';
+  showPinManager();
 }
 
 function vocabCardHTML(num, item, cls, isPinned) {
@@ -2964,6 +3198,13 @@ function buildLessonContent(num) {
     setTimeout(() => {
       grammarIds.forEach(id => pickNextGrammarExercise(id));
     }, 50);
+    return;
+  }
+
+  // Other lessons with vocab data (e.g. Lesson 1) — show only the vocab section
+  if (VOCAB[num]) {
+    container.innerHTML = vocabSectionHTML(num);
+    renderVocabBody(num);
     return;
   }
 
@@ -3563,6 +3804,7 @@ function showPage(name) {
 
   if (name === 'verbs') renderVerbs();
   if (name === 'adjectives') renderAdjectives();
+  if (name === 'pinmanager') showPinManager();
   if (name === 'hiragana') {
     renderKanaTable(HIRAGANA, 'hira-ref', 'hira');
     startPractice(HIRAGANA, 'hira-p1', 'hira', 'k2r');
