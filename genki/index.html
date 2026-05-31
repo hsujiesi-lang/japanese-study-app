@@ -1639,6 +1639,56 @@ GRAMMARS['l1-desu'] = {
       answers:['メアリーです。','メアリーです','わたしはメアリーです','わたしはメアリーです。'] },
     { type:'translate', prompt:'(My) major is Japanese.',
       answers:['専攻は日本語です。','専攻は日本語です','せんこうは日本語です','せんこうはにほんごです','せんこうはにほんごです。'] },
+
+    // -------- Extended practice: more nationalities --------
+    { type:'translate', prompt:'I am Korean.',
+      answers:['わたしは韓国人です。','わたしは韓国人です','私は韓国人です','わたしはかんこくじんです','わたしはかんこくじんです。'] },
+    { type:'translate', prompt:'I am Chinese.',
+      answers:['わたしは中国人です。','わたしは中国人です','私は中国人です','わたしはちゅうごくじんです','わたしはちゅうごくじんです。'] },
+    { type:'translate', prompt:'I am Canadian.',
+      answers:['わたしはカナダ人です。','わたしはカナダ人です','私はカナダ人です','わたしはカナダじんです','わたしはカナダじんです。'] },
+    { type:'translate', prompt:'I am Australian.',
+      answers:['わたしはオーストラリア人です。','わたしはオーストラリア人です','私はオーストラリア人です','わたしはオーストラリアじんです'] },
+    { type:'translate', prompt:'I am Indian.',
+      answers:['わたしはインド人です。','わたしはインド人です','私はインド人です','わたしはインドじんです'] },
+    { type:'translate', prompt:'I am Egyptian.',
+      answers:['わたしはエジプト人です。','わたしはエジプト人です','私はエジプト人です','わたしはエジプトじんです'] },
+    { type:'translate', prompt:'I am Filipino.',
+      answers:['わたしはフィリピン人です。','わたしはフィリピン人です','私はフィリピン人です','わたしはフィリピンじんです'] },
+
+    // Professions
+    { type:'translate', prompt:'I am a student.',
+      answers:['わたしは学生です。','わたしは学生です','私は学生です','わたしはがくせいです','わたしはがくせいです。'] },
+    { type:'translate', prompt:'My mother is a nurse.',
+      answers:['お母さんは看護師です。','お母さんは看護師です','母は看護師です','おかあさんはかんごしです','おかあさんはかんごしです。'] },
+    { type:'translate', prompt:'My father is an office worker.',
+      answers:['お父さんは会社員です。','お父さんは会社員です','父は会社員です','おとうさんはかいしゃいんです','おとうさんはかいしゃいんです。'] },
+    { type:'translate', prompt:'My older brother is a graduate student.',
+      answers:['お兄さんは大学院生です。','お兄さんは大学院生です','兄は大学院生です','おにいさんはだいがくいんせいです'] },
+    { type:'translate', prompt:'My younger sister is a high school student.',
+      answers:['妹は高校生です。','妹は高校生です','いもうとは高校生です','いもうとはこうこうせいです','いもうとはこうこうせいです。'] },
+    { type:'translate', prompt:'Yamashita-sensei is a teacher.',
+      answers:['やましたせんせいは先生です。','やましたせんせいは先生です','山下先生は先生です','やましたせんせいはせんせいです'] },
+
+    // Various ages
+    { type:'translate', prompt:'I am 18 years old.',
+      answers:['わたしは十八歳です。','わたしは十八歳です','私は十八歳です','わたしはじゅうはっさいです','わたしはじゅうはっさいです。'] },
+    { type:'translate', prompt:'I am 20 years old.',
+      answers:['わたしは二十歳です。','わたしは二十歳です','私は二十歳です','わたしははたちです','わたしはにじゅっさいです','わたしはにじゅうさいです'] },
+    { type:'translate', prompt:'I am 25 years old.',
+      answers:['わたしは二十五歳です。','わたしは二十五歳です','私は二十五歳です','わたしはにじゅうごさいです','わたしはにじゅうごさいです。'] },
+    { type:'translate', prompt:'I am 30 years old.',
+      answers:['わたしは三十歳です。','わたしは三十歳です','私は三十歳です','わたしはさんじゅっさいです','わたしはさんじゅうさいです'] },
+    { type:'translate', prompt:'My mother is 45 years old.',
+      answers:['お母さんは四十五歳です。','お母さんは四十五歳です','母は四十五歳です','おかあさんはよんじゅうごさいです'] },
+
+    // Years in school 1-6
+    { type:'translate', prompt:'I am a 1st-year student.',
+      answers:['わたしは一年生です。','わたしは一年生です','私は一年生です','わたしはいちねんせいです','わたしはいちねんせいです。'] },
+    { type:'translate', prompt:'I am a 3rd-year student.',
+      answers:['わたしは三年生です。','わたしは三年生です','私は三年生です','わたしはさんねんせいです','わたしはさんねんせいです。'] },
+    { type:'translate', prompt:'I am a 5th-year student.',
+      answers:['わたしは五年生です。','わたしは五年生です','私は五年生です','わたしはごねんせいです','わたしはごねんせいです。'] },
   ]
 };
 
@@ -1709,6 +1759,47 @@ GRAMMARS['l1-q'] = {
       answers:['お母さんは先生ですか。','お母さんは先生ですか','おかあさんはせんせいですか','おかあさんはせんせいですか。'] },
     { type:'translate', prompt:'Ask: Is your younger sister a college student?',
       answers:['妹は大学生ですか。','妹は大学生ですか','いもうとは大学生ですか','いもうとはだいがくせいですか','いもうとはだいがくせいですか。'] },
+
+    // -------- Extended practice --------
+    // More yes/no questions
+    { type:'translate', prompt:'Ask: Are you Korean?',
+      answers:['韓国人ですか。','韓国人ですか','かんこくじんですか','かんこくじんですか。'] },
+    { type:'translate', prompt:'Ask: Are you Chinese?',
+      answers:['中国人ですか。','中国人ですか','ちゅうごくじんですか','ちゅうごくじんですか。'] },
+    { type:'translate', prompt:'Ask: Are you a doctor?',
+      answers:['医者ですか。','医者ですか','いしゃですか','いしゃですか。'] },
+    { type:'translate', prompt:'Ask: Are you a lawyer?',
+      answers:['弁護士ですか。','弁護士ですか','べんごしですか','べんごしですか。'] },
+    { type:'translate', prompt:'Ask: Are you a teacher?',
+      answers:['先生ですか。','先生ですか','せんせいですか','せんせいですか。'] },
+    { type:'translate', prompt:'Ask: Is your older brother a high school student?',
+      answers:['お兄さんは高校生ですか。','お兄さんは高校生ですか','おにいさんは高校生ですか','おにいさんはこうこうせいですか','おにいさんはこうこうせいですか。'] },
+    { type:'translate', prompt:'Ask: Is your major economics?',
+      answers:['専攻は経済ですか。','専攻は経済ですか','せんこうは経済ですか','せんこうはけいざいですか','せんこうはけいざいですか。'] },
+    { type:'translate', prompt:'Ask: Is your major engineering?',
+      answers:['専攻は工学ですか。','専攻は工学ですか','せんこうは工学ですか','せんこうはこうがくですか'] },
+    { type:'translate', prompt:'Ask: Is your major history?',
+      answers:['専攻は歴史ですか。','専攻は歴史ですか','せんこうは歴史ですか','せんこうはれきしですか'] },
+
+    // Question-word variations
+    { type:'translate', prompt:'What is your name?',
+      answers:['名前は何ですか。','名前は何ですか','お名前は何ですか','お名前はなんですか','なまえはなんですか','なまえはなんですか。'] },
+    { type:'translate', prompt:'What is your major? (use せんこう)',
+      answers:['専攻は何ですか。','専攻は何ですか','せんこうは何ですか','せんこうはなんですか','せんこうはなんですか。'] },
+    { type:'translate', prompt:'How old is your father?',
+      answers:['お父さんは何歳ですか。','お父さんは何歳ですか','おとうさんは何歳ですか','おとうさんはなんさいですか','おとうさんはなんさいですか。'] },
+    { type:'translate', prompt:'How old is your mother?',
+      answers:['お母さんは何歳ですか。','お母さんは何歳ですか','おかあさんは何歳ですか','おかあさんはなんさいですか'] },
+    { type:'translate', prompt:'What year in school is Robert?',
+      answers:['ロバートさんは何年生ですか。','ロバートさんは何年生ですか','ロバートさんはなんねんせいですか','ロバートさんはなんねんせいですか。'] },
+    { type:'translate', prompt:'What time is it in Tokyo?',
+      answers:['東京は今何時ですか。','東京は今何時ですか','とうきょうは今何時ですか','とうきょうはいまなんじですか','とうきょうはいまなんじですか。'] },
+    { type:'translate', prompt:'What time is it in London?',
+      answers:['ロンドンは今何時ですか。','ロンドンは今何時ですか','ロンドンはいまなんじですか','ロンドンはいまなんじですか。'] },
+    { type:'fill', prompt:'専攻は____ですか。', en:'What is your major?', answers:['何','なん'] },
+    { type:'fill', prompt:'今____ですか。', en:'What time is it now?', answers:['何時','なんじ'] },
+    { type:'fill', prompt:'____ですか。', en:'How old are you?', answers:['何歳','なんさい'] },
+    { type:'fill', prompt:'電話番号は____ですか。', en:'What is your phone number?', answers:['何番','なんばん'] },
   ]
 };
 
@@ -1767,6 +1858,54 @@ GRAMMARS['l1-no'] = {
       answers:['たけしさんの専攻は何ですか。','たけしさんの専攻は何ですか','たけしさんのせんこうは何ですか','たけしさんのせんこうはなんですか','たけしさんのせんこうはなんですか。'] },
     { type:'translate', prompt:'Ask: Is Yamashita-sensei a teacher of Japan University?',
       answers:['やましたせんせいは日本大学の先生ですか。','やましたせんせいは日本大学の先生ですか','やましたせんせいはにほんだいがくのせんせいですか','やましたせんせいはにほんだいがくのせんせいですか。','山下先生は日本大学の先生ですか'] },
+
+    // -------- Extended practice --------
+    // More possessive phrases
+    { type:'translate', prompt:"my friend",
+      answers:['わたしの友達','私の友達','わたしのともだち','私のともだち'] },
+    { type:'translate', prompt:"my father",
+      answers:['わたしのお父さん','私のお父さん','わたしのおとうさん','私のおとうさん'] },
+    { type:'translate', prompt:"my older sister",
+      answers:['わたしのお姉さん','私のお姉さん','わたしのおねえさん','私のおねえさん'] },
+    { type:'translate', prompt:"Yamashita-sensei's phone number",
+      answers:['やましたせんせいの電話番号','山下先生の電話番号','やましたせんせいのでんわばんごう'] },
+    { type:'translate', prompt:"Sora's name",
+      answers:['ソラさんの名前','ソラさんのなまえ'] },
+
+    // More school + student
+    { type:'translate', prompt:'a student at Tokyo University',
+      answers:['東京大学の学生','東京大学の学生。','とうきょうだいがくのがくせい','東京大学のがくせい'] },
+    { type:'translate', prompt:'a student at Seoul University',
+      answers:['ソウル大学の学生','ソウル大学の学生。','ソウルだいがくのがくせい','ソウル大学のがくせい'] },
+    { type:'translate', prompt:'a college student',
+      answers:['大学の学生','大学の学生。','だいがくのがくせい','大学のがくせい','大学生'] },
+
+    // Major / subject phrases
+    { type:'translate', prompt:'a student of economics',
+      answers:['経済の学生','経済の学生。','けいざいのがくせい','経済のがくせい'] },
+    { type:'translate', prompt:'a student of history',
+      answers:['歴史の学生','歴史の学生。','れきしのがくせい','歴史のがくせい'] },
+    { type:'translate', prompt:'a student of business',
+      answers:['ビジネスの学生','ビジネスの学生。','ビジネスのがくせい'] },
+    { type:'translate', prompt:'a teacher of English',
+      answers:['英語の先生','英語の先生。','えいごのせんせい','英語のせんせい'] },
+
+    // Full sentences with の
+    { type:'translate', prompt:'I am a student at the University of Arizona.',
+      answers:['わたしはアリゾナ大学の学生です。','わたしはアリゾナ大学の学生です','私はアリゾナ大学の学生です','わたしはアリゾナだいがくのがくせいです'] },
+    { type:'translate', prompt:"My major is computer.",
+      answers:['わたしの専攻はコンピューターです。','わたしの専攻はコンピューターです','私の専攻はコンピューターです','わたしのせんこうはコンピューターです'] },
+    { type:'translate', prompt:"My major is biology.",
+      answers:['わたしの専攻は生物学です。','わたしの専攻は生物学です','私の専攻は生物学です','わたしのせんこうはせいぶつがくです'] },
+    { type:'translate', prompt:"Mary's friend is Sora.",
+      answers:['メアリーさんの友達はソラさんです。','メアリーさんの友達はソラさんです','メアリーさんのともだちはソラさんです'] },
+    { type:'translate', prompt:"Robert's major is international relations.",
+      answers:['ロバートさんの専攻は国際関係です。','ロバートさんの専攻は国際関係です','ロバートさんのせんこうはこくさいかんけいです'] },
+
+    // Fill-in-the-blank with の
+    { type:'fill', prompt:'わたし____せんせい (my teacher)', en:'my teacher', answers:['の'] },
+    { type:'fill', prompt:'にほんご____がくせい (student of Japanese)', en:'student of Japanese', answers:['の'] },
+    { type:'fill', prompt:'メアリーさん____ともだち (Mary\'s friend)', en:"Mary's friend", answers:['の'] },
   ]
 };
 
@@ -1793,6 +1932,49 @@ GRAMMARS['l1-phone'] = {
     { type:'translate', prompt:'(Confirming) 283-9547, right?',
       answers:['283-9547ですね。','283-9547ですね','にはちさんきゅうごよんなな ですね','にはちさんきゅうごよんなな ですね。'] },
     { type:'fill', prompt:'電話番号は____ですか。', en:'What is your phone number?', answers:['何番','なんばん'] },
+
+    // -------- Extended phone-number practice --------
+    // Ask whose phone number
+    { type:'translate', prompt:"What is Mary's phone number?",
+      answers:['メアリーさんの電話番号は何番ですか。','メアリーさんの電話番号は何番ですか','メアリーさんのでんわばんごうはなんばんですか'] },
+    { type:'translate', prompt:"What is Takeshi's phone number?",
+      answers:['たけしさんの電話番号は何番ですか。','たけしさんの電話番号は何番ですか','たけしさんのでんわばんごうはなんばんですか'] },
+    { type:'translate', prompt:"What is your teacher's phone number?",
+      answers:['先生の電話番号は何番ですか。','先生の電話番号は何番ですか','せんせいの電話番号は何番ですか','せんせいのでんわばんごうはなんばんですか'] },
+    { type:'translate', prompt:"What is your friend's phone number?",
+      answers:['友達の電話番号は何番ですか。','友達の電話番号は何番ですか','友だちの電話番号は何番ですか','ともだちのでんわばんごうはなんばんですか'] },
+
+    // Read short number sequences (using 4=よん, 7=なな, 9=きゅう)
+    { type:'translate', prompt:'Read aloud: 1 2 3',
+      answers:['いち に さん','いちにさん','いちにさん。'] },
+    { type:'translate', prompt:'Read aloud: 4 5 6',
+      answers:['よん ご ろく','よんごろく','よんごろく。'] },
+    { type:'translate', prompt:'Read aloud: 7 8 9',
+      answers:['なな はち きゅう','ななはちきゅう','ななはちきゅう。'] },
+    { type:'translate', prompt:'Read aloud: 0 1 1 9',
+      answers:['ぜろ いち いち きゅう','ぜろいちいちきゅう','ぜろいちいちきゅう。','れい いち いち きゅう'] },
+    { type:'translate', prompt:'Read aloud: 4 7 9',
+      answers:['よん なな きゅう','よんななきゅう','よんななきゅう。'] },
+    { type:'translate', prompt:'Read aloud: 555-1234 (just the digits)',
+      answers:['ご ご ご いち に さん よん','ごごごいちにさんよん'] },
+
+    // Saying "It's X-Y-Z"
+    { type:'translate', prompt:'(My phone number) is 080-1234-5678.',
+      answers:['080-1234-5678 です。','080-1234-5678です','ぜろはちぜろ いち に さん よん ご ろく なな はち です','080です'] },
+
+    // Confirmation with ね
+    { type:'translate', prompt:'(Confirming) 03-3456-7890, right?',
+      answers:['03-3456-7890 ですね。','03-3456-7890ですね','ぜろさん さん よん ご ろく なな はち きゅう ぜろ ですね'] },
+    { type:'translate', prompt:'(Confirming) Your name is Mary, right?',
+      answers:['名前はメアリーさんですね。','名前はメアリーさんですね','お名前はメアリーさんですね','なまえはメアリーさんですね'] },
+
+    // Yes/no responses
+    { type:'translate', prompt:"Yes, that's right.",
+      answers:['はい、そうです。','はい、そうです','はい そうです'] },
+
+    // Fill-in
+    { type:'fill', prompt:'電話番号は何番です____。', en:'(question particle)', answers:['か'] },
+    { type:'fill', prompt:'283-9547です____。 (confirming)', en:'…, right?', answers:['ね'] },
   ]
 };
 
@@ -1839,6 +2021,72 @@ GRAMMARS['l1-time'] = {
     { type:'fill', prompt:'今____ですか。', en:'What time is it now?', answers:['何時','なんじ'] },
     { type:'fill', prompt:'____三時です。', en:"It's 3:00 AM.", answers:['午前','ごぜん'] },
     { type:'fill', prompt:'____三時です。', en:"It's 3:00 PM.", answers:['午後','ごご'] },
+
+    // -------- Extended time-telling practice --------
+    // All hours
+    { type:'translate', prompt:"It's 2:00.",
+      answers:['二時です。','二時です','にじです','にじです。'] },
+    { type:'translate', prompt:"It's 5:00.",
+      answers:['五時です。','五時です','ごじです','ごじです。'] },
+    { type:'translate', prompt:"It's 6:00.",
+      answers:['六時です。','六時です','ろくじです','ろくじです。'] },
+    { type:'translate', prompt:"It's 8:00.",
+      answers:['八時です。','八時です','はちじです','はちじです。'] },
+    { type:'translate', prompt:"It's 10:00.",
+      answers:['十時です。','十時です','じゅうじです','じゅうじです。'] },
+    { type:'translate', prompt:"It's 12:00.",
+      answers:['十二時です。','十二時です','じゅうにじです','じゅうにじです。'] },
+
+    // Half-hours
+    { type:'translate', prompt:"It's 2:30.",
+      answers:['二時半です。','二時半です','にじはんです','にじはんです。'] },
+    { type:'translate', prompt:"It's 3:30.",
+      answers:['三時半です。','三時半です','さんじはんです','さんじはんです。'] },
+    { type:'translate', prompt:"It's 4:30.",
+      answers:['四時半です。','四時半です','よじはんです','よじはんです。'] },
+    { type:'translate', prompt:"It's 7:30.",
+      answers:['七時半です。','七時半です','しちじはんです','しちじはんです。'] },
+    { type:'translate', prompt:"It's 9:30.",
+      answers:['九時半です。','九時半です','くじはんです','くじはんです。'] },
+    { type:'translate', prompt:"It's 12:30.",
+      answers:['十二時半です。','十二時半です','じゅうにじはんです','じゅうにじはんです。'] },
+
+    // AM times
+    { type:'translate', prompt:"It's 6:00 AM.",
+      answers:['午前六時です。','午前六時です','ごぜん六時です','ごぜんろくじです','ごぜんろくじです。'] },
+    { type:'translate', prompt:"It's 9:00 AM.",
+      answers:['午前九時です。','午前九時です','ごぜん九時です','ごぜんくじです','ごぜんくじです。'] },
+    { type:'translate', prompt:"It's 11:30 AM.",
+      answers:['午前十一時半です。','午前十一時半です','ごぜん十一時半です','ごぜんじゅういちじはんです'] },
+
+    // PM times
+    { type:'translate', prompt:"It's 1:00 PM.",
+      answers:['午後一時です。','午後一時です','ごご一時です','ごごいちじです','ごごいちじです。'] },
+    { type:'translate', prompt:"It's 4:00 PM.",
+      answers:['午後四時です。','午後四時です','ごご四時です','ごごよじです','ごごよじです。'] },
+    { type:'translate', prompt:"It's 7:30 PM.",
+      answers:['午後七時半です。','午後七時半です','ごご七時半です','ごごしちじはんです'] },
+    { type:'translate', prompt:"It's 10:00 PM.",
+      answers:['午後十時です。','午後十時です','ごご十時です','ごごじゅうじです'] },
+
+    // "What time in city X?"
+    { type:'translate', prompt:'What time is it now in New York?',
+      answers:['ニューヨークは今何時ですか。','ニューヨークは今何時ですか','ニューヨークはいまなんじですか','ニューヨークはいまなんじですか。'] },
+    { type:'translate', prompt:'What time is it now in Sydney?',
+      answers:['シドニーは今何時ですか。','シドニーは今何時ですか','シドニーはいまなんじですか'] },
+    { type:'translate', prompt:'What time is it now in Bangkok?',
+      answers:['バンコクは今何時ですか。','バンコクは今何時ですか','バンコクはいまなんじですか'] },
+
+    // Asking politely
+    { type:'translate', prompt:'Excuse me. What time is it now?',
+      answers:['すみません。今何時ですか。','すみません。今何時ですか','すみません、今何時ですか','すみません、いまなんじですか','すみません。いまなんじですか'] },
+    { type:'translate', prompt:'Thank you very much.',
+      answers:['ありがとうございます。','ありがとうございます','どうもありがとうございます'] },
+
+    // Fill-in-the-blank
+    { type:'fill', prompt:'四時 → ____ じ', en:'four (o\'clock) — irregular', answers:['よ'] },
+    { type:'fill', prompt:'七時 → ____ じ', en:'seven (o\'clock) — irregular', answers:['しち'] },
+    { type:'fill', prompt:'九時 → ____ じ', en:'nine (o\'clock) — irregular', answers:['く'] },
   ]
 };
 
