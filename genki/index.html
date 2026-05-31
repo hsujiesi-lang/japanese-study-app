@@ -1581,6 +1581,810 @@ GRAMMARS['kara'] = {
 };
 
 // ============================
+// LESSON 2 GRAMMARS
+// ============================
+
+// ----- L2 G1: これ／それ／あれ／どれ -----
+GRAMMARS['l2-kore'] = {
+  title: 'Grammar 1 ｜ これ／それ／あれ／どれ (this / that / which one)',
+  explanation: [
+    '<b>これ</b> = 這個（離我近）。<b>それ</b> = 那個（離你近）。<b>あれ</b> = 那個（離兩人都遠）。',
+    '<b>どれ</b> = 哪一個（三選一以上）。',
+    '可單獨當主語：<i>これはペンです。</i>',
+    '⚠️ <b>對人不要用 これ／それ／あれ</b>（不禮貌），介紹人時用名字。'
+  ],
+  examples: [
+    { jp:'これは何ですか。',     reading:'これはなんですか。',     en:'What is this?' },
+    { jp:'それはペンです。',     reading:'それはペンです。',       en:"That's a pen." },
+    { jp:'あれはわたしのです。', reading:'あれはわたしのです。',   en:"That over there is mine." },
+    { jp:'どれですか。',         reading:'どれですか。',           en:'Which one is it?' },
+    { jp:'これはいくらですか。', reading:'これはいくらですか。',   en:'How much is this?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'What is this?',
+      answers:['これは何ですか。','これは何ですか','これはなんですか','これはなんですか。'] },
+    { type:'translate', prompt:'What is that? (near you)',
+      answers:['それは何ですか。','それは何ですか','それはなんですか','それはなんですか。'] },
+    { type:'translate', prompt:'What is that over there?',
+      answers:['あれは何ですか。','あれは何ですか','あれはなんですか','あれはなんですか。'] },
+    { type:'translate', prompt:'This is a pen.',
+      answers:['これはペンです。','これはペンです'] },
+    { type:'translate', prompt:'That is a notebook.',
+      answers:['それはノートです。','それはノートです'] },
+    { type:'translate', prompt:'That over there is an umbrella.',
+      answers:['あれはかさです。','あれはかさです','あれは傘です','あれは傘です。'] },
+    { type:'translate', prompt:'This is a smartphone.',
+      answers:['これはスマホです。','これはスマホです'] },
+    { type:'translate', prompt:'That is a T-shirt.',
+      answers:['それはTシャツです。','それはTシャツです','それはＴシャツです','それはてぃーしゃつです'] },
+    { type:'translate', prompt:'That over there is a bicycle.',
+      answers:['あれはじてんしゃです。','あれはじてんしゃです','あれは自転車です','あれは自転車です。'] },
+    { type:'translate', prompt:'How much is this?',
+      answers:['これはいくらですか。','これはいくらですか'] },
+    { type:'translate', prompt:'How much is that?',
+      answers:['それはいくらですか。','それはいくらですか'] },
+    { type:'translate', prompt:'How much is that one over there?',
+      answers:['あれはいくらですか。','あれはいくらですか'] },
+    { type:'translate', prompt:'Which one is it?',
+      answers:['どれですか。','どれですか'] },
+    { type:'fill', prompt:'____は何ですか。 (近你)', en:'What is that? (near you)', answers:['それ'] },
+    { type:'fill', prompt:'____は何ですか。 (離兩人都遠)', en:'What is that over there?', answers:['あれ'] },
+  ]
+};
+
+// ----- L2 G2: この／その／あの／どの + Noun -----
+GRAMMARS['l2-kono'] = {
+  title: 'Grammar 2 ｜ この／その／あの／どの + Noun',
+  explanation: [
+    '<b>この/その/あの/どの</b> 後面 <b>必須接名詞</b>（不能單獨使用）。',
+    '<b>この時計</b> = 這個錶 ・ <b>そのかばん</b> = 那個包包 ・ <b>あの人</b> = 那邊那個人',
+    '對「人」不用 これ/それ/あれ，但 <b>この人/その人/あの人</b> OK。',
+    '⚠️ <b>どの</b> 是疑問詞 → 用 <b>が</b>（不用 は）：「<i>どの学生<b>が</b>日本人ですか。</i>」'
+  ],
+  examples: [
+    { jp:'この時計はいくらですか。',     reading:'このとけいはいくらですか。',     en:'How much is this watch?' },
+    { jp:'その時計は三千円です。',       reading:'そのとけいはさんぜんえんです。', en:'That watch is 3,000 yen.' },
+    { jp:'あの学生は留学生です。',       reading:'あのがくせいはりゅうがくせいです。', en:'That student over there is an international student.' },
+    { jp:'どの学生が日本人ですか。',     reading:'どのがくせいがにほんじんですか。', en:'Which student is Japanese?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'How much is this watch?',
+      answers:['この時計はいくらですか。','この時計はいくらですか','このとけいはいくらですか','このとけいはいくらですか。'] },
+    { type:'translate', prompt:'How much is that book? (near you)',
+      answers:['その本はいくらですか。','その本はいくらですか','そのほんはいくらですか'] },
+    { type:'translate', prompt:'How much is that bicycle over there?',
+      answers:['あの自転車はいくらですか。','あの自転車はいくらですか','あのじてんしゃはいくらですか'] },
+    { type:'translate', prompt:'That watch is 3,000 yen.',
+      answers:['その時計は三千円です。','その時計は三千円です','そのとけいはさんぜんえんです','そのとけいはさんぜんえんです。','その時計は3000円です'] },
+    { type:'translate', prompt:'This T-shirt is 900 yen.',
+      answers:['このTシャツは九百円です。','このTシャツは九百円です','このTシャツはきゅうひゃくえんです','このTシャツは900円です'] },
+    { type:'translate', prompt:'That umbrella over there is 1,000 yen.',
+      answers:['あのかさは千円です。','あのかさは千円です','あのかさはせんえんです','あのかさはせんえんです。','あの傘は千円です','あの傘は1000円です'] },
+    { type:'translate', prompt:'This wallet is mine.',
+      answers:['このさいふはわたしのです。','このさいふはわたしのです','この財布はわたしのです','この財布は私のです。'] },
+    { type:'translate', prompt:'That book is interesting (lit. that book = manga).',
+      answers:['その本はおもしろいです。','その本はおもしろいです','そのほんはおもしろいです'] },
+    { type:'translate', prompt:'That student over there is American.',
+      answers:['あの学生はアメリカ人です。','あの学生はアメリカ人です','あのがくせいはアメリカじんです'] },
+    { type:'translate', prompt:'Which student is Japanese?',
+      answers:['どの学生が日本人ですか。','どの学生が日本人ですか','どのがくせいが日本人ですか','どのがくせいがにほんじんですか'] },
+    { type:'fill', prompt:'____時計はいくらですか。 (這個)', en:'How much is THIS watch?', answers:['この'] },
+    { type:'fill', prompt:'____かばんはわたしのです。 (那個離兩人遠)', en:'THAT bag (over there) is mine.', answers:['あの'] },
+    { type:'fill', prompt:'どの学生____日本人ですか。 (注意助詞)', en:'Which student is Japanese?', answers:['が'] },
+  ]
+};
+
+// ----- L2 G3: ここ／そこ／あそこ／どこ -----
+GRAMMARS['l2-koko'] = {
+  title: 'Grammar 3 ｜ ここ／そこ／あそこ／どこ (here / there / where)',
+  explanation: [
+    '指地點：<b>ここ</b> = 這裡（近我）・<b>そこ</b> = 那裡（近你）・<b>あそこ</b> = 那邊（離兩人都遠）・<b>どこ</b> = 哪裡。',
+    '問路：<b>〜はどこですか。</b>（〜在哪裡？）',
+    '回答可省略主題：<b>(銀行は) あそこです。</b>',
+    'Lesson 4 會學更詳細的位置描述（前面／後面／旁邊等）。'
+  ],
+  examples: [
+    { jp:'銀行はどこですか。',                 reading:'ぎんこうはどこですか。',           en:'Where is the bank?' },
+    { jp:'あそこです。',                       reading:'あそこです。',                     en:"It's over there." },
+    { jp:'すみません。トイレはどこですか。',   reading:'すみません。トイレはどこですか。', en:'Excuse me. Where is the toilet?' },
+    { jp:'ありがとうございます。',             reading:'ありがとうございます。',           en:'Thank you very much.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Where is the bank?',
+      answers:['銀行はどこですか。','銀行はどこですか','ぎんこうはどこですか','ぎんこうはどこですか。'] },
+    { type:'translate', prompt:'Where is the toilet?',
+      answers:['トイレはどこですか。','トイレはどこですか'] },
+    { type:'translate', prompt:'Where is the library?',
+      answers:['図書館はどこですか。','図書館はどこですか','としょかんはどこですか'] },
+    { type:'translate', prompt:'Where is the post office?',
+      answers:['郵便局はどこですか。','郵便局はどこですか','ゆうびんきょくはどこですか'] },
+    { type:'translate', prompt:'Where is the convenience store?',
+      answers:['コンビニはどこですか。','コンビニはどこですか'] },
+    { type:'translate', prompt:'Where are the shoes?',
+      answers:['くつはどこですか。','くつはどこですか','靴はどこですか'] },
+    { type:'translate', prompt:'Where is the menu?',
+      answers:['メニューはどこですか。','メニューはどこですか'] },
+    { type:'translate', prompt:"It's over there.",
+      answers:['あそこです。','あそこです'] },
+    { type:'translate', prompt:"It's here.",
+      answers:['ここです。','ここです'] },
+    { type:'translate', prompt:"It's right there (near you).",
+      answers:['そこです。','そこです'] },
+    { type:'translate', prompt:'Excuse me. Where is the bank?',
+      answers:['すみません。銀行はどこですか。','すみません、銀行はどこですか','すみません。ぎんこうはどこですか','すみません、ぎんこうはどこですか'] },
+    { type:'fill', prompt:'銀行は____ですか。 (where?)', en:'Where is the bank?', answers:['どこ'] },
+    { type:'fill', prompt:'____です。 (here)', en:"It's here.", answers:['ここ'] },
+  ]
+};
+
+// ----- L2 G4: だれの Noun -----
+GRAMMARS['l2-dareno'] = {
+  title: 'Grammar 4 ｜ だれの Noun (whose ...)',
+  explanation: [
+    '<b>だれ</b> = 誰。<b>だれの + 名詞</b> = 誰的 ~。',
+    '結構：A：これは<b>だれの</b>かさですか。 B：それはメアリーさん<b>の</b>かさです。',
+    '回答可省略名詞（從上下文知道）：<b>メアリーさんのです。</b>'
+  ],
+  examples: [
+    { jp:'これはだれのかばんですか。',   reading:'これはだれのかばんですか。',   en:'Whose bag is this?' },
+    { jp:'それはソラさんのかばんです。', reading:'それはソラさんのかばんです。', en:"That's Sora's bag." },
+    { jp:'メアリーさんのです。',         reading:'メアリーさんのです。',         en:"It's Mary's." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Whose bag is this?',
+      answers:['これはだれのかばんですか。','これはだれのかばんですか'] },
+    { type:'translate', prompt:'Whose pen is that?',
+      answers:['それはだれのペンですか。','それはだれのペンですか'] },
+    { type:'translate', prompt:'Whose umbrella is that one over there?',
+      answers:['あれはだれのかさですか。','あれはだれのかさですか','あれはだれの傘ですか'] },
+    { type:'translate', prompt:'Whose watch is this?',
+      answers:['これはだれの時計ですか。','これはだれの時計ですか','これはだれのとけいですか'] },
+    { type:'translate', prompt:'Whose shoes are those?',
+      answers:['それはだれのくつですか。','それはだれのくつですか','それはだれの靴ですか'] },
+    { type:'translate', prompt:'Whose wallet is this?',
+      answers:['これはだれのさいふですか。','これはだれのさいふですか','これはだれの財布ですか'] },
+    { type:'translate', prompt:'Whose smartphone is that?',
+      answers:['それはだれのスマホですか。','それはだれのスマホですか'] },
+    { type:'translate', prompt:"That is Mary's umbrella.",
+      answers:['あれはメアリーさんのかさです。','あれはメアリーさんのかさです','あれはメアリーさんの傘です'] },
+    { type:'translate', prompt:"This is Takeshi's notebook.",
+      answers:['これはたけしさんのノートです。','これはたけしさんのノートです'] },
+    { type:'translate', prompt:"That bicycle is Sora's.",
+      answers:['その自転車はソラさんのです。','その自転車はソラさんのです','そのじてんしゃはソラさんのです'] },
+    { type:'translate', prompt:"It's mine.",
+      answers:['わたしのです。','わたしのです','私のです','私のです。'] },
+    { type:'fill', prompt:'これは____かばんですか。 (whose?)', en:'Whose bag is this?', answers:['だれの'] },
+  ]
+};
+
+// ----- L2 G5: Noun も -----
+GRAMMARS['l2-mo'] = {
+  title: 'Grammar 5 ｜ Noun も (also ...)',
+  explanation: [
+    '<b>も</b> = 也。用法：<b>A は X です。B も X です。</b>（A 是 X，B 也是 X。）',
+    'も <b>取代</b> は（不能寫成「は も」或「も は」）。',
+    '⚠️ 中文「也」放句末，但日文 <b>も 必須緊跟在「相同的事物」名詞後</b>。',
+    '例：たけしさん<b>は</b>日本人です。ゆいさん<b>も</b>日本人です。'
+  ],
+  examples: [
+    { jp:'たけしさんは日本人です。',   reading:'たけしさんはにほんじんです。',   en:'Takeshi is Japanese.' },
+    { jp:'ゆいさんも日本人です。',     reading:'ゆいさんもにほんじんです。',     en:'Yui is Japanese too.' },
+    { jp:'わたしも学生です。',         reading:'わたしもがくせいです。',         en:'I am a student too.' },
+    { jp:'お母さんも日本人です。',     reading:'おかあさんもにほんじんです。',   en:'Mother is also Japanese.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I am also a student.',
+      answers:['わたしも学生です。','わたしも学生です','私も学生です','わたしもがくせいです','わたしもがくせいです。'] },
+    { type:'translate', prompt:'Mary is also American.',
+      answers:['メアリーさんもアメリカ人です。','メアリーさんもアメリカ人です','メアリーさんもアメリカじんです'] },
+    { type:'translate', prompt:'Sora is also Korean.',
+      answers:['ソラさんも韓国人です。','ソラさんも韓国人です','ソラさんもかんこくじんです'] },
+    { type:'translate', prompt:'Mother is also Japanese.',
+      answers:['お母さんも日本人です。','お母さんも日本人です','おかあさんも日本人です','おかあさんもにほんじんです'] },
+    { type:'translate', prompt:'Robert is also a 4th-year student.',
+      answers:['ロバートさんも四年生です。','ロバートさんも四年生です','ロバートさんもよねんせいです'] },
+    { type:'translate', prompt:"My friend is also a student of Japanese.",
+      answers:['友達も日本語の学生です。','友達も日本語の学生です','ともだちも日本語の学生です','ともだちもにほんごのがくせいです','友だちも日本語の学生です'] },
+    { type:'translate', prompt:'Takeshi is Japanese. Yamashita-sensei is also Japanese. (two sentences)',
+      answers:['たけしさんは日本人です。やましたせんせいも日本人です。','たけしさんは日本人です。やましたせんせいも日本人です','たけしさんはにほんじんです。やましたせんせいもにほんじんです'] },
+    { type:'translate', prompt:'This is a pen. That is also a pen.',
+      answers:['これはペンです。それもペンです。','これはペンです。それもペンです','これはペンです、それもペンです'] },
+    { type:'fill', prompt:'メアリーさんはアメリカ人です。ソラさん___韓国人です。', en:'Sora is ALSO ... (wait, different country — answer is "は"!)', answers:['は'] },
+    { type:'fill', prompt:'たけしさんは日本人です。やましたせんせい___日本人です。', en:'Yamashita is ALSO Japanese.', answers:['も'] },
+    { type:'fill', prompt:'わたしは学生です。メアリーさん___学生です。', en:'Mary is ALSO a student.', answers:['も'] },
+  ]
+};
+
+// ----- L2 G6: Noun じゃないです -----
+GRAMMARS['l2-janai'] = {
+  title: 'Grammar 6 ｜ Noun じゃないです (is not ...)',
+  explanation: [
+    '否定句：把 <b>です</b> 換成 <b>じゃないです</b>。',
+    '更正式：<b>じゃありません</b>（口語＋書面常用）',
+    '最正式（書面）：<b>ではありません</b>',
+    '⚠️ じゃない / です 必須有名詞，<b>不能單獨用</b>。回答「不是」要說 <i>「いいえ、(名詞) じゃないです。」</i>'
+  ],
+  examples: [
+    { jp:'山田さんは学生じゃないです。',     reading:'やまださんはがくせいじゃないです。',     en:'Mr. Yamada is not a student.' },
+    { jp:'いいえ、日本人じゃないです。',     reading:'いいえ、にほんじんじゃないです。',       en:"No, I'm not Japanese." },
+    { jp:'これは肉じゃないです。',           reading:'これはにくじゃないです。',               en:'This is not meat.' },
+    { jp:'メアリーさんは中国人じゃないです。', reading:'メアリーさんはちゅうごくじんじゃないです。', en:'Mary is not Chinese.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Mary is not Japanese.',
+      answers:['メアリーさんは日本人じゃないです。','メアリーさんは日本人じゃないです','メアリーさんはにほんじんじゃないです','メアリーさんは日本人じゃありません'] },
+    { type:'translate', prompt:'I am not a student.',
+      answers:['わたしは学生じゃないです。','わたしは学生じゃないです','私は学生じゃないです','わたしはがくせいじゃないです','わたしは学生じゃありません'] },
+    { type:'translate', prompt:'This is not a pen.',
+      answers:['これはペンじゃないです。','これはペンじゃないです','これはペンじゃありません'] },
+    { type:'translate', prompt:'This is not meat.',
+      answers:['これは肉じゃないです。','これは肉じゃないです','これはにくじゃないです','これは肉じゃありません'] },
+    { type:'translate', prompt:'Tonkatsu is not fish.',
+      answers:['とんかつは魚じゃないです。','とんかつは魚じゃないです','とんかつはさかなじゃないです','とんかつは魚じゃありません'] },
+    { type:'translate', prompt:'Robert is not Japanese.',
+      answers:['ロバートさんは日本人じゃないです。','ロバートさんは日本人じゃないです','ロバートさんはにほんじんじゃないです'] },
+    { type:'translate', prompt:'Takeshi is not a 1st-year student.',
+      answers:['たけしさんは一年生じゃないです。','たけしさんは一年生じゃないです','たけしさんはいちねんせいじゃないです','たけしさんは一年生じゃありません'] },
+    { type:'translate', prompt:"That is not Mary's bag.",
+      answers:['それはメアリーさんのかばんじゃないです。','それはメアリーさんのかばんじゃないです','それはメアリーさんのかばんじゃありません'] },
+    { type:'translate', prompt:"No, I'm not Chinese.",
+      answers:['いいえ、中国人じゃないです。','いいえ、中国人じゃないです','いいえ、ちゅうごくじんじゃないです','いいえ、中国人じゃありません'] },
+    { type:'translate', prompt:"My major is not economics.",
+      answers:['専攻は経済じゃないです。','専攻は経済じゃないです','せんこうは経済じゃないです','せんこうはけいざいじゃないです','専攻は経済じゃありません'] },
+    { type:'fill', prompt:'メアリーさんは日本人____です。 (否定)', en:'is NOT Japanese', answers:['じゃない'] },
+    { type:'fill', prompt:'これは肉____。 (more formal negative)', en:'This is not meat. (formal)', answers:['じゃありません','ではありません'] },
+  ]
+};
+
+// ----- L2 G7: 〜ね／〜よ -----
+GRAMMARS['l2-neyo'] = {
+  title: 'Grammar 7 ｜ 〜ね／〜よ (right? / I tell you)',
+  explanation: [
+    '<b>〜ね</b> 句尾：尋求對方的同意或確認。中文像「~對吧／是吧」。',
+    '例：<i>専攻は文学ですね。</i>（你的主修是文學<b>對吧</b>？）',
+    '<b>〜よ</b> 句尾：告訴對方自己很有把握的資訊。中文像「~喔／~欸」。',
+    '例：<i>とんかつは魚じゃないですよ。</i>（とんかつ 不是魚<b>喔</b>！）'
+  ],
+  examples: [
+    { jp:'リーさんの専攻は文学ですね。', reading:'リーさんのせんこうはぶんがくですね。', en:'Lee, your major is literature, right?' },
+    { jp:'これは肉じゃないですね。',     reading:'これはにくじゃないですね。',           en:"This isn't meat, is it?" },
+    { jp:'とんかつは魚じゃないですよ。', reading:'とんかつはさかなじゃないですよ。',     en:'Let me assure you, tonkatsu is not fish.' },
+    { jp:'スミスさんはイギリス人ですよ。', reading:'スミスさんはイギリスじんですよ。',   en:'(For your information,) Mr. Smith is British.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Your major is Japanese, right?',
+      answers:['専攻は日本語ですね。','専攻は日本語ですね','せんこうは日本語ですね','せんこうはにほんごですね'] },
+    { type:'translate', prompt:"You're a 2nd-year student, right?",
+      answers:['二年生ですね。','二年生ですね','にねんせいですね','にねんせいですね。'] },
+    { type:'translate', prompt:"Mary is American, right?",
+      answers:['メアリーさんはアメリカ人ですね。','メアリーさんはアメリカ人ですね','メアリーさんはアメリカじんですね'] },
+    { type:'translate', prompt:'This is not a pen, is it?',
+      answers:['これはペンじゃないですね。','これはペンじゃないですね'] },
+    { type:'translate', prompt:'(I tell you) That is not meat.',
+      answers:['それは肉じゃないですよ。','それは肉じゃないですよ','それはにくじゃないですよ'] },
+    { type:'translate', prompt:'(I tell you) Yamashita-sensei is Japanese.',
+      answers:['やましたせんせいは日本人ですよ。','やましたせんせいは日本人ですよ','やましたせんせいはにほんじんですよ'] },
+    { type:'translate', prompt:'(I tell you) This bag is expensive!',
+      answers:['このかばんはたかいですよ。','このかばんはたかいですよ','このかばんは高いですよ。','このかばんは高いですよ'] },
+    { type:'fill', prompt:'専攻は文学です____。 (尋求確認 right?)', en:'..., right?', answers:['ね'] },
+    { type:'fill', prompt:'とんかつは魚じゃないです____。 (有自信地告知)', en:'(I tell you) ...', answers:['よ'] },
+    { type:'fill', prompt:'メアリーさんは中国人じゃないです____。 (告知)', en:'(I assure you) Mary is not Chinese.', answers:['よ'] },
+  ]
+};
+
+// ----- L2 Useful: 数字 (100-90,000) + いくら -----
+GRAMMARS['l2-numbers'] = {
+  title: 'Useful Expression ｜ 数字 100-90,000 + いくら (Prices)',
+  explanation: [
+    '100=ひゃく ・ 1,000=せん ・ 10,000=<b>いちまん</b>（不是 まん！）',
+    '<b>音變</b>：300=さん<b>び</b>ゃく、600=<b>ろっぴ</b>ゃく、800=<b>はっぴ</b>ゃく',
+    '<b>音變</b>：3,000=さん<b>ぜ</b>ん、8,000=<b>はっ</b>せん',
+    '<b>問價：</b>〜は<b>いくら</b>ですか。 → 〜<b>えん</b>です。'
+  ],
+  examples: [
+    { jp:'これはいくらですか。',           reading:'これはいくらですか。',                   en:'How much is this?' },
+    { jp:'八十円です。',                   reading:'はちじゅうえんです。',                   en:"It's 80 yen." },
+    { jp:'このノートは四百五十円です。',   reading:'このノートはよんひゃくごじゅうえんです。', en:'This notebook is 450 yen.' },
+    { jp:'あの自転車は二万五千円です。',   reading:'あのじてんしゃはにまんごせんえんです。',   en:'That bicycle over there is 25,000 yen.' },
+  ],
+  exercises: [
+    // Numbers
+    { type:'translate', prompt:"It's 100 yen.",
+      answers:['百円です。','百円です','ひゃくえんです','ひゃくえんです。','100円です'] },
+    { type:'translate', prompt:"It's 300 yen.",
+      answers:['三百円です。','三百円です','さんびゃくえんです','さんびゃくえんです。','300円です'] },
+    { type:'translate', prompt:"It's 600 yen.",
+      answers:['六百円です。','六百円です','ろっぴゃくえんです','ろっぴゃくえんです。','600円です'] },
+    { type:'translate', prompt:"It's 800 yen.",
+      answers:['八百円です。','八百円です','はっぴゃくえんです','はっぴゃくえんです。','800円です'] },
+    { type:'translate', prompt:"It's 1,000 yen.",
+      answers:['千円です。','千円です','せんえんです','せんえんです。','1000円です'] },
+    { type:'translate', prompt:"It's 3,000 yen.",
+      answers:['三千円です。','三千円です','さんぜんえんです','さんぜんえんです。','3000円です'] },
+    { type:'translate', prompt:"It's 8,000 yen.",
+      answers:['八千円です。','八千円です','はっせんえんです','はっせんえんです。','8000円です'] },
+    { type:'translate', prompt:"It's 10,000 yen.",
+      answers:['一万円です。','一万円です','いちまんえんです','いちまんえんです。','10000円です'] },
+    { type:'translate', prompt:"It's 20,000 yen.",
+      answers:['二万円です。','二万円です','にまんえんです','にまんえんです。','20000円です'] },
+    { type:'translate', prompt:"It's 50,000 yen.",
+      answers:['五万円です。','五万円です','ごまんえんです','ごまんえんです。','50000円です'] },
+    // いくら patterns with items
+    { type:'translate', prompt:'How much is this notebook?',
+      answers:['このノートはいくらですか。','このノートはいくらですか'] },
+    { type:'translate', prompt:'How much is that umbrella?',
+      answers:['そのかさはいくらですか。','そのかさはいくらですか','その傘はいくらですか'] },
+    { type:'translate', prompt:'How much are those shoes over there?',
+      answers:['あのくつはいくらですか。','あのくつはいくらですか','あの靴はいくらですか'] },
+    { type:'translate', prompt:'How much is this bag?',
+      answers:['このかばんはいくらですか。','このかばんはいくらですか'] },
+    { type:'translate', prompt:'How much is that smartphone?',
+      answers:['そのスマホはいくらですか。','そのスマホはいくらですか'] },
+    { type:'translate', prompt:'This notebook is 450 yen.',
+      answers:['このノートは四百五十円です。','このノートは四百五十円です','このノートはよんひゃくごじゅうえんです','このノートは450円です'] },
+    { type:'translate', prompt:'That T-shirt is 2,800 yen.',
+      answers:['そのTシャツは二千八百円です。','そのTシャツは二千八百円です','そのTシャツはにせんはっぴゃくえんです','そのTシャツは2800円です'] },
+    { type:'fill', prompt:'ノートは____ですか。 (how much?)', en:'How much?', answers:['いくら'] },
+  ]
+};
+
+// ----- L2 Useful: 買い物 (Shopping) -----
+GRAMMARS['l2-shopping'] = {
+  title: 'Useful Expression ｜ 買い物 (Shopping)',
+  explanation: [
+    '<b>店員：</b>いらっしゃいませ。 = 歡迎光臨。',
+    '<b>客人請求：</b>(物品) <b>を ください</b>。 = 請給我...。',
+    '<b>更禮貌（如點餐）：</b>(物品) <b>を おねがいします</b>。 = 麻煩請給我...。',
+    '<b>遞東西出去：</b>(物品) <b>を どうぞ</b>。 = 來，請收下。',
+    '<b>道謝：</b>どうも。 ／ ありがとうございます。',
+    '<b>那麼...：</b>じゃあ、〜（接到下個動作）'
+  ],
+  examples: [
+    { jp:'いらっしゃいませ。',           reading:'いらっしゃいませ。',           en:'Welcome (to our store).' },
+    { jp:'すみません。これはいくらですか。', reading:'すみません。これはいくらですか。', en:'Excuse me. How much is this?' },
+    { jp:'じゃあ、それをください。',     reading:'じゃあ、それをください。',     en:"Then, please give me that one." },
+    { jp:'コーヒーをおねがいします。',   reading:'コーヒーをおねがいします。',   en:'Coffee, please.' },
+    { jp:'どうぞ。',                     reading:'どうぞ。',                     en:'Here you are.' },
+    { jp:'どうも。',                     reading:'どうも。',                     en:'Thanks.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'(Store clerk) Welcome!',
+      answers:['いらっしゃいませ。','いらっしゃいませ'] },
+    { type:'translate', prompt:'Excuse me, how much is this?',
+      answers:['すみません。これはいくらですか。','すみません。これはいくらですか','すみません、これはいくらですか'] },
+    { type:'translate', prompt:'Then, this one please. (use ください)',
+      answers:['じゃあ、これをください。','じゃあ、これをください'] },
+    { type:'translate', prompt:'Then, that one please. (use ください)',
+      answers:['じゃあ、それをください。','じゃあ、それをください'] },
+    { type:'translate', prompt:"That umbrella, please.",
+      answers:['そのかさをください。','そのかさをください','その傘をください'] },
+    { type:'translate', prompt:"This bag, please.",
+      answers:['このかばんをください。','このかばんをください'] },
+    { type:'translate', prompt:'Coffee, please. (use おねがいします)',
+      answers:['コーヒーをおねがいします。','コーヒーをおねがいします','コーヒーを御願いします','コーヒーをお願いします'] },
+    { type:'translate', prompt:'A menu, please. (use おねがいします)',
+      answers:['メニューをおねがいします。','メニューをおねがいします','メニューをお願いします'] },
+    { type:'translate', prompt:'Tonkatsu, please. (use おねがいします)',
+      answers:['とんかつをおねがいします。','とんかつをおねがいします','とんかつをお願いします'] },
+    { type:'translate', prompt:'Here you are. (handing something over)',
+      answers:['どうぞ。','どうぞ'] },
+    { type:'translate', prompt:'Thanks. (casual)',
+      answers:['どうも。','どうも'] },
+    { type:'translate', prompt:'Thank you very much.',
+      answers:['ありがとうございます。','ありがとうございます','どうもありがとうございます'] },
+    { type:'fill', prompt:'コーヒー____ください。', en:'(particle for object)', answers:['を'] },
+    { type:'fill', prompt:'____、それをください。 (then...)', en:'Then, ...', answers:['じゃあ','じゃ'] },
+  ]
+};
+
+// ============================
+// LESSON 2 GRAMMARS
+// ============================
+
+// ----- L2 Grammar 1: これ / それ / あれ / どれ -----
+GRAMMARS['l2-kore'] = {
+  title: 'Grammar 1 ｜ これ / それ / あれ / どれ',
+  explanation: [
+    '<b>これ</b> = 我這邊的東西 (this, near me) ／ <b>それ</b> = 你那邊的東西 (that, near you) ／ <b>あれ</b> = 遠的東西 (over there) ／ <b>どれ</b> = 哪個。',
+    '這四個是<b>獨立的名詞</b>，可以單獨用，後面接 <b>は</b> / <b>です</b>。',
+    '不可以用來指<b>聽得到的人</b>（指人時用 「こちら／そちら／あちら」或姓名）。',
+    'どれ（疑問詞）後面要用 <b>が</b> 不能用 <b>は</b>：例 <i>どれがあなたのですか。</i>'
+  ],
+  examples: [
+    { jp:'これは何ですか。',           reading:'これはなんですか。',         en:'What is this?' },
+    { jp:'それはペンです。',           reading:'それはペンです。',           en:'That is a pen.' },
+    { jp:'あれは図書館です。',         reading:'あれはとしょかんです。',     en:'That (over there) is a library.' },
+    { jp:'これはいくらですか。',       reading:'これはいくらですか。',       en:'How much is this?' },
+    { jp:'それは三千円です。',         reading:'それはさんぜんえんです。',   en:"That's 3,000 yen." },
+    { jp:'どれですか。',               reading:'どれですか。',               en:'Which one (is it)?' },
+  ],
+  exercises: [
+    // Textbook II A: things friend asks "what is this/that"
+    { type:'translate', prompt:'What is this?',
+      answers:['これは何ですか。','これは何ですか','これはなんですか','これはなんですか。'] },
+    { type:'translate', prompt:'What is that (near you)?',
+      answers:['それは何ですか。','それは何ですか','それはなんですか','それはなんですか。'] },
+    { type:'translate', prompt:'What is that (over there)?',
+      answers:['あれは何ですか。','あれは何ですか','あれはなんですか','あれはなんですか。'] },
+    { type:'translate', prompt:'This is a pen.',
+      answers:['これはペンです。','これはペンです'] },
+    { type:'translate', prompt:'That (near you) is a T-shirt.',
+      answers:['それはTシャツです。','それはTシャツです','それはティーシャツです'] },
+    { type:'translate', prompt:'That (over there) is a library.',
+      answers:['あれは図書館です。','あれは図書館です','あれはとしょかんです','あれはとしょかんです。'] },
+    { type:'translate', prompt:'That (over there) is a post office.',
+      answers:['あれは郵便局です。','あれは郵便局です','あれはゆうびんきょくです','あれはゆうびんきょくです。'] },
+    { type:'translate', prompt:'That (over there) is a bank.',
+      answers:['あれは銀行です。','あれは銀行です','あれはぎんこうです','あれはぎんこうです。'] },
+    { type:'translate', prompt:'That (over there) is a convenience store.',
+      answers:['あれはコンビニです。','あれはコンビニです'] },
+    // Pointing variants
+    { type:'translate', prompt:'This is an umbrella.',
+      answers:['これはかさです。','これはかさです','これは傘です。','これは傘です'] },
+    { type:'translate', prompt:'That (near you) is a watch.',
+      answers:['それは時計です。','それは時計です','それはとけいです','それはとけいです。'] },
+    { type:'translate', prompt:'That (over there) is a bicycle.',
+      answers:['あれは自転車です。','あれは自転車です','あれはじてんしゃです','あれはじてんしゃです。'] },
+    { type:'translate', prompt:'This is a notebook.',
+      answers:['これはノートです。','これはノートです'] },
+    { type:'translate', prompt:'This is a bag.',
+      answers:['これはかばんです。','これはかばんです'] },
+    { type:'translate', prompt:'That (over there) is a smartphone.',
+      answers:['あれはスマホです。','あれはスマホです'] },
+    // Asking price
+    { type:'translate', prompt:'How much is this?',
+      answers:['これはいくらですか。','これはいくらですか','これは いくらですか'] },
+    { type:'translate', prompt:'How much is that (near you)?',
+      answers:['それはいくらですか。','それはいくらですか'] },
+    { type:'translate', prompt:'How much is that (over there)?',
+      answers:['あれはいくらですか。','あれはいくらですか'] },
+    // Fill-in
+    { type:'fill', prompt:'____は何ですか。 (Point to your own pen.)', en:'What is this?', answers:['これ'] },
+    { type:'fill', prompt:'____は何ですか。 (Point to friend\'s shirt.)', en:'What is that (near you)?', answers:['それ'] },
+    { type:'fill', prompt:'____は何ですか。 (Point to a distant building.)', en:'What is that over there?', answers:['あれ'] },
+  ]
+};
+
+// ----- L2 Grammar 2: この / その / あの / どの + Noun -----
+GRAMMARS['l2-kono'] = {
+  title: 'Grammar 2 ｜ この / その / あの / どの + Noun',
+  explanation: [
+    '<b>この・その・あの・どの</b> 後面<b>一定要接名詞</b>，不能單獨用。',
+    'これ／それ／あれ／どれ <b>不接名詞</b>，直接用。對比：<i>これはペン</i> ⇆ <i>このペンは…</i>',
+    'これ系列指人會不禮貌；<b>この + 人</b> (この人 = this person) 比較禮貌。',
+    'どの 是疑問詞，後面助詞要用 <b>が</b>：<i>どの学生が日本人ですか。</i>'
+  ],
+  examples: [
+    { jp:'この時計はいくらですか。',     reading:'このとけいはいくらですか。', en:'How much is this watch?' },
+    { jp:'その時計は三千円です。',       reading:'そのとけいはさんぜんえんです。', en:'That watch is 3,000 yen.' },
+    { jp:'あの学生は留学生です。',       reading:'あのがくせいはりゅうがくせいです。', en:'That student over there is an international student.' },
+    { jp:'どの学生が日本人ですか。',     reading:'どのがくせいがにほんじんですか。', en:'Which student is Japanese?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'This watch is 5,000 yen.',
+      answers:['この時計は五千円です。','この時計は五千円です','このとけいは5000えんです','このとけいはごせんえんです'] },
+    { type:'translate', prompt:'How much is this watch?',
+      answers:['この時計はいくらですか。','この時計はいくらですか','このとけいはいくらですか'] },
+    { type:'translate', prompt:'How much is that book (near you)?',
+      answers:['その本はいくらですか。','その本はいくらですか','そのほんはいくらですか'] },
+    { type:'translate', prompt:'How much is that bicycle (over there)?',
+      answers:['あの自転車はいくらですか。','あの自転車はいくらですか','あのじてんしゃはいくらですか'] },
+    { type:'translate', prompt:'How much is that hat (near you)?',
+      answers:['その帽子はいくらですか。','その帽子はいくらですか','そのぼうしはいくらですか'] },
+    { type:'translate', prompt:'That bag (near you) is 8,000 yen.',
+      answers:['そのかばんは八千円です。','そのかばんは八千円です','そのかばんははっせんえんです'] },
+    { type:'translate', prompt:'That pen (over there) is 290 yen.',
+      answers:['あのペンは二百九十円です。','あのペンは二百九十円です','あのペンはにひゃくきゅうじゅうえんです'] },
+    { type:'translate', prompt:'That T-shirt (over there) is 9,000 yen.',
+      answers:['あのTシャツは九千円です。','あのTシャツは九千円です','あのTシャツはきゅうせんえんです'] },
+    { type:'translate', prompt:'Please give me that watch (near you).',
+      answers:['その時計をください。','その時計をください','そのとけいをください','そのとけいをください。'] },
+    { type:'translate', prompt:'Please give me that umbrella (over there).',
+      answers:['あのかさをください。','あのかさをください','あの傘をください'] },
+    { type:'fill', prompt:'____ペンはいくらですか。 (You\'re holding the pen)', en:'How much is this pen?', answers:['この'] },
+    { type:'fill', prompt:'____ペンはいくらですか。 (Friend is holding the pen)', en:'How much is that pen?', answers:['その'] },
+    { type:'fill', prompt:'____ペンはいくらですか。 (Pen is across the room)', en:'How much is that pen over there?', answers:['あの'] },
+    { type:'fill', prompt:'____学生が日本人ですか。', en:'Which student is Japanese?', answers:['どの'] },
+  ]
+};
+
+// ----- L2 Grammar 3: ここ / そこ / あそこ / どこ -----
+GRAMMARS['l2-koko'] = {
+  title: 'Grammar 3 ｜ ここ / そこ / あそこ / どこ (場所)',
+  explanation: [
+    '<b>ここ</b> = 這裡 (near me) ／ <b>そこ</b> = 那裡 (near you) ／ <b>あそこ</b> = 那邊 (over there) ／ <b>どこ</b> = 哪裡。',
+    '指<b>場所</b>用，與這／那／哪一樣是 ko-so-a-do 系列。',
+    '問路：<b>すみません。X はどこですか。</b>（不好意思，X 在哪？）',
+    '回答：<b>あそこです。</b>（在那邊。）',
+  ],
+  examples: [
+    { jp:'すみません。郵便局はどこですか。', reading:'すみません。ゆうびんきょくはどこですか。', en:'Excuse me. Where is the post office?' },
+    { jp:'あそこです。',                       reading:'あそこです。',                                 en:"It's over there." },
+    { jp:'トイレはどこですか。',               reading:'トイレはどこですか。',                         en:'Where is the toilet?' },
+    { jp:'銀行はあそこです。',                 reading:'ぎんこうはあそこです。',                       en:'The bank is over there.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Where is the bank?',
+      answers:['銀行はどこですか。','銀行はどこですか','ぎんこうはどこですか','ぎんこうはどこですか。'] },
+    { type:'translate', prompt:'Where is the post office?',
+      answers:['郵便局はどこですか。','郵便局はどこですか','ゆうびんきょくはどこですか','ゆうびんきょくはどこですか。'] },
+    { type:'translate', prompt:'Where is the library?',
+      answers:['図書館はどこですか。','図書館はどこですか','としょかんはどこですか','としょかんはどこですか。'] },
+    { type:'translate', prompt:'Where is the toilet?',
+      answers:['トイレはどこですか。','トイレはどこですか'] },
+    { type:'translate', prompt:'Where is the convenience store?',
+      answers:['コンビニはどこですか。','コンビニはどこですか'] },
+    { type:'translate', prompt:'Where are the shoes?',
+      answers:['くつはどこですか。','くつはどこですか','靴はどこですか'] },
+    { type:'translate', prompt:'Where are the vegetables?',
+      answers:['野菜はどこですか。','野菜はどこですか','やさいはどこですか'] },
+    { type:'translate', prompt:'Where is the menu?',
+      answers:['メニューはどこですか。','メニューはどこですか'] },
+    { type:'translate', prompt:'Where are the English books?',
+      answers:['英語の本はどこですか。','英語の本はどこですか','えいごのほんはどこですか'] },
+    { type:'translate', prompt:'(Pointing) It\'s over there.',
+      answers:['あそこです。','あそこです'] },
+    { type:'translate', prompt:'(Right by listener) It\'s right there.',
+      answers:['そこです。','そこです'] },
+    { type:'translate', prompt:'(Right here) It\'s here.',
+      answers:['ここです。','ここです'] },
+    { type:'translate', prompt:"Excuse me. Where is the bank?",
+      answers:['すみません。銀行はどこですか。','すみません。銀行はどこですか','すみません、銀行はどこですか','すみません、ぎんこうはどこですか'] },
+    { type:'fill', prompt:'銀行は____ですか。', en:'Where is the bank?', answers:['どこ'] },
+    { type:'fill', prompt:'(指自己身邊)　____です。', en:"It's here.", answers:['ここ'] },
+    { type:'fill', prompt:'(指對方身邊)　____です。', en:"It's right there.", answers:['そこ'] },
+    { type:'fill', prompt:'(指遠方)　____です。', en:"It's over there.", answers:['あそこ'] },
+  ]
+};
+
+// ----- L2 Grammar 4: だれの Noun -----
+GRAMMARS['l2-dare'] = {
+  title: 'Grammar 4 ｜ だれの Noun (whose)',
+  explanation: [
+    '問「誰的」用 <b>だれの + 名詞</b>。',
+    '結構：(これ／それ／あれ) <b>は</b> <b>だれの</b> N <b>ですか</b>。',
+    '回答：(これ／それ／あれ) <b>は</b> 人名 <b>の</b> N <b>です</b>。',
+    '若是「我的」直接用 <b>わたしの</b> N。'
+  ],
+  examples: [
+    { jp:'これはだれの本ですか。',       reading:'これはだれのほんですか。',         en:'Whose book is this?' },
+    { jp:'それはソラさんのかばんです。', reading:'それはソラさんのかばんです。',     en:"That's Sora's bag." },
+    { jp:'これはだれの財布ですか。',     reading:'これはだれのさいふですか。',       en:'Whose wallet is this?' },
+    { jp:'わたしの財布です。',           reading:'わたしのさいふです。',             en:"It's my wallet." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Whose umbrella is this?',
+      answers:['これはだれのかさですか。','これはだれのかさですか','これはだれの傘ですか'] },
+    { type:'translate', prompt:'Whose pen is that (near you)?',
+      answers:['それはだれのペンですか。','それはだれのペンですか'] },
+    { type:'translate', prompt:'Whose bag is that (over there)?',
+      answers:['あれはだれのかばんですか。','あれはだれのかばんですか'] },
+    { type:'translate', prompt:'Whose shoes are those (near you)?',
+      answers:['それはだれのくつですか。','それはだれのくつですか','それはだれの靴ですか'] },
+    { type:'translate', prompt:'Whose notebook is this?',
+      answers:['これはだれのノートですか。','これはだれのノートですか'] },
+    { type:'translate', prompt:'Whose smartphone is that (over there)?',
+      answers:['あれはだれのスマホですか。','あれはだれのスマホですか'] },
+    { type:'translate', prompt:'Whose newspaper is this?',
+      answers:['これはだれの新聞ですか。','これはだれの新聞ですか','これはだれのしんぶんですか'] },
+    { type:'translate', prompt:"It's my umbrella.",
+      answers:['わたしのかさです。','わたしのかさです','わたしの傘です','私のかさです'] },
+    { type:'translate', prompt:"It's my wallet.",
+      answers:['わたしの財布です。','わたしの財布です','わたしのさいふです','私の財布です'] },
+    { type:'translate', prompt:"It's Sora's bicycle.",
+      answers:['ソラさんの自転車です。','ソラさんの自転車です','ソラさんのじてんしゃです'] },
+    { type:'translate', prompt:"It's Mary's hat.",
+      answers:['メアリーさんの帽子です。','メアリーさんの帽子です','メアリーさんのぼうしです'] },
+    { type:'translate', prompt:"It's Takeshi's pen.",
+      answers:['たけしさんのペンです。','たけしさんのペンです'] },
+    { type:'fill', prompt:'これは____かさですか。', en:'Whose umbrella is this?', answers:['だれの'] },
+    { type:'fill', prompt:'それはメアリーさん____かばんです。', en:"It's Mary's bag.", answers:['の'] },
+  ]
+};
+
+// ----- L2 Grammar 5: Noun も (also) -----
+GRAMMARS['l2-mo'] = {
+  title: 'Grammar 5 ｜ Noun も (also)',
+  explanation: [
+    '<b>も</b> = 「也」。放在主題之後，<b>取代 は</b>。',
+    '結構：<b>A は X です。</b> ／ <b>B も X です。</b> (B 也是 X)',
+    '注意：も 一定接在<b>同類項目</b>後面。例：たけしさんは日本人です。ゆいさんも日本人です。',
+    '問句：B も〜ですか。 (B 也是嗎？)'
+  ],
+  examples: [
+    { jp:'たけしさんは日本人です。',     reading:'たけしさんはにほんじんです。',       en:'Takeshi is Japanese.' },
+    { jp:'ゆいさんも日本人です。',       reading:'ゆいさんもにほんじんです。',         en:'Yui is also Japanese.' },
+    { jp:'お父さんも日本人です。',       reading:'おとうさんもにほんじんです。',       en:'(My) father is also Japanese.' },
+    { jp:'これも五千円です。',           reading:'これもごせんえんです。',             en:'This one is also 5,000 yen.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Mary is also a student.',
+      answers:['メアリーさんも学生です。','メアリーさんも学生です','メアリーさんもがくせいです'] },
+    { type:'translate', prompt:'I am also American.',
+      answers:['わたしもアメリカ人です。','わたしもアメリカ人です','私もアメリカ人です','わたしもアメリカじんです'] },
+    { type:'translate', prompt:'Sora is also a 3rd-year student.',
+      answers:['ソラさんも三年生です。','ソラさんも三年生です','ソラさんもさんねんせいです'] },
+    { type:'translate', prompt:'My mother is also Japanese.',
+      answers:['お母さんも日本人です。','お母さんも日本人です','おかあさんも日本人です','おかあさんもにほんじんです'] },
+    { type:'translate', prompt:'(My) father is also a company employee.',
+      answers:['お父さんも会社員です。','お父さんも会社員です','おとうさんも会社員です','おとうさんもかいしゃいんです'] },
+    { type:'translate', prompt:'Takeshi is also 22 years old.',
+      answers:['たけしさんも二十二歳です。','たけしさんも二十二歳です','たけしさんもにじゅうにさいです'] },
+    { type:'translate', prompt:'This is also 5,800 yen.',
+      answers:['これも五千八百円です。','これも五千八百円です','これもごせんはっぴゃくえんです'] },
+    { type:'translate', prompt:'That (over there) is also expensive.',
+      answers:['あれも高いです。','あれも高いです','あれもたかいです','あれもたかいです。'] },
+    { type:'translate', prompt:"Sora's major is also computer.",
+      answers:['ソラさんの専攻もコンピューターです。','ソラさんの専攻もコンピューターです','ソラさんのせんこうもコンピューターです'] },
+    { type:'translate', prompt:'Robert is also a London University student.',
+      answers:['ロバートさんもロンドン大学の学生です。','ロバートさんもロンドン大学の学生です','ロバートさんもロンドンだいがくのがくせいです'] },
+    { type:'fill', prompt:'たけしさんは日本人です。ゆいさん____日本人です。', en:'Yui is also Japanese.', answers:['も'] },
+    { type:'fill', prompt:'これは五千円です。あれ____五千円です。', en:'That is also 5000 yen.', answers:['も'] },
+  ]
+};
+
+// ----- L2 Grammar 6: Noun じゃないです (is not) -----
+GRAMMARS['l2-janai'] = {
+  title: 'Grammar 6 ｜ Noun じゃないです (is not)',
+  explanation: [
+    '<b>否定句：</b>把 <b>です</b> 換成 <b>じゃないです</b>（口語）。',
+    '比較禮貌：<b>じゃありません</b>（保守口語）。',
+    '正式書寫：<b>ではありません</b>（書面語）。',
+    '都意思一樣。三種形式同樣是「不是」。'
+  ],
+  examples: [
+    { jp:'やまださんは学生じゃないです。', reading:'やまださんはがくせいじゃないです。', en:'Mr. Yamada is not a student.' },
+    { jp:'とんかつは魚じゃないです。',     reading:'とんかつはさかなじゃないです。',     en:"Tonkatsu is not fish." },
+    { jp:'いいえ、にほんじんじゃないです。', reading:'いいえ、にほんじんじゃないです。', en:'No, (I) am not Japanese.' },
+    { jp:'やまださんは学生じゃありません。', reading:'やまださんはがくせいじゃありません。', en:'Mr. Yamada is not a student. (polite)' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I am not Japanese.',
+      answers:['わたしは日本人じゃないです。','わたしは日本人じゃないです','私は日本人じゃないです','わたしはにほんじんじゃないです','わたしは日本人じゃありません','わたしは日本人ではありません'] },
+    { type:'translate', prompt:'This is not meat.',
+      answers:['これは肉じゃないです。','これは肉じゃないです','これはにくじゃないです','これは肉じゃありません'] },
+    { type:'translate', prompt:'That is not fish.',
+      answers:['それは魚じゃないです。','それは魚じゃないです','それはさかなじゃないです','それは魚じゃありません'] },
+    { type:'translate', prompt:"My major is not history.",
+      answers:['専攻は歴史じゃないです。','専攻は歴史じゃないです','せんこうは歴史じゃないです','せんこうはれきしじゃないです','専攻は歴史じゃありません'] },
+    { type:'translate', prompt:'Mary is not Japanese. She is American.',
+      answers:['メアリーさんは日本人じゃないです。アメリカ人です。','メアリーさんは日本人じゃないです。アメリカ人です','メアリーさんはにほんじんじゃないです。アメリカじんです'] },
+    { type:'translate', prompt:'Takeshi is not Chinese. He is Japanese.',
+      answers:['たけしさんは中国人じゃないです。日本人です。','たけしさんは中国人じゃないです。日本人です','たけしさんはちゅうごくじんじゃないです。にほんじんです'] },
+    { type:'translate', prompt:"Robert is not American. He is British.",
+      answers:['ロバートさんはアメリカ人じゃないです。イギリス人です。','ロバートさんはアメリカ人じゃないです。イギリス人です'] },
+    { type:'translate', prompt:"Yamashita-sensei is not Korean. He is Japanese.",
+      answers:['やましたせんせいは韓国人じゃないです。日本人です。','やましたせんせいは韓国人じゃないです。日本人です','やましたせんせいはかんこくじんじゃないです。にほんじんです'] },
+    { type:'translate', prompt:"Takeshi's major is not Japanese.",
+      answers:['たけしさんの専攻は日本語じゃないです。','たけしさんの専攻は日本語じゃないです','たけしさんのせんこうは日本語じゃないです','たけしさんのせんこうはにほんごじゃないです'] },
+    { type:'translate', prompt:"It's not 3000 yen.",
+      answers:['三千円じゃないです。','三千円じゃないです','さんぜんえんじゃないです'] },
+    { type:'translate', prompt:'No, (I) am not a doctor.',
+      answers:['いいえ、医者じゃないです。','いいえ、医者じゃないです','いいえ、いしゃじゃないです'] },
+    { type:'fill', prompt:'これは肉____です。', en:'This is not meat.', answers:['じゃない','じゃありません','ではありません'] },
+    { type:'fill', prompt:'やまださんは学生____。', en:'(More formal) Mr. Yamada is not a student.', answers:['じゃありません','ではありません','じゃないです'] },
+  ]
+};
+
+// ----- L2 Grammar 7: 〜ね / 〜よ -----
+GRAMMARS['l2-neyo'] = {
+  title: 'Grammar 7 ｜ 〜ね / 〜よ (語尾助詞)',
+  explanation: [
+    '<b>〜ね</b> = 「對吧？／不是嗎？」尋求確認或共鳴。對方應該也知道。',
+    '<b>〜よ</b> = 「我跟你說喔／告訴你」強調自己的判斷或提供新資訊。',
+    '錯用很奇怪：對知道的人說 「〜よ」會像在嗆人；對不知道的人說 「〜ね」會莫名其妙。',
+    '禮貌句子也可以加：です<b>ね</b>／です<b>よ</b>。'
+  ],
+  examples: [
+    { jp:'リーさんの専攻は文学ですね。',     reading:'リーさんのせんこうはぶんがくですね。',     en:"Ms. Lee, your major is literature, right?" },
+    { jp:'これは肉じゃないですね。',         reading:'これはにくじゃないですね。',               en:'This is not meat, is it?' },
+    { jp:'とんかつは魚じゃないですよ。',     reading:'とんかつはさかなじゃないですよ。',         en:'(I tell you,) tonkatsu is not fish.' },
+    { jp:'スミスさんはイギリス人ですよ。',   reading:'スミスさんはイギリスじんですよ。',         en:'(For your information,) Mr. Smith is British.' },
+    { jp:'これは高いですね。',               reading:'これはたかいですね。',                     en:'This is expensive, isn\'t it?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:"That is expensive, isn't it?",
+      answers:['それは高いですね。','それは高いですね','それはたかいですね','それはたかいですね。'] },
+    { type:'translate', prompt:'This is a pen, right?',
+      answers:['これはペンですね。','これはペンですね'] },
+    { type:'translate', prompt:'Mary is American, right?',
+      answers:['メアリーさんはアメリカ人ですね。','メアリーさんはアメリカ人ですね','メアリーさんはアメリカじんですね'] },
+    { type:'translate', prompt:'(I tell you) it\'s 3000 yen.',
+      answers:['三千円ですよ。','三千円ですよ','さんぜんえんですよ','3000円ですよ'] },
+    { type:'translate', prompt:'(I tell you) Mr. Smith is British.',
+      answers:['スミスさんはイギリス人ですよ。','スミスさんはイギリス人ですよ','スミスさんはイギリスじんですよ'] },
+    { type:'translate', prompt:'(I tell you) this is not meat.',
+      answers:['これは肉じゃないですよ。','これは肉じゃないですよ','これはにくじゃないですよ'] },
+    { type:'translate', prompt:'283-9547, right?',
+      answers:['283-9547ですね。','283-9547ですね','にはちさんきゅうごよんなな ですね'] },
+    { type:'translate', prompt:"Tonkatsu is not fish, you know.",
+      answers:['とんかつは魚じゃないですよ。','とんかつは魚じゃないですよ','とんかつはさかなじゃないですよ'] },
+    { type:'translate', prompt:'This is delicious, isn\'t it?',
+      answers:['これはおいしいですね。','これはおいしいですね'] },
+    { type:'fill', prompt:'専攻は文学です____。 (尋求確認)', en:'..., right?', answers:['ね'] },
+    { type:'fill', prompt:'これは肉じゃないです____。 (告訴對方)', en:"I tell you, this isn't meat.", answers:['よ'] },
+    { type:'fill', prompt:'これは高いです____。 (兩人都覺得)', en:"It's expensive, isn't it?", answers:['ね'] },
+    { type:'fill', prompt:'三千円です____。 (對方不知道)', en:"It's 3000 yen, you know.", answers:['よ'] },
+  ]
+};
+
+// ----- L2 Useful Expression: 数字 (Numbers 100-90000) -----
+GRAMMARS['l2-numbers'] = {
+  title: 'Useful Expression ｜ 数字 (Numbers 100-90,000)',
+  explanation: [
+    '<b>百 (ひゃく)：</b> 100=ひゃく、200=にひゃく、<b>300=さんびゃく</b>(濁音)、<b>600=ろっぴゃく</b>、<b>800=はっぴゃく</b>。',
+    '<b>千 (せん)：</b> 1000=せん、<b>3000=さんぜん</b>(濁音)、<b>8000=はっせん</b>。',
+    '<b>万 (まん)：</b> 10000=<b>いちまん</b>(注意一定要說「いち」)、20000=にまん、…',
+    '<b>價錢：</b>數字 + <b>円 (えん)</b>。例：三千円 = 3000 yen。',
+    '<b>讀大數字：</b>分段讀。例：234,567 = にじゅうさんまん よんせん ごひゃく ろくじゅう なな。'
+  ],
+  examples: [
+    { jp:'300円です。',           reading:'さんびゃくえんです。',           en:"It's 300 yen." },
+    { jp:'800円です。',           reading:'はっぴゃくえんです。',           en:"It's 800 yen." },
+    { jp:'3,000円です。',         reading:'さんぜんえんです。',             en:"It's 3,000 yen." },
+    { jp:'10,000円です。',        reading:'いちまんえんです。',             en:"It's 10,000 yen." },
+    { jp:'34,000円です。',        reading:'さんまんよんせんえんです。',     en:"It's 34,000 yen." },
+    { jp:'これはいくらですか。',   reading:'これはいくらですか。',           en:'How much is this?' },
+  ],
+  exercises: [
+    // Hundreds
+    { type:'translate', prompt:'(Read) 100',
+      answers:['ひゃく','百'] },
+    { type:'translate', prompt:'(Read) 300',
+      answers:['さんびゃく','三百'] },
+    { type:'translate', prompt:'(Read) 600',
+      answers:['ろっぴゃく','六百'] },
+    { type:'translate', prompt:'(Read) 800',
+      answers:['はっぴゃく','八百'] },
+    { type:'translate', prompt:'(Read) 500',
+      answers:['ごひゃく','五百'] },
+    // Thousands
+    { type:'translate', prompt:'(Read) 1,000',
+      answers:['せん','千'] },
+    { type:'translate', prompt:'(Read) 3,000',
+      answers:['さんぜん','三千'] },
+    { type:'translate', prompt:'(Read) 8,000',
+      answers:['はっせん','八千'] },
+    { type:'translate', prompt:'(Read) 5,000',
+      answers:['ごせん','五千'] },
+    // Ten-thousands
+    { type:'translate', prompt:'(Read) 10,000',
+      answers:['いちまん','一万'] },
+    { type:'translate', prompt:'(Read) 20,000',
+      answers:['にまん','二万'] },
+    { type:'translate', prompt:'(Read) 90,000',
+      answers:['きゅうまん','九万'] },
+
+    // Money translations (using textbook prices)
+    { type:'translate', prompt:"It's 80 yen.",
+      answers:['八十円です。','八十円です','はちじゅうえんです','はちじゅうえんです。'] },
+    { type:'translate', prompt:"It's 450 yen.",
+      answers:['四百五十円です。','四百五十円です','よんひゃくごじゅうえんです'] },
+    { type:'translate', prompt:"It's 1,500 yen.",
+      answers:['千五百円です。','千五百円です','せんごひゃくえんです','千五百円です'] },
+    { type:'translate', prompt:"It's 3,500 yen.",
+      answers:['三千五百円です。','三千五百円です','さんぜんごひゃくえんです'] },
+    { type:'translate', prompt:"It's 8,000 yen.",
+      answers:['八千円です。','八千円です','はっせんえんです'] },
+    { type:'translate', prompt:"It's 25,000 yen.",
+      answers:['二万五千円です。','二万五千円です','にまんごせんえんです'] },
+    { type:'translate', prompt:"It's 34,000 yen.",
+      answers:['三万四千円です。','三万四千円です','さんまんよんせんえんです'] },
+    { type:'translate', prompt:"It's 68,000 yen.",
+      answers:['六万八千円です。','六万八千円です','ろくまんはっせんえんです'] },
+    { type:'translate', prompt:"That bicycle is 36,000 yen.",
+      answers:['その自転車は三万六千円です。','その自転車は三万六千円です','そのじてんしゃはさんまんろくせんえんです'] },
+    // Sound-change fill-ins
+    { type:'fill', prompt:'300 = ____', en:'three hundred', answers:['さんびゃく','三百'] },
+    { type:'fill', prompt:'600 = ____', en:'six hundred', answers:['ろっぴゃく','六百'] },
+    { type:'fill', prompt:'800 = ____', en:'eight hundred', answers:['はっぴゃく','八百'] },
+    { type:'fill', prompt:'3000 = ____', en:'three thousand', answers:['さんぜん','三千'] },
+    { type:'fill', prompt:'8000 = ____', en:'eight thousand', answers:['はっせん','八千'] },
+    { type:'fill', prompt:'10000 = ____', en:'ten thousand (注意!)', answers:['いちまん','一万'] },
+  ]
+};
+
+// ============================
 // LESSON 1 GRAMMARS
 // ============================
 
@@ -2237,6 +3041,85 @@ const VOCAB = {
         { kanji:'お兄さん', hira:'おにいさん',   en:'older brother' },
         { kanji:'妹',       hira:'いもうと',     en:'younger sister' },
         { kanji:'弟',       hira:'おとうと',     en:'younger brother' },
+      ]},
+    ]
+  },
+  2: {
+    groups: [
+      { key:'point', title:'👉 Words That Point (指示詞)', cls:'noun', items: [
+        { kanji:'', hira:'これ',   en:'this one' },
+        { kanji:'', hira:'それ',   en:'that one' },
+        { kanji:'', hira:'あれ',   en:'that one (over there)' },
+        { kanji:'', hira:'どれ',   en:'which one' },
+        { kanji:'', hira:'この',   en:'this ...' },
+        { kanji:'', hira:'その',   en:'that ...' },
+        { kanji:'', hira:'あの',   en:'that ... (over there)' },
+        { kanji:'', hira:'どの',   en:'which ...' },
+        { kanji:'', hira:'ここ',   en:'here' },
+        { kanji:'', hira:'そこ',   en:'there' },
+        { kanji:'', hira:'あそこ', en:'over there' },
+        { kanji:'', hira:'どこ',   en:'where' },
+        { kanji:'', hira:'だれ',   en:'who' },
+      ]},
+      { key:'food', title:'🍱 Food', cls:'noun', items: [
+        { kanji:'',   hira:'おいしい',   en:'delicious' },
+        { kanji:'魚',   hira:'さかな',   en:'fish' },
+        { kanji:'',   hira:'とんかつ',   en:'pork cutlet' },
+        { kanji:'肉',   hira:'にく',     en:'meat' },
+        { kanji:'',   hira:'メニュー',   en:'menu' },
+        { kanji:'野菜', hira:'やさい',   en:'vegetable' },
+      ]},
+      { key:'things', title:'🎒 Things', cls:'noun', items: [
+        { kanji:'傘',     hira:'かさ',       en:'umbrella' },
+        { kanji:'',       hira:'かばん',     en:'bag' },
+        { kanji:'靴',     hira:'くつ',       en:'shoes' },
+        { kanji:'財布',   hira:'さいふ',     en:'wallet' },
+        { kanji:'',       hira:'ジーンズ',   en:'jeans' },
+        { kanji:'自転車', hira:'じてんしゃ', en:'bicycle' },
+        { kanji:'新聞',   hira:'しんぶん',   en:'newspaper' },
+        { kanji:'',       hira:'スマホ',     en:'smartphone; mobile' },
+        { kanji:'',       hira:'Tシャツ',    en:'T-shirt' },
+        { kanji:'時計',   hira:'とけい',     en:'watch; clock' },
+        { kanji:'',       hira:'ノート',     en:'notebook' },
+        { kanji:'',       hira:'ペン',       en:'pen' },
+        { kanji:'帽子',   hira:'ぼうし',     en:'hat; cap' },
+        { kanji:'本',     hira:'ほん',       en:'book' },
+      ]},
+      { key:'places', title:'🏢 Places', cls:'noun', items: [
+        { kanji:'銀行',     hira:'ぎんこう',     en:'bank' },
+        { kanji:'',         hira:'コンビニ',     en:'convenience store' },
+        { kanji:'',         hira:'トイレ',       en:'toilet; restroom' },
+        { kanji:'図書館',   hira:'としょかん',   en:'library' },
+        { kanji:'郵便局',   hira:'ゆうびんきょく', en:'post office' },
+      ]},
+      { key:'countries', title:'🌏 Countries', cls:'noun', items: [
+        { kanji:'',     hira:'イギリス', en:'Britain' },
+        { kanji:'韓国', hira:'かんこく', en:'Korea' },
+        { kanji:'中国', hira:'ちゅうごく', en:'China' },
+      ]},
+      { key:'majors', title:'🎓 Majors', cls:'noun', items: [
+        { kanji:'英語', hira:'えいご',         en:'English (language)' },
+        { kanji:'経済', hira:'けいざい',       en:'economics' },
+        { kanji:'',     hira:'コンピューター', en:'computer' },
+        { kanji:'',     hira:'ビジネス',       en:'business' },
+        { kanji:'歴史', hira:'れきし',         en:'history' },
+      ]},
+      { key:'family', title:'👨‍👩 Family', cls:'noun', items: [
+        { kanji:'お母さん', hira:'おかあさん', en:'mother' },
+        { kanji:'お父さん', hira:'おとうさん', en:'father' },
+      ]},
+      { key:'money', title:'💴 Money Matters', cls:'noun', items: [
+        { kanji:'',   hira:'いくら', en:'how much' },
+        { kanji:'円', hira:'〜えん', en:'... yen' },
+        { kanji:'高い', hira:'たかい', en:'expensive; high' },
+      ]},
+      { key:'expr', title:'💬 Expressions', cls:'adverb', items: [
+        { kanji:'',     hira:'いらっしゃいませ',     en:'Welcome (to our store).' },
+        { kanji:'',     hira:'(〜を)おねがいします', en:'..., please.' },
+        { kanji:'',     hira:'(〜を)ください',       en:'Please give me ...' },
+        { kanji:'',     hira:'じゃあ',               en:'then ...; if that is the case, ...' },
+        { kanji:'',     hira:'どうぞ',               en:'Please.; Here it is.' },
+        { kanji:'',     hira:'どうも',               en:'Thank you.' },
       ]},
     ]
   },
@@ -4162,16 +5045,25 @@ function buildLessonContent(num) {
     return;
   }
 
-  // Lesson 1 — vocab + Grammar 1-3 + Phone + Time (each in its own collapsible section)
+  // Lesson 1 — vocab + Grammar 1-3 + Phone + Time
   if (VOCAB[num] && num === 1) {
     const grammarIds = ['l1-desu','l1-q','l1-no','l1-phone','l1-time'];
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
     renderVocabBody(num);
-    setTimeout(() => {
-      grammarIds.forEach(id => pickNextGrammarExercise(id));
-    }, 50);
+    setTimeout(() => grammarIds.forEach(id => pickNextGrammarExercise(id)), 50);
+    return;
+  }
+
+  // Lesson 2 — vocab + Grammar 1-7 + Numbers
+  if (VOCAB[num] && num === 2) {
+    const grammarIds = ['l2-kore','l2-kono','l2-koko','l2-dare','l2-mo','l2-janai','l2-neyo','l2-numbers'];
+    container.innerHTML =
+      vocabSectionHTML(num) +
+      grammarIds.map(id => grammarSectionHTML(id)).join('');
+    renderVocabBody(num);
+    setTimeout(() => grammarIds.forEach(id => pickNextGrammarExercise(id)), 50);
     return;
   }
 
