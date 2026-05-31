@@ -4104,6 +4104,39 @@ function vocabGroups(num) {
   ].filter(g => g.items.length > 0);
 }
 
+// ============================
+// VOCAB QUIZ — auto-generated from VOCAB[num]
+// English prompt → user types Japanese (kanji or hiragana accepted)
+// ============================
+function buildVocabQuiz(num) {
+  const groups = vocabGroups(num);
+  const exercises = [];
+  groups.forEach(g => g.items.forEach(it => {
+    if (!it.en || !it.hira) return;
+    const answers = [];
+    if (it.kanji && it.kanji.length > 0 && it.kanji !== it.hira) answers.push(it.kanji);
+    answers.push(it.hira);
+    exercises.push({
+      type: 'translate',
+      prompt: it.en,
+      answers: answers
+    });
+  }));
+  if (exercises.length === 0) return null;
+  return {
+    title: `📚 単語クイズ ｜ Lesson ${num} Vocabulary Quiz`,
+    explanation: [
+      '<b>用法：</b>看英文意思，打出日文。<b>漢字或平假名都接受</b>。',
+      '練習從 Lesson ' + num + ' 全部單字隨機出題，含名詞、形容詞、表現等。',
+      '不確定就點 <b>👀 看答案</b>。'
+    ],
+    examples: [],   // no example sentences for vocab quiz
+    exercises: exercises
+  };
+}
+const _q1 = buildVocabQuiz(1); if (_q1) GRAMMARS['l1-vocab-quiz'] = _q1;
+const _q2 = buildVocabQuiz(2); if (_q2) GRAMMARS['l2-vocab-quiz'] = _q2;
+
 // --- Pin persistence (localStorage) ---
 function getPinnedVocab(num) {
   try {
@@ -4722,10 +4755,10 @@ function grammarSectionHTML(id) {
       </div>
       <div class="lesson-section-body">
         <div class="grammar-explain">${explainHtml}</div>
-        <div class="grammar-examples">
+        ${g.examples.length > 0 ? `<div class="grammar-examples">
           <h4>📖 例文 Examples</h4>
           ${examplesHtml}
-        </div>
+        </div>` : ''}
         <div class="practice-zone">
           <div class="practice-zone-header">
             <h4>✏️ 練習 Practice</h4>
@@ -5044,9 +5077,10 @@ function buildLessonContent(num) {
     return;
   }
 
-  // Lesson 1 — vocab + Grammar 1-3 + Phone + Time
+  // Lesson 1 — vocab + Vocab Quiz + Grammar 1-3 + Phone + Time
   if (VOCAB[num] && num === 1) {
-    const grammarIds = ['l1-desu','l1-q','l1-no','l1-phone','l1-time'];
+    const grammarIds = ['l1-vocab-quiz','l1-desu','l1-q','l1-no','l1-phone','l1-time']
+      .filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
@@ -5055,9 +5089,10 @@ function buildLessonContent(num) {
     return;
   }
 
-  // Lesson 2 — vocab + Grammar 1-7 + Numbers
+  // Lesson 2 — vocab + Vocab Quiz + Grammar 1-7 + Numbers
   if (VOCAB[num] && num === 2) {
-    const grammarIds = ['l2-kore','l2-kono','l2-koko','l2-dare','l2-mo','l2-janai','l2-neyo','l2-numbers'];
+    const grammarIds = ['l2-vocab-quiz','l2-kore','l2-kono','l2-koko','l2-dare','l2-mo','l2-janai','l2-neyo','l2-numbers']
+      .filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
