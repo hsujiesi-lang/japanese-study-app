@@ -3568,16 +3568,18 @@ function grammarSectionHTML(id) {
   if (!g) return '';
   const explainHtml = g.explanation.map(p => `<p>${p}</p>`).join('');
   const examplesHtml = g.examples.map(ex => {
-    const safe = ex.jp.replace(/'/g, "\\'");
+    // Prefer the hiragana reading for TTS — kanji readings can be ambiguous
+    // (e.g. 人 may be read ひと instead of じん, 何 may be read なに instead of なん).
+    const spoken = (ex.reading || ex.jp).replace(/'/g, "\\'");
     const readingLine = ex.reading ? `<div class="ex-reading">${ex.reading}</div>` : '';
     return `
-      <div class="grammar-example" onclick="speak('${safe}')">
+      <div class="grammar-example" onclick="speak('${spoken}')">
         <div style="flex:1; min-width:0;">
           <div class="ex-jp">${ex.jp}</div>
           ${readingLine}
           <div class="ex-en">${ex.en}</div>
         </div>
-        <button class="ex-speak" onclick="event.stopPropagation(); speak('${safe}')">🔊</button>
+        <button class="ex-speak" onclick="event.stopPropagation(); speak('${spoken}')">🔊</button>
       </div>`;
   }).join('');
 
