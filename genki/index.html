@@ -4925,11 +4925,10 @@ const lessonPlayback = {};
 function playLessonVocab(num) {
   const vocab = VOCAB[num];
   if (!vocab) return;
-  const all = [
-    ...(vocab.nouns || []),
-    ...(vocab.naAdjectives || []),
-    ...(vocab.adverbs || []),
-  ];
+  // Use the same flexible groups helper that the renderer uses, so it
+  // works for both legacy (nouns/naAdjectives/adverbs) and new (groups[]) formats.
+  const all = [];
+  vocabGroups(num).forEach(g => g.items.forEach(it => all.push(it)));
   if (all.length === 0) return;
 
   const items = all.map(it => ({
