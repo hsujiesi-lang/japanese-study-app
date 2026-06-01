@@ -484,6 +484,44 @@
   }
   .result-correct-text { color: #2E7D32; font-weight: 700; }
 
+  /* Numbers reference */
+  .number-section-title {
+    background: #E8F5E9; color: #2E7D32; padding: 10px 16px;
+    margin: 16px 16px 8px; border-radius: 8px;
+    font-size: 0.98em; font-weight: 700;
+  }
+  .number-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px; padding: 0 16px;
+  }
+  .number-card {
+    background: white; border-radius: 10px; padding: 10px 8px;
+    text-align: center; cursor: pointer; user-select: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 2px solid transparent;
+    transition: transform 0.1s;
+  }
+  .number-card:active { transform: scale(0.96); background: #F1F8E9; }
+  .number-card.special {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    border-color: #FF7043;
+  }
+  .number-card.special:active { background: #FFCC80; }
+  .number-card .num-digit {
+    font-size: 1.1em; color: #999; font-weight: 600;
+  }
+  .number-card .num-kanji {
+    font-size: 1.4em; color: #37474F; font-weight: 700; margin: 2px 0;
+  }
+  .number-card .num-hira {
+    font-size: 0.92em; color: #2E7D32; font-weight: 600;
+  }
+  .number-card.special .num-hira { color: #BF360C; }
+  .number-card .num-note {
+    font-size: 0.72em; color: #E65100; margin-top: 4px;
+    font-weight: 600;
+  }
+
   /* Pin list (in Pin Manager page) */
   .pin-list-section-title {
     background: #FFE0B2; color: #E65100; padding: 8px 12px;
@@ -833,6 +871,11 @@
         <div class="lesson-title">釘選管理</div>
         <div class="lesson-en">統計 · 清除 · 跨裝置匯出／匯入</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('numbers')" style="background:linear-gradient(135deg,#E8F5E9 0%,#A5D6A7 100%);">
+        <div class="lesson-num" style="color:#2E7D32">🔢 NUMBERS</div>
+        <div class="lesson-title">数字 1〜10,000</div>
+        <div class="lesson-en">含發音變化 · 點數字聽發音</div>
+      </div>
       <div class="hub-card" onclick="showPage('hiragana')" style="background:linear-gradient(135deg,#FFE4EC 0%,#FFB3C8 100%);">
         <div class="lesson-num" style="color:#C2185B">ひらがな</div>
         <div class="lesson-title">Hiragana 練習</div>
@@ -966,6 +1009,20 @@
 </div>
 
 <!-- ============ LESSON PAGES ============ -->
+<!-- ============ NUMBERS PAGE ============ -->
+<div id="page-numbers" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>🔢 数字 Numbers</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="particle-info">
+    💡 點任何數字可聽發音。<b style="color:#E65100">橘色標示</b> 是<b>發音不規則</b>的數字 (sound change)。
+  </div>
+  <div id="numbers-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
 <!-- ============ PIN MANAGER PAGE ============ -->
 <div id="page-pinmanager" class="page">
   <div class="top-nav">
@@ -1231,6 +1288,83 @@
 
 
 <script>
+// ============================
+// NUMBERS DATA & RENDER
+// ============================
+const NUMBERS_GROUPS = [
+  { title: '🔢 1 〜 10', items: [
+    { num:'1',  kanji:'一', hira:'いち' },
+    { num:'2',  kanji:'二', hira:'に' },
+    { num:'3',  kanji:'三', hira:'さん' },
+    { num:'4',  kanji:'四', hira:'よん', special:true, note:'另讀 し / よ。例：四時=よじ、四月=しがつ' },
+    { num:'5',  kanji:'五', hira:'ご' },
+    { num:'6',  kanji:'六', hira:'ろく' },
+    { num:'7',  kanji:'七', hira:'なな', special:true, note:'另讀 しち。例：七時=しちじ' },
+    { num:'8',  kanji:'八', hira:'はち' },
+    { num:'9',  kanji:'九', hira:'きゅう', special:true, note:'另讀 く。例：九時=くじ' },
+    { num:'10', kanji:'十', hira:'じゅう' },
+  ]},
+  { title: '🔢 10 〜 100', items: [
+    { num:'10',  kanji:'十',     hira:'じゅう' },
+    { num:'20',  kanji:'二十',   hira:'にじゅう' },
+    { num:'30',  kanji:'三十',   hira:'さんじゅう' },
+    { num:'40',  kanji:'四十',   hira:'よんじゅう', special:true, note:'用 よん 不用 し' },
+    { num:'50',  kanji:'五十',   hira:'ごじゅう' },
+    { num:'60',  kanji:'六十',   hira:'ろくじゅう' },
+    { num:'70',  kanji:'七十',   hira:'ななじゅう', special:true, note:'用 なな 不用 しち' },
+    { num:'80',  kanji:'八十',   hira:'はちじゅう' },
+    { num:'90',  kanji:'九十',   hira:'きゅうじゅう', special:true, note:'用 きゅう 不用 く' },
+    { num:'100', kanji:'百',     hira:'ひゃく' },
+  ]},
+  { title: '🔢 100 〜 1,000 (注意 300 / 600 / 800)', items: [
+    { num:'100',  kanji:'百',     hira:'ひゃく' },
+    { num:'200',  kanji:'二百',   hira:'にひゃく' },
+    { num:'300',  kanji:'三百',   hira:'さんびゃく', special:true, note:'ひゃく → びゃく (濁音)' },
+    { num:'400',  kanji:'四百',   hira:'よんひゃく' },
+    { num:'500',  kanji:'五百',   hira:'ごひゃく' },
+    { num:'600',  kanji:'六百',   hira:'ろっぴゃく', special:true, note:'ひゃく → っぴゃく (促音+半濁音)' },
+    { num:'700',  kanji:'七百',   hira:'ななひゃく' },
+    { num:'800',  kanji:'八百',   hira:'はっぴゃく', special:true, note:'ひゃく → っぴゃく (促音+半濁音)' },
+    { num:'900',  kanji:'九百',   hira:'きゅうひゃく' },
+    { num:'1000', kanji:'千',     hira:'せん' },
+  ]},
+  { title: '🔢 1,000 〜 10,000 (注意 3000 / 8000 / 10000)', items: [
+    { num:'1,000',  kanji:'千',     hira:'せん' },
+    { num:'2,000',  kanji:'二千',   hira:'にせん' },
+    { num:'3,000',  kanji:'三千',   hira:'さんぜん', special:true, note:'せん → ぜん (濁音)' },
+    { num:'4,000',  kanji:'四千',   hira:'よんせん' },
+    { num:'5,000',  kanji:'五千',   hira:'ごせん' },
+    { num:'6,000',  kanji:'六千',   hira:'ろくせん' },
+    { num:'7,000',  kanji:'七千',   hira:'ななせん' },
+    { num:'8,000',  kanji:'八千',   hira:'はっせん', special:true, note:'せん → っせん (促音)' },
+    { num:'9,000',  kanji:'九千',   hira:'きゅうせん' },
+    { num:'10,000', kanji:'一万',   hira:'いちまん', special:true, note:'萬位數一定要說「いち」！不能省略' },
+  ]},
+];
+
+function renderNumbersPage() {
+  const root = document.getElementById('numbers-content');
+  if (!root) return;
+  let html = '';
+  NUMBERS_GROUPS.forEach(group => {
+    html += `<div class="number-section-title">${group.title}</div>`;
+    html += `<div class="number-grid">`;
+    group.items.forEach(it => {
+      const safeHira = it.hira.replace(/'/g, "\\'");
+      html += `
+        <div class="number-card ${it.special ? 'special' : ''}" onclick="speak('${safeHira}')">
+          <div class="num-digit">${it.num}</div>
+          <div class="num-kanji">${it.kanji}</div>
+          <div class="num-hira">${it.hira}</div>
+          ${it.note ? `<div class="num-note">⚠ ${it.note}</div>` : ''}
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+  root.innerHTML = html;
+}
+
 // ============================
 // KANA DATA
 // ============================
@@ -6787,6 +6921,7 @@ function showPage(name) {
   if (name === 'verbs') renderVerbs();
   if (name === 'adjectives') renderAdjectives();
   if (name === 'pinmanager') showPinManager();
+  if (name === 'numbers') renderNumbersPage();
   if (name === 'hiragana') {
     renderKanaTable(HIRAGANA, 'hira-ref', 'hira');
     startPractice(HIRAGANA, 'hira-p1', 'hira', 'k2r');
