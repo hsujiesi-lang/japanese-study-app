@@ -432,6 +432,57 @@
     color: #999; font-size: 0.78em; margin-bottom: 6px;
   }
 
+  /* Session progress + results */
+  .exercise-progress {
+    background: #FFF3E0; color: #E65100;
+    padding: 4px 12px; border-radius: 12px;
+    font-size: 0.8em; font-weight: 700;
+    display: inline-block; margin-bottom: 8px;
+  }
+  .result-card { text-align: center; }
+  .result-title {
+    font-size: 1.3em; font-weight: 800; color: #FF7043; margin-bottom: 4px;
+  }
+  .result-score {
+    font-size: 2.4em; font-weight: 800; color: #37474F;
+    margin: 8px 0 2px;
+  }
+  .result-pct {
+    font-size: 0.95em; color: #666; margin-bottom: 14px;
+  }
+  .result-section-h {
+    text-align: left; color: #C62828; font-size: 1em;
+    margin: 12px 0 8px;
+  }
+  .result-allcorrect {
+    color: #2E7D32; font-size: 1.2em; font-weight: 700;
+    background: #E8F5E9; padding: 14px; border-radius: 10px;
+    margin: 10px 0;
+  }
+  .result-wrong-list {
+    text-align: left; margin-top: 6px;
+  }
+  .result-wrong-item {
+    background: #FFEBEE; border-left: 4px solid #EF5350;
+    border-radius: 0 8px 8px 0; padding: 10px 12px;
+    margin-bottom: 8px; display: flex; gap: 8px;
+  }
+  .result-wrong-num {
+    color: #C62828; font-weight: 700; flex-shrink: 0;
+  }
+  .result-wrong-content { flex: 1; min-width: 0; }
+  .result-wrong-prompt {
+    font-weight: 600; color: #37474F; font-size: 0.95em; margin-bottom: 4px;
+  }
+  .result-wrong-user {
+    font-size: 0.85em; color: #888; margin-bottom: 2px;
+  }
+  .result-wrong-text { color: #C62828; font-weight: 600; }
+  .result-wrong-ans {
+    font-size: 0.95em; color: #555;
+  }
+  .result-correct-text { color: #2E7D32; font-weight: 700; }
+
   /* Pin list (in Pin Manager page) */
   .pin-list-section-title {
     background: #FFE0B2; color: #E65100; padding: 8px 12px;
@@ -5523,12 +5574,19 @@ function toggleLessonSection(id) {
 // ============================
 const grammarPracticeStates = {};  // keyed by grammar id
 
+// Number of questions per practice session
+const SESSION_LENGTH = 10;
+
 function getGrammarState(id) {
   if (!grammarPracticeStates[id]) {
     grammarPracticeStates[id] = {
       correct: 0, wrong: 0, current: null, attempts: 0,
-      revealed: false,      // answer has been finalized (correct submit OR 看答案 clicked)
-      advanceArmed: false   // next Enter will advance to the next question
+      revealed: false,            // answer has been finalized
+      advanceArmed: false,        // next Enter will advance
+      sessionCount: 0,            // number of questions presented in this session
+      sessionWrong: [],           // {ex, userAns} for wrong items this session
+      sessionDone: false,         // showing the results screen
+      currentMarkedWrong: false,  // current question already counted as wrong
     };
   }
   return grammarPracticeStates[id];
@@ -5590,6 +5648,14 @@ function pickNextGrammarExercise(id) {
   const g = GRAMMARS[id];
   if (!g) return;
   const state = getGrammarState(id);
+  if (state.sessionDone) { renderGrammarResults(id); return; }
+  if (state.sessionCount >= SESSION_LENGTH) {
+    state.sessionDone = true;
+    renderGrammarResults(id);
+    return;
+  }
+  state.sessionCount++;
+  state.currentMarkedWrong = false;
   let pick;
   do {
     pick = g.exercises[Math.floor(Math.random() * g.exercises.length)];
@@ -5599,6 +5665,74 @@ function pickNextGrammarExercise(id) {
   state.revealed = false;
   state.advanceArmed = false;
   renderGrammarExercise(id);
+}
+
+function renderGrammarResults(id) {
+  const state = getGrammarState(id);
+  const g = GRAMMARS[id];
+  const area = document.getElementById(`g-ex-area-${id}`);
+  if (!area) return;
+  const total = state.sessionCount;
+  const wrongCount = state.sessionWrong.length;
+  const correctCount = Math.max(0, total - wrongCount);
+  const pct = total > 0 ? Math.round(100 * correctCount / total) : 0;
+
+  let wrongHtml = '';
+  if (wrongCount === 0) {
+    wrongHtml = `<div class="result-allcorrect">🎉 全部答對！</div>`;
+  } else {
+    wrongHtml = `
+      <h4 class="result-section-h">❌ 答錯 / 看答案的題目 (${wrongCount} 題)</h4>
+      <div class="result-wrong-list">
+        ${state.sessionWrong.map((w, i) => {
+          const correctAns = (w.ex && w.ex.answers && w.ex.answers[0]) || '';
+          const userAns = w.userAns || '(看答案)';
+          const prompt = (w.ex && w.ex.prompt) || '';
+          const spoken = correctAns.replace(/'/g, "\\'").replace(/[。.]$/,'');
+          return `
+            <div class="result-wrong-item">
+              <div class="result-wrong-num">${i+1}.</div>
+              <div class="result-wrong-content">
+                <div class="result-wrong-prompt">${prompt}</div>
+                <div class="result-wrong-user">你的答案：<span class="result-wrong-text">${userAns}</span></div>
+                <div class="result-wrong-ans">正解：<span class="result-correct-text">${correctAns}</span>
+                  <button class="ex-btn-show" style="margin-left:6px; padding:3px 10px; font-size:0.8em;" onclick="speak('${spoken}')">🔊</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  const grade = pct >= 90 ? '🏆 太棒了！' : pct >= 70 ? '👏 不錯！' : pct >= 50 ? '💪 加油！' : '📚 多複習！';
+
+  area.innerHTML = `
+    <div class="exercise-card result-card">
+      <div class="result-title">🎯 練習結束！</div>
+      <div class="result-score">${correctCount} / ${total}</div>
+      <div class="result-pct">正確率 ${pct}% ・ ${grade}</div>
+      ${wrongHtml}
+      <button class="ex-btn-submit" style="width:100%; margin-top:14px;" onclick="restartGrammarPractice('${id}')">🔄 再來一輪 (${SESSION_LENGTH} 題)</button>
+    </div>
+  `;
+}
+
+function restartGrammarPractice(id) {
+  const state = getGrammarState(id);
+  state.correct = 0;
+  state.wrong = 0;
+  state.sessionCount = 0;
+  state.sessionWrong = [];
+  state.sessionDone = false;
+  state.currentMarkedWrong = false;
+  state.current = null;
+  state.attempts = 0;
+  state.revealed = false;
+  state.advanceArmed = false;
+  updateGrammarStats(id);
+  pickNextGrammarExercise(id);
 }
 
 function renderGrammarExercise(id) {
@@ -5636,6 +5770,7 @@ function renderGrammarExercise(id) {
 
   area.innerHTML = `
     <div class="exercise-card">
+      <div class="exercise-progress">📝 第 ${state.sessionCount} / ${SESSION_LENGTH} 題</div>
       <span class="exercise-type-tag ${ex.type}">${tagText}</span>
       ${promptHtml}
       <div class="input-hint">💡 ${inputHint}</div>
@@ -5675,17 +5810,19 @@ function checkGrammarExercise(id) {
       <div style="margin-top:6px; color:#2E7D32; font-size:0.88em; font-weight:600;">↵ 再按一次 Enter 進入下一題</div>`;
     speak(ex.answers[0]);
     updateGrammarStats(id);
-    // Reveal + arm advance — next Enter goes to next question (2 enters total: submit + advance)
     state.revealed = true;
     state.advanceArmed = true;
     inp.focus();
   } else {
     if (state.attempts === 1) state.wrong++;
+    if (!state.currentMarkedWrong) {
+      state.sessionWrong.push({ ex: state.current, userAns: raw });
+      state.currentMarkedWrong = true;
+    }
     inp.classList.add('wrong');
     fb.className = 'exercise-feedback show wrong';
     fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
     updateGrammarStats(id);
-    // Stay open for retry — not revealed
   }
 }
 
@@ -5695,16 +5832,18 @@ function showGrammarAnswer(id) {
   const inp = document.getElementById(`g-ex-input-${id}`);
   const fb = document.getElementById(`g-ex-fb-${id}`);
   if (state.attempts === 0) state.wrong++;
-  if (inp) inp.readOnly = true;  // readOnly (not disabled) so it can still receive focus+keydown
+  if (!state.currentMarkedWrong) {
+    state.sessionWrong.push({ ex: state.current, userAns: (inp && inp.value.trim()) ? inp.value.trim() : '(看答案)' });
+    state.currentMarkedWrong = true;
+  }
+  if (inp) inp.readOnly = true;
   fb.className = 'exercise-feedback show wrong';
   fb.innerHTML = `📖 正解：<span class="answer-shown">${ex.answers[0]}</span>${ex.answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${ex.answers.slice(1).join('、')}</span>` : ''}
     <div style="margin-top:8px; color:#C62828; font-size:0.88em; font-weight:600;">↵ 按 Enter 兩下進入下一題</div>`;
   speak(ex.answers[0]);
   updateGrammarStats(id);
-  // Reveal but not armed — needs two Enters (one to arm, one to advance)
   state.revealed = true;
   state.advanceArmed = false;
-  // Critical: move focus away from the 看答案 button so Enter doesn't re-trigger it
   if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   if (inp) setTimeout(() => inp.focus(), 0);
 }
