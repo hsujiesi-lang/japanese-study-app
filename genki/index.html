@@ -4935,69 +4935,92 @@ function showPinManager() {
 }
 
 // ============================
-// PINNED PRACTICE — quiz built from all pinned items
+// PINNED PRACTICE — quiz built from all pinned items (with filters)
 // ============================
+const pinPracticeFilter = { lesson: 'all', kind: 'all' };
+
+function setPinPracticeFilter(key, value) {
+  pinPracticeFilter[key] = value;
+  refreshPinnedPractice();
+}
+
+function lessonsWithAnyPin() {
+  const set = new Set();
+  knownVocabLessons().forEach(num => { if (getPinnedVocab(num).size > 0) set.add(num); });
+  const verbPins = getPinnedVerbs();
+  VERBS.forEach(v => { if (verbPins.has(verbKey(v))) set.add(v.lesson); });
+  return Array.from(set).sort((a,b) => a - b);
+}
+
 function buildPinnedExercises() {
   const exercises = [];
+  const fLesson = pinPracticeFilter.lesson;
+  const fKind   = pinPracticeFilter.kind;
 
   // Vocab pins
-  knownVocabLessons().forEach(num => {
-    const pinned = getPinnedVocab(num);
-    if (pinned.size === 0) return;
-    vocabGroups(num).forEach(g => g.items.forEach(it => {
-      if (!pinned.has(it.hira) || !it.en || !it.hira) return;
-      const answers = [];
-      if (it.kanji && it.kanji.length > 0 && it.kanji !== it.hira) answers.push(it.kanji);
-      answers.push(it.hira);
-      exercises.push({
-        type: 'translate',
-        prompt: `📚 L${num} 単語： ${it.en}`,
-        answers: answers
-      });
-    }));
-  });
-
-  // Verb pins (dict form + each conjugation form)
-  const verbPins = getPinnedVerbs();
-  if (verbPins.size > 0) {
-    const verbs = VERBS.filter(v => verbPins.has(verbKey(v)));
-    verbs.forEach(v => {
-      // Dictionary form
-      const dictAnswers = [];
-      if (v.kanji && v.kanji !== v.hira) dictAnswers.push(v.kanji);
-      dictAnswers.push(v.hira);
-      exercises.push({
-        type: 'translate',
-        prompt: `📖 L${v.lesson} 動詞 (辞書形)： ${v.en}`,
-        answers: dictAnswers
-      });
-      // Conjugation forms
-      try {
-        const hiraForms = conjugateAny(v.hira, v.type);
-        const kanjiForms = conjugateAny(v.kanji || v.hira, v.type);
-        const formList = [
-          { label: '現在 (〜ます)',       k: 'presentAff' },
-          { label: '現在否定 (〜ません)', k: 'presentNeg' },
-          { label: '過去 (〜ました)',     k: 'pastAff' },
-          { label: '過去否定 (〜ませんでした)', k: 'pastNeg' },
-          { label: 'て形',               k: 'te' },
-        ];
-        formList.forEach(f => {
-          const hira = hiraForms[f.k];
-          const kanji = kanjiForms[f.k];
-          const answers = [];
-          if (kanji && kanji !== hira) answers.push(kanji);
-          if (hira) answers.push(hira);
-          if (answers.length > 0) {
-            exercises.push({
-              type: 'translate',
-              prompt: `📖 L${v.lesson} 動詞 (${f.label})： ${v.en}`,
-              answers: answers
-            });
-          }
+  if (fKind !== 'verb') {
+    knownVocabLessons().forEach(num => {
+      if (fLesson !== 'all' && String(num) !== String(fLesson)) return;
+      const pinned = getPinnedVocab(num);
+      if (pinned.size === 0) return;
+      vocabGroups(num).forEach(g => g.items.forEach(it => {
+        if (!pinned.has(it.hira) || !it.en || !it.hira) return;
+        const answers = [];
+        if (it.kanji && it.kanji.length > 0 && it.kanji !== it.hira) answers.push(it.kanji);
+        answers.push(it.hira);
+        exercises.push({
+          type: 'translate',
+          prompt: `📚 L${num} 単語： ${it.en}`,
+          answers: answers
         });
-      } catch(e){}
+      }));
     });
+  }
+
+  // Verb pins
+  if (fKind !== 'vocab') {
+    const verbPins = getPinnedVerbs();
+    if (verbPins.size > 0) {
+      const verbs = VERBS.filter(v => verbPins.has(verbKey(v)));
+      verbs.forEach(v => {
+        if (fLesson !== 'all' && String(v.lesson) !== String(fLesson)) return;
+        // Dictionary form
+        const dictAnswers = [];
+        if (v.kanji && v.kanji !== v.hira) dictAnswers.push(v.kanji);
+        dictAnswers.push(v.hira);
+        exercises.push({
+          type: 'translate',
+          prompt: `📖 L${v.lesson} 動詞 (辞書形)： ${v.en}`,
+          answers: dictAnswers
+        });
+        // Conjugation forms
+        try {
+          const hiraForms = conjugateAny(v.hira, v.type);
+          const kanjiForms = conjugateAny(v.kanji || v.hira, v.type);
+          const formList = [
+            { label: '現在 (〜ます)',       k: 'presentAff' },
+            { label: '現在否定 (〜ません)', k: 'presentNeg' },
+            { label: '過去 (〜ました)',     k: 'pastAff' },
+            { label: '過去否定 (〜ませんでした)', k: 'pastNeg' },
+            { label: 'て形',               k: 'te' },
+          ];
+          formList.forEach(f => {
+            const hira = hiraForms[f.k];
+            const kanji = kanjiForms[f.k];
+            const answers = [];
+            if (kanji && kanji !== hira) answers.push(kanji);
+            if (hira) answers.push(hira);
+            if (answers.length > 0) {
+              exercises.push({
+                type: 'translate',
+                prompt: `📖 L${v.lesson} 動詞 (${f.label})： ${v.en}`,
+                answers: answers
+              });
+            }
+          });
+        } catch(e){}
+      });
+    }
   }
 
   return exercises;
@@ -5006,12 +5029,18 @@ function buildPinnedExercises() {
 function refreshPinnedPractice() {
   const area = document.getElementById('pinned-practice-area');
   if (!area) return;
-  const exercises = buildPinnedExercises();
 
-  if (exercises.length === 0) {
+  // Preserve expansion state across re-renders (e.g. when filter changes)
+  const existing = document.getElementById('grammar-section-pinned-quiz');
+  const wasCollapsed = !existing || existing.classList.contains('collapsed');
+
+  const lessons = lessonsWithAnyPin();
+
+  // No pins at all → simple empty state
+  if (lessons.length === 0) {
     area.innerHTML = `
-      <div class="lesson-section" id="pinned-quiz-empty">
-        <div class="lesson-section-header" onclick="toggleLessonSection('pinned-quiz-empty')" style="background:linear-gradient(135deg,#90A4AE 0%,#607D8B 100%);">
+      <div class="lesson-section collapsed" id="grammar-section-pinned-quiz">
+        <div class="lesson-section-header" onclick="toggleLessonSection('grammar-section-pinned-quiz')" style="background:linear-gradient(135deg,#90A4AE 0%,#607D8B 100%);">
           <h3>🎯 釘選練習</h3>
           <span class="toggle-arrow">▼</span>
         </div>
@@ -5023,28 +5052,73 @@ function refreshPinnedPractice() {
     return;
   }
 
-  // Dynamically build a GRAMMARS entry from current pins
+  // Build filter chips
+  const f = pinPracticeFilter;
+  const lessonChips = `
+    <button class="filter-chip ${f.lesson==='all'?'active':''}" onclick="setPinPracticeFilter('lesson','all')">全部</button>
+    ${lessons.map(n => `<button class="filter-chip ${f.lesson===String(n)?'active':''}" onclick="setPinPracticeFilter('lesson','${n}')">L${n}</button>`).join('')}
+  `;
+  const kindChips = `
+    <button class="filter-chip ${f.kind==='all'?'active':''}" onclick="setPinPracticeFilter('kind','all')">全部</button>
+    <button class="filter-chip ${f.kind==='vocab'?'active':''}" onclick="setPinPracticeFilter('kind','vocab')">📚 単語</button>
+    <button class="filter-chip ${f.kind==='verb'?'active':''}" onclick="setPinPracticeFilter('kind','verb')">📖 動詞</button>
+  `;
+
+  const exercises = buildPinnedExercises();
+
+  // Build the section
+  area.innerHTML = `
+    <div class="lesson-section ${wasCollapsed ? 'collapsed' : ''}" id="grammar-section-pinned-quiz">
+      <div class="lesson-section-header" onclick="toggleLessonSection('grammar-section-pinned-quiz')">
+        <h3>🎯 釘選練習 (${exercises.length} 題池)</h3>
+        <span class="toggle-arrow">▼</span>
+      </div>
+      <div class="lesson-section-body">
+        <div class="grammar-explain">
+          <p><b>用法：</b>從你<b>釘選的單字／動詞</b>隨機抽 10 題。可篩選範圍。</p>
+          <p>看英文意思（含型態提示），打日文（漢字或平假名都接受）。</p>
+        </div>
+        <div style="padding:0 16px 4px;">
+          <div style="font-size:0.82em; color:#666; margin:6px 0 4px;">📚 課程範圍：</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">${lessonChips}</div>
+          <div style="font-size:0.82em; color:#666; margin:10px 0 4px;">類型：</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">${kindChips}</div>
+        </div>
+        <div class="practice-zone">
+          <div class="practice-zone-header">
+            <h4>✏️ 練習 Practice</h4>
+            <div class="practice-zone-stats">
+              ✅<span class="ok" id="g-stat-ok-pinned-quiz">0</span> ・
+              ❌<span class="ng" id="g-stat-ng-pinned-quiz">0</span>
+            </div>
+          </div>
+          <div id="g-ex-area-pinned-quiz"></div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  if (exercises.length === 0) {
+    document.getElementById('g-ex-area-pinned-quiz').innerHTML =
+      '<div class="exercise-card" style="text-align:center; color:#888;">這個篩選沒有題目，請改選其他範圍。</div>';
+    return;
+  }
+
+  // Update GRAMMARS entry and reset session
   GRAMMARS['pinned-quiz'] = {
-    title: `🎯 釘選練習 (${exercises.length} 題)`,
-    explanation: [
-      '<b>用法：</b>從你<b>所有釘選的單字／動詞</b>隨機抽題。',
-      '看英文意思（含型態提示），打日文（漢字或平假名都接受）。',
-      '答對／看答案後按 <b>Enter</b> 兩次進下一題。',
-      '釘選變動時這個練習池會自動更新。'
-    ],
+    title: '🎯 釘選練習',
+    explanation: [],
     examples: [],
     exercises: exercises
   };
-
-  // Reset previous practice state so the pool is fresh
-  if (grammarPracticeStates['pinned-quiz']) {
-    grammarPracticeStates['pinned-quiz'].current = null;
-  }
-
-  // Render the collapsible section
-  area.innerHTML = grammarSectionHTML('pinned-quiz');
-
-  // Initialize the first exercise
+  // Full reset of practice state when filter or pool changes
+  const st = getGrammarState('pinned-quiz');
+  st.correct = 0; st.wrong = 0;
+  st.sessionCount = 0; st.sessionWrong = [];
+  st.sessionDone = false; st.currentMarkedWrong = false;
+  st.current = null; st.attempts = 0;
+  st.revealed = false; st.advanceArmed = false;
+  updateGrammarStats('pinned-quiz');
   setTimeout(() => pickNextGrammarExercise('pinned-quiz'), 50);
 }
 
