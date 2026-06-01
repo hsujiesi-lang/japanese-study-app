@@ -4970,6 +4970,8 @@ function playLessonVocab(num) {
   }));
 
   speechSynthesis.cancel();
+  try { speechSynthesis.resume(); } catch(e){}  // unstick paused engine
+  if (!jaVoice) loadVoices();  // re-pick voice in case it was missing at init
   const state = lessonPlayback[num] = {
     token: (lessonPlayback[num] ? lessonPlayback[num].token + 1 : 1),
     active: true,
@@ -5009,6 +5011,7 @@ function playNextLessonItem(num, myToken) {
   const item = state.items[state.index];
   progEl.textContent = `${state.index+1}/${state.items.length} · ${item.label}`;
 
+  try { speechSynthesis.resume(); } catch(e){}  // keep engine awake (Chrome bug workaround)
   const u = new SpeechSynthesisUtterance(item.text);
   u.lang = 'ja-JP';
   if (jaVoice) u.voice = jaVoice;
