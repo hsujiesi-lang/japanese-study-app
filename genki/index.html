@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Genki">
 <title>げんき Lessons 1-6 練習</title>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   html, body { background: #EFE9DD; }
@@ -515,19 +516,21 @@
   }
   .pin-list-speak:active { background: #FFCC80; }
   .pin-list-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
-  .pin-list-reorder {
-    display: flex; flex-direction: column; gap: 2px;
-    flex-shrink: 0; margin-right: 6px;
+  .pin-drag-handle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 32px; flex-shrink: 0;
+    color: #BCAAA4; font-size: 1.6em; line-height: 1;
+    cursor: grab; user-select: none;
+    margin-right: 4px;
+    touch-action: none;
   }
-  .pin-reorder-btn {
-    background: #FFF3E0; color: #E65100; border: none;
-    width: 24px; height: 18px; line-height: 18px; padding: 0;
-    font-size: 0.7em; font-weight: 700;
-    border-radius: 4px; cursor: pointer;
-  }
-  .pin-reorder-btn:active:not([disabled]) { background: #FFCC80; }
-  .pin-reorder-btn[disabled] {
-    background: #F5F5F5; color: #CCC; cursor: not-allowed;
+  .pin-drag-handle:active { cursor: grabbing; color: #FF7043; }
+  .pin-sortable-group { display: flex; flex-direction: column; gap: 6px; }
+  .pin-ghost { opacity: 0.35; background: #FFE0B2 !important; }
+  .pin-chosen { background: #FFFBF7; }
+  .pin-dragging {
+    box-shadow: 0 6px 20px rgba(255,112,67,0.4) !important;
+    transform: rotate(1deg);
   }
   .pin-list-play-all {
     background: white; color: #E65100; border: 1.5px solid #FF7043;
@@ -5054,24 +5057,19 @@ function renderPinList() {
   knownVocabLessons().forEach(num => {
     const order = getPinnedVocabArr(num);
     if (order.length === 0) return;
-    // Build hira → {item, cls} map from current vocab
     const map = new Map();
     vocabGroups(num).forEach(g => g.items.forEach(it => map.set(it.hira, { item: it, cls: g.cls })));
     const items = order.map(h => map.get(h)).filter(Boolean);
     if (items.length === 0) return;
 
     html += `<div class="pin-list-section-title">📚 Lesson ${num} 単語 (${items.length}) <button class="pin-list-play-all" onclick="playPinnedVocab(${num})">▶ 連續播放</button></div>`;
-    items.forEach((entry, idx) => {
+    html += `<div class="pin-sortable-group" data-pin-kind="vocab" data-pin-num="${num}">`;
+    items.forEach(entry => {
       const it = entry.item;
       const display = (it.kanji && it.kanji !== it.hira && it.kanji.length) ? `${it.kanji} [${it.hira}]` : it.hira;
       const safeHira = it.hira.replace(/'/g, "\\'");
-      const upDisabled  = idx === 0 ? 'disabled' : '';
-      const dnDisabled  = idx === items.length - 1 ? 'disabled' : '';
-      html += `<div class="pin-list-item">
-        <div class="pin-list-reorder">
-          <button class="pin-reorder-btn" ${upDisabled} title="上移" onclick="reorderVocabPin(${num},${idx},${idx-1})">▲</button>
-          <button class="pin-reorder-btn" ${dnDisabled} title="下移" onclick="reorderVocabPin(${num},${idx},${idx+1})">▼</button>
-        </div>
+      html += `<div class="pin-list-item" data-key="${it.hira}">
+        <span class="pin-drag-handle" title="拖曳排序">≡</span>
         <div class="pin-list-text">
           <span class="pin-list-jp">${display}</span>
           <span class="pin-list-en">${it.en}</span>
@@ -5082,6 +5080,7 @@ function renderPinList() {
         </div>
       </div>`;
     });
+    html += `</div>`;
   });
 
   // ----- Verb pins (iterate saved order) -----
@@ -5091,7 +5090,8 @@ function renderPinList() {
     const verbList = verbOrder.map(k => byKey.get(k)).filter(Boolean);
     if (verbList.length > 0) {
       html += `<div class="pin-list-section-title">📖 動詞 (${verbList.length}) <button class="pin-list-play-all" onclick="playPinnedVerbs()">▶ 連續播放全部變化</button></div>`;
-      verbList.forEach((v, idx) => {
+      html += `<div class="pin-sortable-group" data-pin-kind="verb">`;
+      verbList.forEach(v => {
         const display = (v.kanji && v.kanji !== v.hira) ? `${v.kanji} [${v.hira}]` : v.hira;
         const typeLabel = v.type === 'ru' ? 'Ru' : (v.type === 'u' ? 'U' : 'Irr');
         const safeKey = verbKey(v).replace(/'/g, "\\'");
@@ -5106,13 +5106,8 @@ function renderPinList() {
           { label: 'て形',   text: te },
         ];
         const chips = forms.map(f => `<button class="pin-form-chip" onclick="speak('${f.text}')"><b>${f.label}</b>${f.text}</button>`).join('');
-        const upDisabled = idx === 0 ? 'disabled' : '';
-        const dnDisabled = idx === verbList.length - 1 ? 'disabled' : '';
-        html += `<div class="pin-list-item pin-list-verb">
-          <div class="pin-list-reorder">
-            <button class="pin-reorder-btn" ${upDisabled} title="上移" onclick="reorderVerbPin(${idx},${idx-1})">▲</button>
-            <button class="pin-reorder-btn" ${dnDisabled} title="下移" onclick="reorderVerbPin(${idx},${idx+1})">▼</button>
-          </div>
+        html += `<div class="pin-list-item pin-list-verb" data-key="${verbKey(v)}">
+          <span class="pin-drag-handle" title="拖曳排序">≡</span>
           <div class="pin-list-text">
             <div>
               <span class="pin-list-jp">${display}</span>
@@ -5127,11 +5122,42 @@ function renderPinList() {
           </div>
         </div>`;
       });
+      html += `</div>`;
     }
   }
 
   if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞頁點 📌 開始釘選。</p>';
   container.innerHTML = html;
+
+  // Initialize SortableJS on each draggable group
+  initPinSortables();
+}
+
+function initPinSortables() {
+  if (typeof Sortable === 'undefined') return;  // CDN failed to load
+  document.querySelectorAll('#pin-list .pin-sortable-group').forEach(group => {
+    new Sortable(group, {
+      handle: '.pin-drag-handle',
+      animation: 160,
+      ghostClass: 'pin-ghost',
+      chosenClass: 'pin-chosen',
+      dragClass: 'pin-dragging',
+      onEnd: (evt) => {
+        if (evt.oldIndex === evt.newIndex) return;
+        const kind = group.getAttribute('data-pin-kind');
+        if (kind === 'vocab') {
+          const num = parseInt(group.getAttribute('data-pin-num'), 10);
+          const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
+          try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(newOrder)); } catch(e){}
+        } else if (kind === 'verb') {
+          const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
+          try { localStorage.setItem('genki-verb-pinned', JSON.stringify(newOrder)); } catch(e){}
+        }
+        if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+        refreshPinnedPractice();  // practice pool reflects new order
+      }
+    });
+  });
 }
 
 // ============================
