@@ -2385,6 +2385,438 @@ GRAMMARS['l2-numbers'] = {
 };
 
 // ============================
+// LESSON 3 GRAMMARS
+// ============================
+
+// ----- L3 Grammar 3: Particles を / で / に / へ -----
+GRAMMARS['l3-particles'] = {
+  title: 'Grammar 3 ｜ Particles を / で / に / へ',
+  explanation: [
+    '<b>を</b> (唸 o) = <b>直接受詞</b>。例：本<b>を</b>読みます (read a book)',
+    '<b>で</b> = <b>動作發生的地點</b>。例：家<b>で</b>勉強します (study at home)',
+    '<b>に / へ</b> = <b>目的地</b>。例：学校<b>に</b>行きます (go to school)。に 比 へ 常用，意思相同。',
+    '<b>に</b> 也用於<b>時間點</b>。例：七時<b>に</b>起きます (get up at 7)。但 きょう／あした 等不加 に。'
+  ],
+  examples: [
+    { jp:'本を読みます。',           reading:'ほんをよみます。',           en:'(I) read a book.' },
+    { jp:'家で勉強します。',         reading:'うちでべんきょうします。',   en:'(I) study at home.' },
+    { jp:'学校に行きます。',         reading:'がっこうにいきます。',       en:'(I) go to school.' },
+    { jp:'七時に起きます。',         reading:'しちじにおきます。',         en:'(I) get up at 7.' },
+    { jp:'カフェでコーヒーを飲みます。', reading:'カフェでコーヒーをのみます。', en:'(I) drink coffee at a cafe.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I drink coffee.',
+      answers:['コーヒーを飲みます。','コーヒーを飲みます','コーヒーをのみます。','コーヒーをのみます'] },
+    { type:'translate', prompt:'I read books.',
+      answers:['本を読みます。','本を読みます','ほんをよみます','ほんをよみます。'] },
+    { type:'translate', prompt:'I eat breakfast.',
+      answers:['朝ご飯を食べます。','朝ご飯を食べます','あさごはんを食べます','あさごはんをたべます'] },
+    { type:'translate', prompt:'I watch TV.',
+      answers:['テレビを見ます。','テレビを見ます','テレビをみます','テレビをみます。'] },
+    { type:'translate', prompt:'I listen to music.',
+      answers:['音楽を聞きます。','音楽を聞きます','おんがくをききます','おんがくをききます。'] },
+    { type:'translate', prompt:'I study at home.',
+      answers:['家で勉強します。','家で勉強します','うちで勉強します','うちでべんきょうします','いえで勉強します'] },
+    { type:'translate', prompt:'I study at the library.',
+      answers:['図書館で勉強します。','図書館で勉強します','としょかんで勉強します','としょかんでべんきょうします'] },
+    { type:'translate', prompt:'I eat at the cafeteria.',
+      answers:['食堂で食べます。','食堂で食べます','しょくどうで食べます','しょくどうでたべます'] },
+    { type:'translate', prompt:'I go to school.',
+      answers:['学校に行きます。','学校に行きます','がっこうに行きます','がっこうにいきます','学校へ行きます'] },
+    { type:'translate', prompt:'I go to Tokyo tomorrow.',
+      answers:['明日東京に行きます。','明日東京に行きます','あした東京に行きます','あしたとうきょうにいきます','明日東京へ行きます'] },
+    { type:'translate', prompt:'I go home at 9.',
+      answers:['九時にうちに帰ります。','九時にうちに帰ります','くじにうちに帰ります','くじにうちにかえります','九時に家に帰ります'] },
+    { type:'translate', prompt:'I get up at 7.',
+      answers:['七時に起きます。','七時に起きます','しちじに起きます','しちじにおきます。','しちじにおきます'] },
+    { type:'translate', prompt:'I sleep at 11.',
+      answers:['十一時に寝ます。','十一時に寝ます','じゅういちじに寝ます','じゅういちじにねます'] },
+    { type:'translate', prompt:'I drink coffee at the cafe.',
+      answers:['カフェでコーヒーを飲みます。','カフェでコーヒーを飲みます','カフェでコーヒーをのみます'] },
+    { type:'translate', prompt:'I will study Japanese tomorrow.',
+      answers:['明日日本語を勉強します。','明日日本語を勉強します','あした日本語を勉強します','あした日本語をべんきょうします','あしたにほんごをべんきょうします'] },
+    // Fill-in: particle drills
+    { type:'fill', prompt:'本____読みます。', en:'I read a book.', answers:['を'] },
+    { type:'fill', prompt:'うち____勉強します。', en:'I study at home.', answers:['で'] },
+    { type:'fill', prompt:'学校____行きます。', en:'I go to school.', answers:['に','へ'] },
+    { type:'fill', prompt:'七時____起きます。', en:'I get up at 7.', answers:['に'] },
+    { type:'fill', prompt:'カフェ____コーヒー____飲みます。', en:'I drink coffee at the cafe. (両方の助詞)', answers:['でを','で を'] },
+  ]
+};
+
+// ----- L3 Grammar 5: ～ませんか (Won't you...?) -----
+GRAMMARS['l3-masenka'] = {
+  title: 'Grammar 5 ｜ 〜ませんか (Won\'t you...? / 邀請)',
+  explanation: [
+    '<b>用法：</b>動詞 ます形 → ません + <b>か</b>。表「(一起)…好嗎？」 (邀請)',
+    '不是真的否定問句！只是禮貌的邀請句型。',
+    '回答接受：<b>ええ、いいですね。</b> 或 <b>そうですね。</b>',
+    '回答拒絕：<b>(時間／日子) はちょっと…。</b>（委婉拒絕）'
+  ],
+  examples: [
+    { jp:'土曜日に映画を見ませんか。', reading:'どようびにえいがをみませんか。', en:"Won't you see a movie on Saturday?" },
+    { jp:'ええ、いいですね。',         reading:'ええ、いいですね。',             en:'Yes, sounds good!' },
+    { jp:'土曜日はちょっと…。',       reading:'どようびはちょっと…。',         en:"Saturday is a bit ..." },
+    { jp:'一緒にお茶を飲みませんか。', reading:'いっしょにおちゃをのみませんか。', en:"Won't you have tea with me?" },
+  ],
+  exercises: [
+    { type:'translate', prompt:"Won't you see a movie?",
+      answers:['映画を見ませんか。','映画を見ませんか','えいがをみませんか','えいがをみませんか。'] },
+    { type:'translate', prompt:"Won't you drink coffee?",
+      answers:['コーヒーを飲みませんか。','コーヒーを飲みませんか','コーヒーをのみませんか'] },
+    { type:'translate', prompt:"Won't you eat dinner together?",
+      answers:['一緒に晩ご飯を食べませんか。','一緒に晩ご飯を食べませんか','いっしょに晩ご飯を食べませんか','いっしょにばんごはんをたべませんか'] },
+    { type:'translate', prompt:"Won't you study at the library?",
+      answers:['図書館で勉強しませんか。','図書館で勉強しませんか','としょかんで勉強しませんか','としょかんでべんきょうしませんか'] },
+    { type:'translate', prompt:"Won't you go to Tokyo?",
+      answers:['東京に行きませんか。','東京に行きませんか','とうきょうに行きませんか','とうきょうにいきませんか','東京へ行きませんか'] },
+    { type:'translate', prompt:"Won't you play tennis on Sunday?",
+      answers:['日曜日にテニスをしませんか。','日曜日にテニスをしませんか','にちようびにテニスをしませんか'] },
+    { type:'translate', prompt:'Yes, sounds good!',
+      answers:['ええ、いいですね。','ええ、いいですね','はい、いいですね'] },
+    { type:'translate', prompt:"Saturday is a bit ... (decline)",
+      answers:['土曜日はちょっと…。','土曜日はちょっと…','土曜日はちょっと','どようびはちょっと'] },
+    { type:'fill', prompt:'映画を____か。', en:"Won't you see a movie?", answers:['見ません','みません'] },
+    { type:'fill', prompt:'コーヒーを____か。', en:"Won't you drink coffee?", answers:['飲みません','のみません'] },
+  ]
+};
+
+// ----- L3 Grammar 6: Frequency Adverbs -----
+GRAMMARS['l3-freq'] = {
+  title: 'Grammar 6 ｜ 頻度副詞 (Frequency Adverbs)',
+  explanation: [
+    '<b>毎日</b> = every day ／ <b>よく</b> = often ／ <b>ときどき</b> = sometimes ／ <b>たいてい</b> = usually',
+    '<b>あまり</b> + 否定 = not much ／ <b>全然</b> + 否定 = not at all',
+    '頻度副詞通常放在<b>動詞前面</b>，主題後面。',
+    '注意 <b>あまり</b> 和 <b>全然</b> 必須搭配<b>否定句</b>使用！'
+  ],
+  examples: [
+    { jp:'毎日テレビを見ます。',           reading:'まいにちテレビをみます。',           en:'I watch TV every day.' },
+    { jp:'よく映画を見ます。',             reading:'よくえいがをみます。',               en:'I often watch movies.' },
+    { jp:'ときどきカフェに行きます。',     reading:'ときどきカフェにいきます。',         en:'I sometimes go to a cafe.' },
+    { jp:'たいていうちで勉強します。',     reading:'たいていうちでべんきょうします。',   en:'I usually study at home.' },
+    { jp:'あまりテレビを見ません。',       reading:'あまりテレビをみません。',           en:"I don't watch TV much." },
+    { jp:'全然お酒を飲みません。',         reading:'ぜんぜんおさけをのみません。',       en:"I don't drink alcohol at all." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I watch TV every day.',
+      answers:['毎日テレビを見ます。','毎日テレビを見ます','まいにちテレビをみます','まいにちテレビをみます。'] },
+    { type:'translate', prompt:'I often read magazines.',
+      answers:['よく雑誌を読みます。','よく雑誌を読みます','よくざっしをよみます'] },
+    { type:'translate', prompt:'I sometimes drink coffee.',
+      answers:['ときどきコーヒーを飲みます。','ときどきコーヒーを飲みます','ときどきコーヒーをのみます','時々コーヒーを飲みます'] },
+    { type:'translate', prompt:'I usually eat breakfast at home.',
+      answers:['たいていうちで朝ご飯を食べます。','たいていうちで朝ご飯を食べます','たいていうちであさごはんをたべます'] },
+    { type:'translate', prompt:"I don't watch TV much.",
+      answers:['あまりテレビを見ません。','あまりテレビを見ません','あまりテレビをみません'] },
+    { type:'translate', prompt:"I don't study at all.",
+      answers:['全然勉強しません。','全然勉強しません','ぜんぜん勉強しません','ぜんぜんべんきょうしません'] },
+    { type:'translate', prompt:"I don't drink alcohol at all.",
+      answers:['全然お酒を飲みません。','全然お酒を飲みません','ぜんぜんおさけをのみません'] },
+    { type:'translate', prompt:'I often listen to music.',
+      answers:['よく音楽を聞きます。','よく音楽を聞きます','よくおんがくをききます'] },
+    { type:'fill', prompt:'____テレビを見ます。', en:'I watch TV every day.', answers:['毎日','まいにち'] },
+    { type:'fill', prompt:'____カフェに行きます。', en:'I sometimes go to a cafe.', answers:['ときどき','時々'] },
+    { type:'fill', prompt:'____テレビを見ません。', en:"I don't watch TV at all.", answers:['全然','ぜんぜん'] },
+    { type:'fill', prompt:'____お酒を飲みません。', en:"I don't drink alcohol much.", answers:['あまり'] },
+  ]
+};
+
+// ============================
+// LESSON 4 GRAMMARS
+// ============================
+
+// ----- L4 Grammar 1: X があります / X がいます -----
+GRAMMARS['l4-arimasu'] = {
+  title: 'Grammar 1 ｜ X があります / X がいます (there is...)',
+  explanation: [
+    '<b>あります</b> 用於<b>非生物</b>（書、桌子、商店…）',
+    '<b>います</b> 用於<b>有生命</b>（人、動物）',
+    '結構：(場所)<b>に</b> (物／人)<b>が</b> あります／います',
+    '也可以表「擁有」：日本人の友達がいます (I have a Japanese friend)',
+    '也表「(活動)會發生」：火曜日にテストがあります (There will be an exam on Tuesday)'
+  ],
+  examples: [
+    { jp:'机の上に本があります。',     reading:'つくえのうえにほんがあります。',         en:'There is a book on the desk.' },
+    { jp:'教室に学生がいます。',       reading:'きょうしつにがくせいがいます。',         en:'There is a student in the classroom.' },
+    { jp:'日本人の友達がいます。',     reading:'にほんじんのともだちがいます。',         en:'I have a Japanese friend.' },
+    { jp:'火曜日にテストがあります。', reading:'かようびにテストがあります。',           en:'There will be an exam on Tuesday.' },
+    { jp:'時間がありません。',         reading:'じかんがありません。',                   en:"I don't have time." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'There is a book on the desk.',
+      answers:['机の上に本があります。','机の上に本があります','つくえの上に本があります','つくえのうえにほんがあります'] },
+    { type:'translate', prompt:'There is a cat in the room.',
+      answers:['部屋に猫がいます。','部屋に猫がいます','へやに猫がいます','へやにねこがいます'] },
+    { type:'translate', prompt:'There is a McDonald\'s over there.',
+      answers:['あそこにマクドナルドがあります。','あそこにマクドナルドがあります'] },
+    { type:'translate', prompt:'There is a student in the classroom.',
+      answers:['教室に学生がいます。','教室に学生がいます','きょうしつに学生がいます','きょうしつにがくせいがいます'] },
+    { type:'translate', prompt:"I don't have a TV.",
+      answers:['テレビがありません。','テレビがありません'] },
+    { type:'translate', prompt:'Do you have time?',
+      answers:['時間がありますか。','時間がありますか','じかんがありますか','じかんがありますか。'] },
+    { type:'translate', prompt:'I have a Japanese friend.',
+      answers:['日本人の友達がいます。','日本人の友達がいます','日本人のともだちがいます','にほんじんのともだちがいます'] },
+    { type:'translate', prompt:'There will be an exam on Tuesday.',
+      answers:['火曜日にテストがあります。','火曜日にテストがあります','かようびにテストがあります'] },
+    { type:'translate', prompt:'There is no Japanese class tomorrow.',
+      answers:['明日は日本語のクラスがありません。','明日は日本語のクラスがありません','あしたは日本語のクラスがありません'] },
+    { type:'fill', prompt:'(non-living) 本が____。', en:'There is a book.', answers:['あります'] },
+    { type:'fill', prompt:'(living) 学生が____。', en:'There is a student.', answers:['います'] },
+    { type:'fill', prompt:'(animal) 犬が____。', en:'There is a dog.', answers:['います'] },
+    { type:'fill', prompt:'机の上____本があります。', en:'There is a book on the desk. (place particle)', answers:['に'] },
+  ]
+};
+
+// ----- L4 Grammar 2: Describing Where Things Are -----
+GRAMMARS['l4-location'] = {
+  title: 'Grammar 2 ｜ Describing Where Things Are (位置表現)',
+  explanation: [
+    '結構：<b>X は Y の (位置詞) です</b>。',
+    '位置詞：右(みぎ)・左(ひだり)・前(まえ)・後ろ(うしろ)・中(なか)・上(うえ)・下(した)・近く(ちかく)・隣(となり)・間(あいだ)',
+    '<b>間</b> 結構：A と B の<b>間</b> (between A and B)',
+    '描述<b>動作發生地點</b>時用 <b>で</b>：銀行の前で写真を撮ります。'
+  ],
+  examples: [
+    { jp:'銀行は図書館の隣です。',         reading:'ぎんこうはとしょかんのとなりです。',     en:'The bank is next to the library.' },
+    { jp:'傘はテーブルの下です。',         reading:'かさはテーブルのしたです。',             en:'The umbrella is under the table.' },
+    { jp:'レストランはスーパーと病院の間です。', reading:'レストランはスーパーとびょういんのあいだです。', en:'The restaurant is between the supermarket and the hospital.' },
+    { jp:'ホテルの前で待ちます。',         reading:'ホテルのまえでまちます。',               en:"I'll wait in front of the hotel." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'The bank is next to the library.',
+      answers:['銀行は図書館の隣です。','銀行は図書館の隣です','ぎんこうは図書館の隣です','ぎんこうはとしょかんのとなりです'] },
+    { type:'translate', prompt:'The umbrella is under the table.',
+      answers:['傘はテーブルの下です。','傘はテーブルの下です','かさはテーブルの下です','かさはテーブルのしたです'] },
+    { type:'translate', prompt:'The cat is on the chair.',
+      answers:['猫はいすの上です。','猫はいすの上です','ねこはいすの上です','ねこはいすのうえです'] },
+    { type:'translate', prompt:'The post office is in front of the bank.',
+      answers:['郵便局は銀行の前です。','郵便局は銀行の前です','ゆうびんきょくは銀行の前です','ゆうびんきょくはぎんこうのまえです'] },
+    { type:'translate', prompt:'The book is inside the bag.',
+      answers:['本はかばんの中です。','本はかばんの中です','ほんはかばんの中です','ほんはかばんのなかです'] },
+    { type:'translate', prompt:'The hospital is behind the school.',
+      answers:['病院は学校の後ろです。','病院は学校の後ろです','びょういんは学校の後ろです','びょういんはがっこうのうしろです'] },
+    { type:'translate', prompt:'The convenience store is near the station.',
+      answers:['コンビニは駅の近くです。','コンビニは駅の近くです','コンビニはえきのちかくです'] },
+    { type:'translate', prompt:'The restaurant is between the supermarket and the hospital.',
+      answers:['レストランはスーパーと病院の間です。','レストランはスーパーと病院の間です','レストランはスーパーとびょういんのあいだです'] },
+    { type:'translate', prompt:"I waited for Mary in front of Mos Burger.",
+      answers:['モスバーガーの前でメアリーさんを待ちました。','モスバーガーの前でメアリーさんを待ちました','モスバーガーのまえでメアリーさんをまちました'] },
+    { type:'fill', prompt:'銀行は図書館の____です。 (next to)', en:'next to', answers:['隣','となり'] },
+    { type:'fill', prompt:'傘はテーブルの____です。 (under)', en:'under', answers:['下','した'] },
+    { type:'fill', prompt:'猫はいすの____です。 (on top)', en:'on', answers:['上','うえ'] },
+    { type:'fill', prompt:'A____B____間 (between A and B)', en:'between A and B (particles)', answers:['との','と の'] },
+  ]
+};
+
+// ----- L4 Grammar 3+4: Past Tense (です + Verbs) -----
+GRAMMARS['l4-past'] = {
+  title: 'Grammar 3+4 ｜ 過去式 (Past Tense)',
+  explanation: [
+    '<b>です：</b>過去肯定 <b>でした</b> ／ 過去否定 <b>じゃなかったです</b> (口) / <b>じゃありませんでした</b> (禮)',
+    '<b>動詞：</b>過去肯定 <b>〜ました</b> ／ 過去否定 <b>〜ませんでした</b>',
+    'Ru-verb／U-verb／Irregular 通通遵照這個規則（先變 ます形再改尾）。',
+    '時間詞用 <b>昨日</b>(きのう)、<b>先週</b>(せんしゅう)。<b>昨日</b> 不接 に，<b>火曜日</b> 接 に。'
+  ],
+  examples: [
+    { jp:'昨日映画を見ました。',         reading:'きのうえいがをみました。',           en:'I watched a movie yesterday.' },
+    { jp:'昨日勉強しませんでした。',     reading:'きのうべんきょうしませんでした。',   en:"I didn't study yesterday." },
+    { jp:'山下先生は学生でした。',       reading:'やましたせんせいはがくせいでした。', en:'Prof. Yamashita was a student.' },
+    { jp:'あれは日本の映画じゃなかったです。', reading:'あれはにほんのえいがじゃなかったです。', en:'That was not a Japanese movie.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I watched a movie yesterday.',
+      answers:['昨日映画を見ました。','昨日映画を見ました','きのう映画を見ました','きのうえいがをみました'] },
+    { type:'translate', prompt:"I didn't study yesterday.",
+      answers:['昨日勉強しませんでした。','昨日勉強しませんでした','きのう勉強しませんでした','きのうべんきょうしませんでした'] },
+    { type:'translate', prompt:'I ate lunch at the cafe.',
+      answers:['カフェで昼ご飯を食べました。','カフェで昼ご飯を食べました','カフェでひるごはんを食べました','カフェでひるごはんをたべました'] },
+    { type:'translate', prompt:'I went to Tokyo last week.',
+      answers:['先週東京に行きました。','先週東京に行きました','せんしゅう東京に行きました','せんしゅうとうきょうにいきました','先週東京へ行きました'] },
+    { type:'translate', prompt:'I got up at 6 today.',
+      answers:['今日六時に起きました。','今日六時に起きました','きょう六時に起きました','きょうろくじにおきました'] },
+    { type:'translate', prompt:"I didn't drink coffee.",
+      answers:['コーヒーを飲みませんでした。','コーヒーを飲みませんでした','コーヒーをのみませんでした'] },
+    { type:'translate', prompt:'Yamashita-sensei was a student at Sakura University.',
+      answers:['山下先生はさくら大学の学生でした。','山下先生はさくら大学の学生でした','やましたせんせいはさくらだいがくのがくせいでした'] },
+    { type:'translate', prompt:'That was not a Japanese movie.',
+      answers:['あれは日本の映画じゃなかったです。','あれは日本の映画じゃなかったです','あれは日本のえいがじゃなかったです','あれは日本の映画じゃありませんでした'] },
+    { type:'translate', prompt:'Yesterday was not Sunday.',
+      answers:['昨日は日曜日じゃなかったです。','昨日は日曜日じゃなかったです','きのうは日曜日じゃなかったです','きのうはにちようびじゃなかったです'] },
+    { type:'translate', prompt:'I waited for Mary for one hour.',
+      answers:['一時間メアリーさんを待ちました。','一時間メアリーさんを待ちました','いちじかんメアリーさんを待ちました','いちじかんメアリーさんをまちました'] },
+    // Verb form drills
+    { type:'conj', prompt:'食べる → 過去肯定', en:'past affirmative',     answers:['食べました','たべました'] },
+    { type:'conj', prompt:'飲む → 過去否定',  en:'past negative',         answers:['飲みませんでした','のみませんでした'] },
+    { type:'conj', prompt:'行く → 過去肯定',  en:'past affirmative',       answers:['行きました','いきました'] },
+    { type:'conj', prompt:'する → 過去否定',  en:'past negative',          answers:['しませんでした'] },
+    { type:'conj', prompt:'来る → 過去肯定',  en:'past affirmative',       answers:['来ました','きました'] },
+    { type:'conj', prompt:'(です) → 過去肯定', en:'です past affirmative',   answers:['でした'] },
+    { type:'conj', prompt:'(です) → 過去否定', en:'です past negative',      answers:['じゃなかったです','じゃありませんでした','ではありませんでした'] },
+  ]
+};
+
+// ============================
+// LESSON 5 GRAMMARS
+// ============================
+
+// ----- L5 Grammar 1+2: Adjectives Present + Past -----
+GRAMMARS['l5-adj'] = {
+  title: 'Grammar 1+2 ｜ 形容詞活用 (Adjectives Present + Past)',
+  explanation: [
+    '<b>い-形容詞 現在肯定：</b>〜<b>い</b>です (さむいです)',
+    '<b>い-形容詞 現在否定：</b>〜<b>くないです</b> (さむくないです)',
+    '<b>い-形容詞 過去肯定：</b>〜<b>かったです</b> (さむかったです)',
+    '<b>い-形容詞 過去否定：</b>〜<b>くなかったです</b> (さむくなかったです)',
+    '<b>な-形容詞</b>跟名詞一樣：〜<b>です</b> ／ 〜<b>じゃないです</b> ／ 〜<b>でした</b> ／ 〜<b>じゃなかったです</b>',
+    '<b>不規則：</b>いい → よくないです、よかったです、よくなかったです（い→よ）'
+  ],
+  examples: [
+    { jp:'寒いです。',           reading:'さむいです。',           en:'It is cold.' },
+    { jp:'寒くないです。',       reading:'さむくないです。',       en:'It is not cold.' },
+    { jp:'寒かったです。',       reading:'さむかったです。',       en:'It was cold.' },
+    { jp:'寒くなかったです。',   reading:'さむくなかったです。',   en:'It was not cold.' },
+    { jp:'元気です。',           reading:'げんきです。',           en:'(She) is healthy.' },
+    { jp:'元気じゃないです。',   reading:'げんきじゃないです。',   en:'(She) is not healthy.' },
+    { jp:'よかったです。',       reading:'よかったです。',         en:'It was good.' },
+  ],
+  exercises: [
+    { type:'conj', prompt:'さむい → 現在否定', en:'(not cold)',       answers:['さむくないです','寒くないです'] },
+    { type:'conj', prompt:'さむい → 過去肯定', en:'(was cold)',        answers:['さむかったです','寒かったです'] },
+    { type:'conj', prompt:'さむい → 過去否定', en:'(was not cold)',    answers:['さむくなかったです','寒くなかったです'] },
+    { type:'conj', prompt:'たかい → 現在否定', en:'(not expensive)',   answers:['たかくないです','高くないです'] },
+    { type:'conj', prompt:'たかい → 過去肯定', en:'(was expensive)',    answers:['たかかったです','高かったです'] },
+    { type:'conj', prompt:'おいしい → 過去肯定', en:'(was delicious)',  answers:['おいしかったです'] },
+    { type:'conj', prompt:'いい → 過去肯定 (不規則!)', en:'(was good)',  answers:['よかったです'] },
+    { type:'conj', prompt:'いい → 現在否定 (不規則!)', en:'(not good)',  answers:['よくないです'] },
+    { type:'conj', prompt:'げんき(な) → 現在否定', en:'(not energetic)', answers:['げんきじゃないです','元気じゃないです','元気じゃありません'] },
+    { type:'conj', prompt:'げんき(な) → 過去肯定', en:'(was energetic)', answers:['げんきでした','元気でした'] },
+    { type:'conj', prompt:'にぎやか(な) → 過去否定', en:'(was not lively)', answers:['にぎやかじゃなかったです','にぎやかじゃありませんでした'] },
+    { type:'translate', prompt:'It was hot (yesterday).',
+      answers:['暑かったです。','暑かったです','あつかったです','あつかったです。'] },
+    { type:'translate', prompt:'This restaurant is delicious.',
+      answers:['このレストランはおいしいです。','このレストランはおいしいです'] },
+    { type:'translate', prompt:'The exam was difficult.',
+      answers:['テストは難しかったです。','テストは難しかったです','テストはむずかしかったです'] },
+    { type:'translate', prompt:"Yesterday's weather was good.",
+      answers:['昨日の天気はよかったです。','昨日の天気はよかったです','きのうの天気はよかったです','きのうのてんきはよかったです'] },
+    { type:'translate', prompt:'The town was not lively.',
+      answers:['町はにぎやかじゃなかったです。','町はにぎやかじゃなかったです','まちはにぎやかじゃなかったです','町はにぎやかじゃありませんでした'] },
+  ]
+};
+
+// ----- L5 Grammar 3: Adjective + Noun (Modification) -----
+GRAMMARS['l5-adj-mod'] = {
+  title: 'Grammar 3 ｜ 形容詞 + 名詞 (Noun Modification)',
+  explanation: [
+    '<b>い-形容詞 + 名詞：</b>直接接 (おもしろい映画 = an interesting movie)',
+    '<b>な-形容詞 + 名詞：</b>要加 <b>な</b> (きれいな写真 = a beautiful photo)',
+    '結構：(描述語)<b> + </b>名詞，整個再放回句中。'
+  ],
+  examples: [
+    { jp:'おもしろい映画を見ました。',     reading:'おもしろいえいがをみました。',         en:'I saw an interesting movie.' },
+    { jp:'きれいな写真を撮りました。',     reading:'きれいなしゃしんをとりました。',       en:'I took a beautiful picture.' },
+    { jp:'山下先生はこわい先生です。',     reading:'やましたせんせいはこわいせんせいです。', en:'Professor Yamashita is a scary teacher.' },
+    { jp:'にぎやかな町です。',             reading:'にぎやかなまちです。',                 en:'It is a vibrant city.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'an interesting movie',
+      answers:['おもしろい映画','おもしろい映画。','おもしろいえいが'] },
+    { type:'translate', prompt:'a beautiful picture',
+      answers:['きれいな写真','きれいな写真。','きれいなしゃしん'] },
+    { type:'translate', prompt:'a scary teacher',
+      answers:['こわい先生','こわい先生。','こわいせんせい'] },
+    { type:'translate', prompt:'a quiet town',
+      answers:['静かな町','静かな町。','しずかなまち','しずかな町'] },
+    { type:'translate', prompt:'a fun trip',
+      answers:['楽しい旅行','楽しい旅行。','たのしいりょこう','楽しいりょこう'] },
+    { type:'translate', prompt:'a new restaurant',
+      answers:['新しいレストラン','新しいレストラン。','あたらしいレストラン'] },
+    { type:'translate', prompt:'I saw an interesting movie yesterday.',
+      answers:['昨日おもしろい映画を見ました。','昨日おもしろい映画を見ました','きのうおもしろい映画を見ました','きのうおもしろいえいがをみました'] },
+    { type:'translate', prompt:'This is a very vibrant town.',
+      answers:['ここはとてもにぎやかな町です。','ここはとてもにぎやかな町です','ここはとてもにぎやかなまちです'] },
+    { type:'fill', prompt:'おもしろい____ (movie)', en:'an interesting movie', answers:['映画','えいが'] },
+    { type:'fill', prompt:'きれい____写真 (なadj + N)', en:'a beautiful picture (particle)', answers:['な'] },
+    { type:'fill', prompt:'しずか____町 (なadj + N)', en:'a quiet town (particle)', answers:['な'] },
+    { type:'fill', prompt:'おおきい____ (large bag)', en:'large bag', answers:['かばん'] },
+  ]
+};
+
+// ----- L5 Grammar 4: 好き(な) / きらい(な) -----
+GRAMMARS['l5-suki'] = {
+  title: 'Grammar 4 ｜ 好き(な) / きらい(な)',
+  explanation: [
+    '<b>好き</b>(suki) = 喜歡 ／ <b>きらい</b> = 不喜歡／討厭',
+    '結構：<b>X は Y が 好きです</b>。 (X likes Y) ← Y 的助詞是 <b>が</b>，不是 を！',
+    '加強：<b>大好き</b> = 非常喜歡(love) ／ <b>大嫌い</b> = 非常討厭(hate)',
+    '中性：<b>好きでも嫌いでもないです</b> = 不喜歡也不討厭'
+  ],
+  examples: [
+    { jp:'ロバートさんは日本語のクラスが好きです。', reading:'ロバートさんはにほんごのクラスがすきです。', en:'Robert likes his Japanese classes.' },
+    { jp:'山下先生は魚がきらいです。',               reading:'やましたせんせいはさかながきらいです。',     en:'Prof. Yamashita dislikes fish.' },
+    { jp:'たけしさんはコーヒーが大好きです。',       reading:'たけしさんはコーヒーがだいすきです。',       en:'Takeshi likes coffee a lot.' },
+    { jp:'これは私の好きな本です。',                 reading:'これはわたしのすきなほんです。',             en:'This is my favorite book.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I like coffee.',
+      answers:['コーヒーが好きです。','コーヒーが好きです','コーヒーがすきです','わたしはコーヒーが好きです'] },
+    { type:'translate', prompt:'I like Japanese.',
+      answers:['日本語が好きです。','日本語が好きです','にほんごが好きです','にほんごがすきです'] },
+    { type:'translate', prompt:'I dislike fish.',
+      answers:['魚がきらいです。','魚がきらいです','さかながきらいです','私は魚がきらいです'] },
+    { type:'translate', prompt:'I love movies.',
+      answers:['映画が大好きです。','映画が大好きです','えいががだいすきです'] },
+    { type:'translate', prompt:'I hate tests.',
+      answers:['テストが大嫌いです。','テストが大嫌いです','テストがだいきらいです'] },
+    { type:'translate', prompt:"My major is Japanese; I like it.",
+      answers:['専攻は日本語です。日本語が好きです。','専攻は日本語です。日本語が好きです'] },
+    { type:'translate', prompt:'Mary likes music.',
+      answers:['メアリーさんは音楽が好きです。','メアリーさんは音楽が好きです','メアリーさんはおんがくがすきです'] },
+    { type:'translate', prompt:'This is my favorite book.',
+      answers:['これは私の好きな本です。','これは私の好きな本です','これはわたしの好きな本です','これはわたしのすきなほんです'] },
+    { type:'fill', prompt:'コーヒー____好きです。', en:'I like coffee. (particle)', answers:['が'] },
+    { type:'fill', prompt:'魚____きらいです。', en:'I dislike fish. (particle)', answers:['が'] },
+    { type:'fill', prompt:'これは私の好き____本です。', en:'This is my favorite book. (なadj+N)', answers:['な'] },
+  ]
+};
+
+// ----- L5 Grammar 5: ～ましょう / ～ましょうか -----
+GRAMMARS['l5-mashou'] = {
+  title: 'Grammar 5 ｜ 〜ましょう / 〜ましょうか (Let\'s ...)',
+  explanation: [
+    '動詞ます形 → 把 <b>ます</b> 換成 <b>ましょう</b> = 「(我們一起)…吧」(邀請、提議)',
+    '把 <b>ます</b> 換成 <b>ましょうか</b> = 「(我們)…吧？」(更柔軟的提議)',
+    '注意 L5 學的是<b>提議</b>用法；L6 會再學<b>主動幫忙</b>的 ましょうか。'
+  ],
+  examples: [
+    { jp:'一緒に図書館で勉強しましょう。', reading:'いっしょにとしょかんでべんきょうしましょう。', en:"Let's study at the library together." },
+    { jp:'あそこでコーヒーを飲みましょうか。', reading:'あそこでコーヒーをのみましょうか。', en:'Shall we drink coffee over there?' },
+    { jp:'明日東京に行きましょう。',     reading:'あしたとうきょうにいきましょう。',         en:"Let's go to Tokyo tomorrow." },
+  ],
+  exercises: [
+    { type:'translate', prompt:"Let's study Japanese.",
+      answers:['日本語を勉強しましょう。','日本語を勉強しましょう','にほんごを勉強しましょう','にほんごをべんきょうしましょう'] },
+    { type:'translate', prompt:"Let's eat lunch together.",
+      answers:['一緒に昼ご飯を食べましょう。','一緒に昼ご飯を食べましょう','いっしょに昼ご飯を食べましょう','いっしょにひるごはんをたべましょう'] },
+    { type:'translate', prompt:"Let's see a movie.",
+      answers:['映画を見ましょう。','映画を見ましょう','えいがを見ましょう','えいがをみましょう'] },
+    { type:'translate', prompt:'Shall we drink coffee?',
+      answers:['コーヒーを飲みましょうか。','コーヒーを飲みましょうか','コーヒーをのみましょうか'] },
+    { type:'translate', prompt:'Shall we go to the cafe?',
+      answers:['カフェに行きましょうか。','カフェに行きましょうか','カフェにいきましょうか'] },
+    { type:'translate', prompt:"Let's go home.",
+      answers:['うちに帰りましょう。','うちに帰りましょう','うちにかえりましょう','家に帰りましょう'] },
+    { type:'translate', prompt:"Let's wait at the bus stop.",
+      answers:['バス停で待ちましょう。','バス停で待ちましょう','バスていで待ちましょう','バスていでまちましょう'] },
+    { type:'conj', prompt:'食べる → Let\'s eat', en:"let's eat", answers:['食べましょう','たべましょう'] },
+    { type:'conj', prompt:'行く → Let\'s go', en:"let's go", answers:['行きましょう','いきましょう'] },
+    { type:'conj', prompt:'勉強する → Let\'s study', en:"let's study", answers:['勉強しましょう','べんきょうしましょう'] },
+  ]
+};
+
+// ============================
 // LESSON 1 GRAMMARS
 // ============================
 
@@ -3120,6 +3552,196 @@ const VOCAB = {
         { kanji:'',     hira:'じゃあ',               en:'then ...; if that is the case, ...' },
         { kanji:'',     hira:'どうぞ',               en:'Please.; Here it is.' },
         { kanji:'',     hira:'どうも',               en:'Thank you.' },
+      ]},
+    ]
+  },
+  3: {
+    groups: [
+      { key:'entertainment', title:'🎬 Entertainment & Sports', cls:'noun', items: [
+        { kanji:'映画', hira:'えいが',   en:'movie' },
+        { kanji:'音楽', hira:'おんがく', en:'music' },
+        { kanji:'雑誌', hira:'ざっし',   en:'magazine' },
+        { kanji:'',     hira:'スポーツ', en:'sports' },
+        { kanji:'',     hira:'デート',   en:'date (romantic, not calendar)' },
+        { kanji:'',     hira:'テニス',   en:'tennis' },
+        { kanji:'',     hira:'テレビ',   en:'TV' },
+      ]},
+      { key:'foods', title:'🍴 Foods & Drinks', cls:'noun', items: [
+        { kanji:'',         hira:'アイスクリーム', en:'ice cream' },
+        { kanji:'',         hira:'ハンバーガー',   en:'hamburger' },
+        { kanji:'お酒',     hira:'おさけ',         en:'sake; alcoholic drink' },
+        { kanji:'お茶',     hira:'おちゃ',         en:'green tea' },
+        { kanji:'',         hira:'コーヒー',       en:'coffee' },
+        { kanji:'水',       hira:'みず',           en:'water' },
+        { kanji:'朝ご飯',   hira:'あさごはん',     en:'breakfast' },
+        { kanji:'昼ご飯',   hira:'ひるごはん',     en:'lunch' },
+        { kanji:'晩ご飯',   hira:'ばんごはん',     en:'dinner' },
+      ]},
+      { key:'places', title:'🏠 Places', cls:'noun', items: [
+        { kanji:'家',     hira:'いえ',     en:'home; house' },
+        { kanji:'',       hira:'うち',     en:'home; my place' },
+        { kanji:'学校',   hira:'がっこう', en:'school' },
+        { kanji:'',       hira:'カフェ',   en:'cafe' },
+      ]},
+      { key:'time', title:'⏰ Time', cls:'noun', items: [
+        { kanji:'明日',     hira:'あした',     en:'tomorrow' },
+        { kanji:'今日',     hira:'きょう',     en:'today' },
+        { kanji:'朝',       hira:'あさ',       en:'morning' },
+        { kanji:'今晩',     hira:'こんばん',   en:'tonight' },
+        { kanji:'毎日',     hira:'まいにち',   en:'every day' },
+        { kanji:'毎晩',     hira:'まいばん',   en:'every night' },
+        { kanji:'週末',     hira:'しゅうまつ', en:'weekend' },
+        { kanji:'土曜日',   hira:'どようび',   en:'Saturday' },
+        { kanji:'日曜日',   hira:'にちようび', en:'Sunday' },
+        { kanji:'',         hira:'いつ',       en:'when' },
+        { kanji:'〜ごろ',   hira:'〜ごろ',     en:'at about ...' },
+      ]},
+      { key:'adj', title:'🎨 い-Adjectives', cls:'naadj', items: [
+        { kanji:'',       hira:'いい',     en:'good' },
+        { kanji:'早い',   hira:'はやい',   en:'early; fast' },
+      ]},
+      { key:'adv', title:'💬 Adverbs', cls:'adverb', items: [
+        { kanji:'',       hira:'あまり',   en:'not much (+ negative)' },
+        { kanji:'全然',   hira:'ぜんぜん', en:'not at all (+ negative)' },
+        { kanji:'',       hira:'たいてい', en:'usually' },
+        { kanji:'',       hira:'ちょっと', en:'a little' },
+        { kanji:'時々',   hira:'ときどき', en:'sometimes' },
+        { kanji:'',       hira:'よく',     en:'often; much' },
+      ]},
+      { key:'expr', title:'💬 Expressions', cls:'adverb', items: [
+        { kanji:'',     hira:'そうですね', en:"That's right.; Let me see." },
+        { kanji:'',     hira:'でも',       en:'but' },
+        { kanji:'',     hira:'どうですか', en:'How about ...?; How is ...?' },
+        { kanji:'',     hira:'ええ',       en:'yes' },
+      ]},
+    ]
+  },
+  4: {
+    groups: [
+      { key:'activities', title:'🎯 Activities', cls:'noun', items: [
+        { kanji:'',       hira:'ゲーム',     en:'game' },
+        { kanji:'',       hira:'アルバイト', en:'part time job (バイト)' },
+        { kanji:'買い物', hira:'かいもの',   en:'shopping' },
+        { kanji:'',       hira:'クラス',     en:'class' },
+      ]},
+      { key:'people_things', title:'👥 People & Things', cls:'noun', items: [
+        { kanji:'犬',     hira:'いぬ',     en:'dog' },
+        { kanji:'猫',     hira:'ねこ',     en:'cat' },
+        { kanji:'人',     hira:'ひと',     en:'person' },
+        { kanji:'子供',   hira:'こども',   en:'child' },
+        { kanji:'',       hira:'あなた',   en:'you' },
+        { kanji:'',       hira:'いす',     en:'chair' },
+        { kanji:'机',     hira:'つくえ',   en:'desk' },
+        { kanji:'写真',   hira:'しゃしん', en:'picture; photograph' },
+        { kanji:'花',     hira:'はな',     en:'flower' },
+        { kanji:'',       hira:'レポート', en:'(term) paper' },
+        { kanji:'ご飯',   hira:'ごはん',   en:'rice; meal' },
+        { kanji:'',       hira:'パン',     en:'bread' },
+      ]},
+      { key:'places', title:'📍 Places', cls:'noun', items: [
+        { kanji:'お寺',     hira:'おてら',     en:'temple' },
+        { kanji:'公園',     hira:'こうえん',   en:'park' },
+        { kanji:'',         hira:'スーパー',   en:'supermarket' },
+        { kanji:'バス停',   hira:'バスてい',   en:'bus stop' },
+        { kanji:'病院',     hira:'びょういん', en:'hospital' },
+        { kanji:'',         hira:'ホテル',     en:'hotel' },
+        { kanji:'本屋',     hira:'ほんや',     en:'bookstore' },
+        { kanji:'町',       hira:'まち',       en:'town; city' },
+        { kanji:'',         hira:'レストラン', en:'restaurant' },
+      ]},
+      { key:'time', title:'⏰ Time', cls:'noun', items: [
+        { kanji:'昨日',     hira:'きのう',     en:'yesterday' },
+        { kanji:'〜時間',   hira:'〜じかん',   en:'... hours' },
+        { kanji:'一時間',   hira:'いちじかん', en:'one hour' },
+        { kanji:'先週',     hira:'せんしゅう', en:'last week' },
+        { kanji:'時',       hira:'とき',       en:'when ...; at the time of ...' },
+        { kanji:'月曜日',   hira:'げつようび', en:'Monday' },
+        { kanji:'火曜日',   hira:'かようび',   en:'Tuesday' },
+        { kanji:'水曜日',   hira:'すいようび', en:'Wednesday' },
+        { kanji:'木曜日',   hira:'もくようび', en:'Thursday' },
+        { kanji:'金曜日',   hira:'きんようび', en:'Friday' },
+      ]},
+      { key:'location', title:'📐 Location Words', cls:'noun', items: [
+        { kanji:'右',     hira:'みぎ',     en:'right (〜の)' },
+        { kanji:'左',     hira:'ひだり',   en:'left (〜の)' },
+        { kanji:'前',     hira:'まえ',     en:'front (〜の)' },
+        { kanji:'後ろ',   hira:'うしろ',   en:'back (〜の)' },
+        { kanji:'中',     hira:'なか',     en:'inside (〜の)' },
+        { kanji:'上',     hira:'うえ',     en:'on (〜の)' },
+        { kanji:'下',     hira:'した',     en:'under (〜の)' },
+        { kanji:'近く',   hira:'ちかく',   en:'near; nearby (〜の)' },
+        { kanji:'隣',     hira:'となり',   en:'next (〜の)' },
+        { kanji:'間',     hira:'あいだ',   en:'between (A と B の)' },
+      ]},
+      { key:'adv', title:'💬 Adverbs & Expressions', cls:'adverb', items: [
+        { kanji:'',       hira:'〜ぐらい',     en:'about (approximate measurement)' },
+        { kanji:'',       hira:'ごめんなさい', en:"I'm sorry." },
+        { kanji:'',       hira:'それから',     en:'and then' },
+        { kanji:'',       hira:'だから',       en:'so; therefore' },
+        { kanji:'',       hira:'たくさん',     en:'many; a lot' },
+        { kanji:'',       hira:'〜と',         en:'together with (a person); and' },
+        { kanji:'',       hira:'どうして',     en:'why' },
+        { kanji:'一人で', hira:'ひとりで',     en:'alone' },
+        { kanji:'',       hira:'もしもし',     en:'Hello? (used on the phone)' },
+      ]},
+    ]
+  },
+  5: {
+    groups: [
+      { key:'nouns', title:'📦 名詞 Nouns', cls:'noun', items: [
+        { kanji:'食べ物',   hira:'たべもの',   en:'food' },
+        { kanji:'飲み物',   hira:'のみもの',   en:'drink' },
+        { kanji:'果物',     hira:'くだもの',   en:'fruit' },
+        { kanji:'休み',     hira:'やすみ',     en:'holiday; day off; absence' },
+        { kanji:'旅行',     hira:'りょこう',   en:'travel' },
+        { kanji:'海',       hira:'うみ',       en:'sea' },
+        { kanji:'',         hira:'サーフィン', en:'surfing' },
+        { kanji:'お土産',   hira:'おみやげ',   en:'souvenir' },
+        { kanji:'',         hira:'バス',       en:'bus' },
+        { kanji:'天気',     hira:'てんき',     en:'weather' },
+        { kanji:'宿題',     hira:'しゅくだい', en:'homework' },
+        { kanji:'',         hira:'テスト',     en:'test' },
+        { kanji:'誕生日',   hira:'たんじょうび', en:'birthday' },
+        { kanji:'部屋',     hira:'へや',       en:'room' },
+        { kanji:'僕',       hira:'ぼく',       en:'I (used by men)' },
+        { kanji:'Lサイズ',  hira:'エルサイズ', en:'size L' },
+      ]},
+      { key:'iadj', title:'🎨 い-Adjectives', cls:'naadj', items: [
+        { kanji:'新しい',   hira:'あたらしい', en:'new' },
+        { kanji:'古い',     hira:'ふるい',     en:'old (thing — not for people)' },
+        { kanji:'暑い',     hira:'あつい',     en:'hot (weather)' },
+        { kanji:'寒い',     hira:'さむい',     en:'cold (weather)' },
+        { kanji:'熱い',     hira:'あつい',     en:'hot (thing)' },
+        { kanji:'忙しい',   hira:'いそがしい', en:'busy (people/days)' },
+        { kanji:'大きい',   hira:'おおきい',   en:'large' },
+        { kanji:'小さい',   hira:'ちいさい',   en:'small' },
+        { kanji:'面白い',   hira:'おもしろい', en:'interesting; funny' },
+        { kanji:'',         hira:'つまらない', en:'boring' },
+        { kanji:'',         hira:'やさしい',   en:'easy; kind' },
+        { kanji:'難しい',   hira:'むずかしい', en:'difficult' },
+        { kanji:'',         hira:'かっこいい', en:'good-looking' },
+        { kanji:'怖い',     hira:'こわい',     en:'frightening' },
+        { kanji:'楽しい',   hira:'たのしい',   en:'fun' },
+        { kanji:'安い',     hira:'やすい',     en:'inexpensive; cheap' },
+      ]},
+      { key:'naadj', title:'🎨 な-Adjectives', cls:'naadj', items: [
+        { kanji:'好き',     hira:'すき',       en:'fond of; to like (〜が)' },
+        { kanji:'嫌い',     hira:'きらい',     en:'disgusted with (〜が)' },
+        { kanji:'大好き',   hira:'だいすき',   en:'very fond of; love (〜が)' },
+        { kanji:'大嫌い',   hira:'だいきらい', en:'to hate (〜が)' },
+        { kanji:'',         hira:'きれい',     en:'beautiful; clean' },
+        { kanji:'元気',     hira:'げんき',     en:'healthy; energetic' },
+        { kanji:'静か',     hira:'しずか',     en:'quiet' },
+        { kanji:'',         hira:'にぎやか',   en:'lively' },
+        { kanji:'暇',       hira:'ひま',       en:'not busy; free (time)' },
+      ]},
+      { key:'adv', title:'💬 Adverbs & Other', cls:'adverb', items: [
+        { kanji:'一緒に',   hira:'いっしょに', en:'together' },
+        { kanji:'',         hira:'すごく',     en:'extremely' },
+        { kanji:'大丈夫',   hira:'だいじょうぶ', en:"It's okay; Not to worry" },
+        { kanji:'',         hira:'とても',     en:'very' },
+        { kanji:'',         hira:'どんな',     en:'what kind of ...' },
+        { kanji:'〜枚',     hira:'〜まい',     en:'[counter for flat objects]' },
       ]},
     ]
   },
@@ -4136,6 +4758,9 @@ function buildVocabQuiz(num) {
 }
 const _q1 = buildVocabQuiz(1); if (_q1) GRAMMARS['l1-vocab-quiz'] = _q1;
 const _q2 = buildVocabQuiz(2); if (_q2) GRAMMARS['l2-vocab-quiz'] = _q2;
+const _q3 = buildVocabQuiz(3); if (_q3) GRAMMARS['l3-vocab-quiz'] = _q3;
+const _q4 = buildVocabQuiz(4); if (_q4) GRAMMARS['l4-vocab-quiz'] = _q4;
+const _q5 = buildVocabQuiz(5); if (_q5) GRAMMARS['l5-vocab-quiz'] = _q5;
 
 // --- Pin persistence (localStorage) ---
 function getPinnedVocab(num) {
@@ -5096,6 +5721,39 @@ function buildLessonContent(num) {
   if (VOCAB[num] && num === 2) {
     const grammarIds = ['l2-vocab-quiz','l2-kore','l2-kono','l2-koko','l2-dare','l2-mo','l2-janai','l2-neyo','l2-numbers']
       .filter(id => GRAMMARS[id]);
+    container.innerHTML =
+      vocabSectionHTML(num) +
+      grammarIds.map(id => grammarSectionHTML(id)).join('');
+    renderVocabBody(num);
+    setTimeout(() => grammarIds.forEach(id => pickNextGrammarExercise(id)), 50);
+    return;
+  }
+
+  // Lesson 3 — vocab + Vocab Quiz + Particles + ～ませんか + Frequency
+  if (VOCAB[num] && num === 3) {
+    const grammarIds = ['l3-vocab-quiz','l3-particles','l3-masenka','l3-freq'].filter(id => GRAMMARS[id]);
+    container.innerHTML =
+      vocabSectionHTML(num) +
+      grammarIds.map(id => grammarSectionHTML(id)).join('');
+    renderVocabBody(num);
+    setTimeout(() => grammarIds.forEach(id => pickNextGrammarExercise(id)), 50);
+    return;
+  }
+
+  // Lesson 4 — vocab + Vocab Quiz + あります/います + Location + Past tense
+  if (VOCAB[num] && num === 4) {
+    const grammarIds = ['l4-vocab-quiz','l4-arimasu','l4-location','l4-past'].filter(id => GRAMMARS[id]);
+    container.innerHTML =
+      vocabSectionHTML(num) +
+      grammarIds.map(id => grammarSectionHTML(id)).join('');
+    renderVocabBody(num);
+    setTimeout(() => grammarIds.forEach(id => pickNextGrammarExercise(id)), 50);
+    return;
+  }
+
+  // Lesson 5 — vocab + Vocab Quiz + Adjectives (present/past) + N-modification + 好き + ～ましょう
+  if (VOCAB[num] && num === 5) {
+    const grammarIds = ['l5-vocab-quiz','l5-adj','l5-adj-mod','l5-suki','l5-mashou'].filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
