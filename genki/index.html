@@ -464,6 +464,20 @@
   }
   .pin-list-speak:active { background: #FFCC80; }
   .pin-list-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .pin-list-reorder {
+    display: flex; flex-direction: column; gap: 2px;
+    flex-shrink: 0; margin-right: 6px;
+  }
+  .pin-reorder-btn {
+    background: #FFF3E0; color: #E65100; border: none;
+    width: 24px; height: 18px; line-height: 18px; padding: 0;
+    font-size: 0.7em; font-weight: 700;
+    border-radius: 4px; cursor: pointer;
+  }
+  .pin-reorder-btn:active:not([disabled]) { background: #FFCC80; }
+  .pin-reorder-btn[disabled] {
+    background: #F5F5F5; color: #CCC; cursor: not-allowed;
+  }
   .pin-list-play-all {
     background: white; color: #E65100; border: 1.5px solid #FF7043;
     border-radius: 14px; padding: 3px 12px; font-size: 0.78em;
@@ -4252,12 +4266,29 @@ function getPinnedVerbs() {
     return new Set(raw ? JSON.parse(raw) : []);
   } catch(e) { return new Set(); }
 }
+function getPinnedVerbsArr() {
+  try {
+    const raw = localStorage.getItem('genki-verb-pinned');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
 function togglePinVerb(key) {
   const pinned = getPinnedVerbs();
   if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
   try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
   renderVerbs();
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+}
+// Reorder a verb pin (move from -> to)
+function reorderVerbPin(fromIdx, toIdx) {
+  const arr = getPinnedVerbsArr();
+  if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return;
+  const [moved] = arr.splice(fromIdx, 1);
+  arr.splice(toIdx, 0, moved);
+  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(arr)); } catch(e){}
+  if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+  renderPinList();
+  refreshPinnedPractice();
 }
 
 function renderVerbs() {
@@ -4772,12 +4803,30 @@ function getPinnedVocab(num) {
     return new Set(raw ? JSON.parse(raw) : []);
   } catch(e) { return new Set(); }
 }
+// Same as above but returns array preserving saved order
+function getPinnedVocabArr(num) {
+  try {
+    const raw = localStorage.getItem('genki-vocab-pinned-' + num);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
 function togglePinVocab(num, hira) {
   const pinned = getPinnedVocab(num);
   if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
   try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
   renderVocabBody(num);
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+}
+// Reorder a vocab pin within its lesson (move from -> to)
+function reorderVocabPin(num, fromIdx, toIdx) {
+  const arr = getPinnedVocabArr(num);
+  if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return;
+  const [moved] = arr.splice(fromIdx, 1);
+  arr.splice(toIdx, 0, moved);
+  try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(arr)); } catch(e){}
+  if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+  renderPinList();
+  refreshPinnedPractice();
 }
 
 // ============================
@@ -4950,20 +4999,28 @@ function renderPinList() {
   if (!container) return;
   let html = '';
 
-  // Vocab pins by lesson
+  // ----- Vocab pins by lesson (iterate saved order) -----
   knownVocabLessons().forEach(num => {
-    const pinnedSet = getPinnedVocab(num);
-    if (pinnedSet.size === 0) return;
-    const items = [];
-    vocabGroups(num).forEach(g => g.items.forEach(it => {
-      if (pinnedSet.has(it.hira)) items.push(it);
-    }));
+    const order = getPinnedVocabArr(num);
+    if (order.length === 0) return;
+    // Build hira → {item, cls} map from current vocab
+    const map = new Map();
+    vocabGroups(num).forEach(g => g.items.forEach(it => map.set(it.hira, { item: it, cls: g.cls })));
+    const items = order.map(h => map.get(h)).filter(Boolean);
     if (items.length === 0) return;
+
     html += `<div class="pin-list-section-title">📚 Lesson ${num} 単語 (${items.length}) <button class="pin-list-play-all" onclick="playPinnedVocab(${num})">▶ 連續播放</button></div>`;
-    items.forEach(it => {
+    items.forEach((entry, idx) => {
+      const it = entry.item;
       const display = (it.kanji && it.kanji !== it.hira && it.kanji.length) ? `${it.kanji} [${it.hira}]` : it.hira;
       const safeHira = it.hira.replace(/'/g, "\\'");
+      const upDisabled  = idx === 0 ? 'disabled' : '';
+      const dnDisabled  = idx === items.length - 1 ? 'disabled' : '';
       html += `<div class="pin-list-item">
+        <div class="pin-list-reorder">
+          <button class="pin-reorder-btn" ${upDisabled} title="上移" onclick="reorderVocabPin(${num},${idx},${idx-1})">▲</button>
+          <button class="pin-reorder-btn" ${dnDisabled} title="下移" onclick="reorderVocabPin(${num},${idx},${idx+1})">▼</button>
+        </div>
         <div class="pin-list-text">
           <span class="pin-list-jp">${display}</span>
           <span class="pin-list-en">${it.en}</span>
@@ -4976,13 +5033,14 @@ function renderPinList() {
     });
   });
 
-  // Verb pins (show all 6 forms as clickable chips)
-  const pinnedVerbsSet = getPinnedVerbs();
-  if (pinnedVerbsSet.size > 0) {
-    const verbList = VERBS.filter(v => pinnedVerbsSet.has(verbKey(v)));
+  // ----- Verb pins (iterate saved order) -----
+  const verbOrder = getPinnedVerbsArr();
+  if (verbOrder.length > 0) {
+    const byKey = new Map(VERBS.map(v => [verbKey(v), v]));
+    const verbList = verbOrder.map(k => byKey.get(k)).filter(Boolean);
     if (verbList.length > 0) {
       html += `<div class="pin-list-section-title">📖 動詞 (${verbList.length}) <button class="pin-list-play-all" onclick="playPinnedVerbs()">▶ 連續播放全部變化</button></div>`;
-      verbList.forEach(v => {
+      verbList.forEach((v, idx) => {
         const display = (v.kanji && v.kanji !== v.hira) ? `${v.kanji} [${v.hira}]` : v.hira;
         const typeLabel = v.type === 'ru' ? 'Ru' : (v.type === 'u' ? 'U' : 'Irr');
         const safeKey = verbKey(v).replace(/'/g, "\\'");
@@ -4997,7 +5055,13 @@ function renderPinList() {
           { label: 'て形',   text: te },
         ];
         const chips = forms.map(f => `<button class="pin-form-chip" onclick="speak('${f.text}')"><b>${f.label}</b>${f.text}</button>`).join('');
+        const upDisabled = idx === 0 ? 'disabled' : '';
+        const dnDisabled = idx === verbList.length - 1 ? 'disabled' : '';
         html += `<div class="pin-list-item pin-list-verb">
+          <div class="pin-list-reorder">
+            <button class="pin-reorder-btn" ${upDisabled} title="上移" onclick="reorderVerbPin(${idx},${idx-1})">▲</button>
+            <button class="pin-reorder-btn" ${dnDisabled} title="下移" onclick="reorderVerbPin(${idx},${idx+1})">▼</button>
+          </div>
           <div class="pin-list-text">
             <div>
               <span class="pin-list-jp">${display}</span>
