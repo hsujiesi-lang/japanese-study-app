@@ -484,6 +484,59 @@
   }
   .result-correct-text { color: #2E7D32; font-weight: 700; }
 
+  /* Kanji reference */
+  .kanji-card {
+    background: white; border-radius: 12px; padding: 14px;
+    margin: 10px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-left: 5px solid #9C27B0;
+  }
+  .kanji-card-header {
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .kanji-big {
+    font-size: 3em; font-weight: 900; color: #4A148C;
+    line-height: 1; cursor: pointer; user-select: none;
+    flex-shrink: 0;
+  }
+  .kanji-big:active { color: #9C27B0; }
+  .kanji-info { flex: 1; min-width: 0; }
+  .kanji-meaning { font-size: 0.95em; color: #555; font-weight: 600; }
+  .kanji-lesson-tag {
+    display: inline-block; background: #F3E5F5; color: #6A1B9A;
+    padding: 2px 8px; border-radius: 8px; font-size: 0.75em;
+    font-weight: 700; margin-left: 6px;
+  }
+  .kanji-readings {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  }
+  .kanji-reading {
+    background: #FFE0B2; color: #BF360C; border: none;
+    padding: 5px 12px; border-radius: 12px;
+    font-size: 0.92em; font-weight: 700; cursor: pointer;
+    font-family: 'Hiragino Sans','Noto Sans JP',sans-serif;
+  }
+  .kanji-reading:active { background: #FFCC80; }
+  .kanji-words {
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px dashed #E0E0E0;
+  }
+  .kanji-word-item {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 6px 8px; cursor: pointer; border-radius: 8px; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .kanji-word-item:active { background: #F3E5F5; }
+  .kanji-word-jp {
+    font-weight: 700; color: #37474F; font-size: 1em;
+  }
+  .kanji-word-reading {
+    color: #BF360C; font-size: 0.78em; margin-left: 4px;
+    letter-spacing: 0.3px;
+  }
+  .kanji-word-en {
+    color: #888; font-size: 0.82em; font-style: italic;
+  }
+
   /* Numbers reference */
   .number-section-title {
     background: #E8F5E9; color: #2E7D32; padding: 10px 16px;
@@ -876,6 +929,11 @@
         <div class="lesson-title">数字 1〜10,000</div>
         <div class="lesson-en">含發音變化 · 點數字聽發音</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('kanji')" style="background:linear-gradient(135deg,#F3E5F5 0%,#CE93D8 100%);">
+        <div class="lesson-num" style="color:#6A1B9A">📖 KANJI</div>
+        <div class="lesson-title">漢字 Lessons 3〜6</div>
+        <div class="lesson-en">必背發音 + 詞彙 · 點聽發音</div>
+      </div>
       <div class="hub-card" onclick="showPage('hiragana')" style="background:linear-gradient(135deg,#FFE4EC 0%,#FFB3C8 100%);">
         <div class="lesson-num" style="color:#C2185B">ひらがな</div>
         <div class="lesson-title">Hiragana 練習</div>
@@ -1009,6 +1067,27 @@
 </div>
 
 <!-- ============ LESSON PAGES ============ -->
+<!-- ============ KANJI PAGE ============ -->
+<div id="page-kanji" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>📖 漢字 Kanji L3-6</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="filter-bar">
+    <button class="filter-chip active" data-kanji-l="all" onclick="setKanjiFilter(this,'all')">All</button>
+    <button class="filter-chip" data-kanji-l="3" onclick="setKanjiFilter(this,'3')">L3</button>
+    <button class="filter-chip" data-kanji-l="4" onclick="setKanjiFilter(this,'4')">L4</button>
+    <button class="filter-chip" data-kanji-l="5" onclick="setKanjiFilter(this,'5')">L5</button>
+    <button class="filter-chip" data-kanji-l="6" onclick="setKanjiFilter(this,'6')">L6</button>
+  </div>
+  <div class="particle-info">
+    💡 點漢字、讀音或詞彙都可以聽發音。<b>只列橘色標示</b>的必背讀音與詞彙。
+  </div>
+  <div id="kanji-list"></div>
+  <div class="bottom-pad"></div>
+</div>
+
 <!-- ============ NUMBERS PAGE ============ -->
 <div id="page-numbers" class="page">
   <div class="top-nav">
@@ -1288,6 +1367,297 @@
 
 
 <script>
+// ============================
+// KANJI DATA (L3-L6, only orange-highlighted readings + compounds)
+// ============================
+const KANJI_DATA = [
+  // ==== Lesson 3 (numbers / time / yen) ====
+  { lesson:3, k:'一', meaning:'one', readings:['いち','いっ'], words:[
+    ['一','いち','one'],
+    ['一時','いちじ',"one o'clock"],
+    ['一分','いっぷん','one minute'],
+    ['一つ','ひとつ','one (object)'],
+  ]},
+  { lesson:3, k:'二', meaning:'two', readings:['に'], words:[
+    ['二','に','two'],
+    ['二時','にじ',"two o'clock"],
+    ['二つ','ふたつ','two (objects)'],
+  ]},
+  { lesson:3, k:'三', meaning:'three', readings:['さん'], words:[
+    ['三','さん','three'],
+    ['三時','さんじ',"three o'clock"],
+    ['三つ','みっつ','three (objects)'],
+  ]},
+  { lesson:3, k:'四', meaning:'four', readings:['し','よん','よ'], words:[
+    ['四','よん','four'],
+    ['四時','よじ',"four o'clock"],
+    ['四月','しがつ','April'],
+    ['四つ','よっつ','four (objects)'],
+  ]},
+  { lesson:3, k:'五', meaning:'five', readings:['ご'], words:[
+    ['五','ご','five'],
+    ['五時','ごじ',"five o'clock"],
+  ]},
+  { lesson:3, k:'六', meaning:'six', readings:['ろく','ろっ'], words:[
+    ['六','ろく','six'],
+    ['六時','ろくじ',"six o'clock"],
+    ['六百','ろっぴゃく','six hundred'],
+  ]},
+  { lesson:3, k:'七', meaning:'seven', readings:['しち','なな'], words:[
+    ['七','しち/なな','seven'],
+    ['七時','しちじ',"seven o'clock"],
+    ['七つ','ななつ','seven (objects)'],
+  ]},
+  { lesson:3, k:'八', meaning:'eight', readings:['はち','はっ'], words:[
+    ['八','はち','eight'],
+    ['八時','はちじ',"eight o'clock"],
+    ['八百','はっぴゃく','eight hundred'],
+  ]},
+  { lesson:3, k:'九', meaning:'nine', readings:['きゅう','く'], words:[
+    ['九','きゅう','nine'],
+    ['九時','くじ',"nine o'clock"],
+  ]},
+  { lesson:3, k:'十', meaning:'ten', readings:['じゅう','じゅっ','じっ','とお'], words:[
+    ['十','じゅう','ten'],
+    ['十時','じゅうじ',"ten o'clock"],
+    ['十歳','じゅっさい/じっさい','ten years old'],
+    ['十','とお','ten (objects)'],
+  ]},
+  { lesson:3, k:'百', meaning:'hundred', readings:['ひゃく','びゃく','ぴゃく'], words:[
+    ['百','ひゃく','hundred'],
+    ['三百','さんびゃく','three hundred'],
+    ['六百','ろっぴゃく','six hundred'],
+    ['八百','はっぴゃく','eight hundred'],
+  ]},
+  { lesson:3, k:'千', meaning:'thousand', readings:['せん','ぜん'], words:[
+    ['千','せん','thousand'],
+    ['三千','さんぜん','three thousand'],
+    ['八千','はっせん','eight thousand'],
+    ['千円','せんえん','one thousand yen'],
+  ]},
+  { lesson:3, k:'万', meaning:'ten thousand', readings:['まん'], words:[
+    ['一万','いちまん','ten thousand'],
+    ['十万','じゅうまん','one hundred thousand'],
+    ['百万','ひゃくまん','one million'],
+  ]},
+  { lesson:3, k:'円', meaning:'yen; circle', readings:['えん'], words:[
+    ['百円','ひゃくえん','one hundred yen'],
+  ]},
+  { lesson:3, k:'時', meaning:'time', readings:['じ'], words:[
+    ['一時','いちじ',"one o'clock"],
+    ['時間','じかん','time; hours'],
+  ]},
+
+  // ==== Lesson 4 (weekdays / positions) ====
+  { lesson:4, k:'日', meaning:'day; sun', readings:['に','にち','にっ','び'], words:[
+    ['日本','にほん','Japan'],
+    ['日曜日','にちようび','Sunday'],
+  ]},
+  { lesson:4, k:'本', meaning:'book; basis', readings:['ほん'], words:[
+    ['本','ほん','book'],
+    ['日本','にほん','Japan'],
+  ]},
+  { lesson:4, k:'人', meaning:'person', readings:['じん','にん'], words:[
+    ['日本人','にほんじん','Japanese people'],
+    ['一人で','ひとりで','alone'],
+    ['この人','このひと','this person'],
+  ]},
+  { lesson:4, k:'月', meaning:'moon; month', readings:['げつ','がつ'], words:[
+    ['月曜日','げつようび','Monday'],
+    ['一月','いちがつ','January'],
+  ]},
+  { lesson:4, k:'火', meaning:'fire', readings:['か'], words:[
+    ['火曜日','かようび','Tuesday'],
+  ]},
+  { lesson:4, k:'水', meaning:'water', readings:['すい','みず'], words:[
+    ['水曜日','すいようび','Wednesday'],
+    ['水','みず','water'],
+  ]},
+  { lesson:4, k:'木', meaning:'tree', readings:['もく'], words:[
+    ['木曜日','もくようび','Thursday'],
+  ]},
+  { lesson:4, k:'金', meaning:'gold; money', readings:['きん'], words:[
+    ['金曜日','きんようび','Friday'],
+  ]},
+  { lesson:4, k:'土', meaning:'soil', readings:['ど','と'], words:[
+    ['土曜日','どようび','Saturday'],
+  ]},
+  { lesson:4, k:'曜', meaning:'weekday', readings:['よう'], words:[
+    ['日曜日','にちようび','Sunday'],
+    ['曜日','ようび','day of the week'],
+  ]},
+  { lesson:4, k:'上', meaning:'up', readings:['じょう','うえ'], words:[
+    ['上','うえ','top; above'],
+  ]},
+  { lesson:4, k:'下', meaning:'down', readings:['か','した'], words:[
+    ['下','した','under'],
+  ]},
+  { lesson:4, k:'中', meaning:'middle', readings:['ちゅう','なか'], words:[
+    ['中','なか','inside'],
+  ]},
+  { lesson:4, k:'半', meaning:'half', readings:['はん'], words:[
+    ['三時半','さんじはん','half past three'],
+  ]},
+
+  // ==== Lesson 5 (travel) ====
+  { lesson:5, k:'山', meaning:'mountain', readings:['さん','やま'], words:[
+    ['山','やま','mountain'],
+    ['山川さん','やまかわさん','Mr./Ms. Yamakawa'],
+  ]},
+  { lesson:5, k:'川', meaning:'river', readings:['かわ','がわ'], words:[
+    ['川','かわ','river'],
+    ['山川さん','やまかわさん','Mr./Ms. Yamakawa'],
+  ]},
+  { lesson:5, k:'元', meaning:'origin', readings:['げん','がん'], words:[
+    ['元気な','げんきな','fine; healthy'],
+  ]},
+  { lesson:5, k:'気', meaning:'spirit', readings:['き'], words:[
+    ['元気な','げんきな','fine; healthy'],
+    ['天気','てんき','weather'],
+  ]},
+  { lesson:5, k:'天', meaning:'heaven', readings:['てん'], words:[
+    ['天気','てんき','weather'],
+  ]},
+  { lesson:5, k:'私', meaning:'I; private', readings:['し','わたし'], words:[
+    ['私','わたし','I'],
+  ]},
+  { lesson:5, k:'今', meaning:'now', readings:['こん','いま'], words:[
+    ['今','いま','now'],
+    ['今日','きょう','today'],
+  ]},
+  { lesson:5, k:'田', meaning:'rice field', readings:['た','だ'], words:[
+    ['田中さん','たなかさん','Mr./Ms. Tanaka'],
+    ['山田さん','やまださん','Mr./Ms. Yamada'],
+  ]},
+  { lesson:5, k:'女', meaning:'woman', readings:['じょ','おんな'], words:[
+    ['女の人','おんなのひと','woman'],
+  ]},
+  { lesson:5, k:'男', meaning:'man', readings:['だん','おとこ'], words:[
+    ['男の人','おとこのひと','man'],
+  ]},
+  { lesson:5, k:'見', meaning:'to see', readings:['けん','み'], words:[
+    ['見る','みる','to see'],
+  ]},
+  { lesson:5, k:'行', meaning:'to go', readings:['こう','ぎょう','い'], words:[
+    ['行く','いく','to go'],
+  ]},
+  { lesson:5, k:'食', meaning:'to eat', readings:['しょく','た'], words:[
+    ['食べる','たべる','to eat'],
+  ]},
+  { lesson:5, k:'飲', meaning:'to drink', readings:['いん','の'], words:[
+    ['飲む','のむ','to drink'],
+  ]},
+
+  // ==== Lesson 6 (directions / school) ====
+  { lesson:6, k:'東', meaning:'east', readings:['とう','ひがし'], words:[
+    ['東','ひがし','east'],
+    ['東口','ひがしぐち','east exit'],
+  ]},
+  { lesson:6, k:'西', meaning:'west', readings:['せい','さい','にし'], words:[
+    ['西','にし','west'],
+    ['西口','にしぐち','west exit'],
+  ]},
+  { lesson:6, k:'南', meaning:'south', readings:['なん','みなみ'], words:[
+    ['南','みなみ','south'],
+    ['南口','みなみぐち','south exit'],
+  ]},
+  { lesson:6, k:'北', meaning:'north', readings:['ほく','ほっ','きた'], words:[
+    ['北','きた','north'],
+    ['北口','きたぐち','north exit'],
+  ]},
+  { lesson:6, k:'口', meaning:'mouth', readings:['こう','ぐち','くち'], words:[
+    ['北口','きたぐち','north exit'],
+  ]},
+  { lesson:6, k:'出', meaning:'to exit', readings:['しゅっ','しゅつ','で','だ'], words:[
+    ['出る','でる','to exit'],
+    ['出口','でぐち','exit'],
+    ['出かける','でかける','to go out'],
+    ['出す','だす','to take out'],
+  ]},
+  { lesson:6, k:'右', meaning:'right', readings:['う','ゆう','みぎ'], words:[
+    ['右','みぎ','right'],
+  ]},
+  { lesson:6, k:'左', meaning:'left', readings:['さ','ひだり'], words:[
+    ['左','ひだり','left'],
+  ]},
+  { lesson:6, k:'分', meaning:'minute; divide', readings:['ふん','ぷん','ぶん','わ'], words:[
+    ['五分','ごふん','five minutes'],
+    ['十分','じゅっぷん/じっぷん','ten minutes'],
+  ]},
+  { lesson:6, k:'先', meaning:'ahead', readings:['せん','さき'], words:[
+    ['先生','せんせい','teacher'],
+  ]},
+  { lesson:6, k:'生', meaning:'birth', readings:['せい','しょう','う'], words:[
+    ['学生','がくせい','student'],
+    ['先生','せんせい','teacher'],
+  ]},
+  { lesson:6, k:'大', meaning:'big', readings:['だい','たい','おお'], words:[
+    ['大学生','だいがくせい','college student'],
+    ['大きい','おおきい','big'],
+  ]},
+  { lesson:6, k:'学', meaning:'learning', readings:['がく','がっ','まな'], words:[
+    ['大学','だいがく','university'],
+    ['学生','がくせい','student'],
+  ]},
+  { lesson:6, k:'外', meaning:'outside', readings:['がい','そと'], words:[
+    ['外国','がいこく','foreign country'],
+    ['外国人','がいこくじん','foreigner'],
+  ]},
+  { lesson:6, k:'国', meaning:'country', readings:['こく','ごく','こっ','くに'], words:[
+    ['外国','がいこく','foreign country'],
+    ['中国','ちゅうごく','China'],
+    ['国','くに','country'],
+    ['韓国','かんこく','South Korea'],
+  ]},
+];
+
+let kanjiFilter = 'all';
+function setKanjiFilter(btn, value) {
+  document.querySelectorAll('[data-kanji-l]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  kanjiFilter = value;
+  renderKanjiPage();
+}
+
+function renderKanjiPage() {
+  const root = document.getElementById('kanji-list');
+  if (!root) return;
+  const list = KANJI_DATA.filter(k => kanjiFilter === 'all' || String(k.lesson) === kanjiFilter);
+  let html = '';
+  list.forEach(k => {
+    const readingChips = k.readings.map(r => {
+      const safe = r.replace(/'/g, "\\'");
+      return `<button class="kanji-reading" onclick="speak('${safe}')">${r}</button>`;
+    }).join('');
+    const wordItems = k.words.map(w => {
+      // w[1] may contain "／" or "/" for alternates — pick first variant for speech
+      const reading = w[1];
+      const spoken = reading.split(/[\/／]/)[0].replace(/'/g, "\\'");
+      return `<div class="kanji-word-item" onclick="speak('${spoken}')">
+        <div>
+          <span class="kanji-word-jp">${w[0]}</span>
+          <span class="kanji-word-reading">[${reading}]</span>
+        </div>
+        <span class="kanji-word-en">${w[2]}</span>
+      </div>`;
+    }).join('');
+    const safeFirst = (k.readings[0] || '').replace(/'/g, "\\'");
+    html += `
+      <div class="kanji-card">
+        <div class="kanji-card-header">
+          <div class="kanji-big" onclick="speak('${safeFirst}')">${k.k}</div>
+          <div class="kanji-info">
+            <div class="kanji-meaning">${k.meaning} <span class="kanji-lesson-tag">L${k.lesson}</span></div>
+            <div class="kanji-readings">${readingChips}</div>
+          </div>
+        </div>
+        <div class="kanji-words">${wordItems}</div>
+      </div>
+    `;
+  });
+  root.innerHTML = html;
+}
+
 // ============================
 // NUMBERS DATA & RENDER
 // ============================
@@ -7147,6 +7517,7 @@ function showPage(name) {
   if (name === 'adjectives') renderAdjectives();
   if (name === 'pinmanager') showPinManager();
   if (name === 'numbers') renderNumbersPage();
+  if (name === 'kanji') renderKanjiPage();
   if (name === 'hiragana') {
     renderKanaTable(HIRAGANA, 'hira-ref', 'hira');
     startPractice(HIRAGANA, 'hira-p1', 'hira', 'k2r');
