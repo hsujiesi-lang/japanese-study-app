@@ -5477,6 +5477,7 @@ const _q2 = buildVocabQuiz(2); if (_q2) GRAMMARS['l2-vocab-quiz'] = _q2;
 const _q3 = buildVocabQuiz(3); if (_q3) GRAMMARS['l3-vocab-quiz'] = _q3;
 const _q4 = buildVocabQuiz(4); if (_q4) GRAMMARS['l4-vocab-quiz'] = _q4;
 const _q5 = buildVocabQuiz(5); if (_q5) GRAMMARS['l5-vocab-quiz'] = _q5;
+const _q6 = buildVocabQuiz(6); if (_q6) GRAMMARS['l6-vocab-quiz'] = _q6;
 
 // --- Pin persistence (localStorage) ---
 function getPinnedVocab(num) {
@@ -6758,9 +6759,10 @@ function buildLessonContent(num) {
   const container = document.getElementById(`lesson${num}-content`);
   const data = LESSONS[num];
 
-  // Lesson 6 — vocab + Grammar 2-7 (each in its own collapsible section)
+  // Lesson 6 — vocab + Vocab Quiz + Grammar 2-7 (each in its own collapsible section)
   if (VOCAB[num] && num === 6) {
-    const grammarIds = ['te-kudasai','te-two','te-mo-ii','te-wa-ikemasen','kara','mashou-ka'];
+    const grammarIds = ['l6-vocab-quiz','te-kudasai','te-two','te-mo-ii','te-wa-ikemasen','kara','mashou-ka']
+      .filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
