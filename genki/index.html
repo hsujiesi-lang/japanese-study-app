@@ -4546,8 +4546,24 @@ const VERB_FORMS = [
 
 const verbPractice = {
   correct: 0, wrong: 0, current: null, attempts: 0,
-  revealed: false, advanceArmed: false
+  revealed: false, advanceArmed: false,
+  sessionCount: 0, sessionWrong: [], sessionDone: false,
+  currentMarkedWrong: false
 };
+
+function resetVerbSession() {
+  verbPractice.correct = 0;
+  verbPractice.wrong = 0;
+  verbPractice.sessionCount = 0;
+  verbPractice.sessionWrong = [];
+  verbPractice.sessionDone = false;
+  verbPractice.currentMarkedWrong = false;
+  verbPractice.current = null;
+  verbPractice.attempts = 0;
+  verbPractice.revealed = false;
+  verbPractice.advanceArmed = false;
+  updateVerbStats();
+}
 
 function setVerbMode(mode) {
   const refMode = document.getElementById('verb-reference-mode');
@@ -4559,6 +4575,7 @@ function setVerbMode(mode) {
     pracMode.style.display = 'block';
     refTab.classList.remove('active');
     pracTab.classList.add('active');
+    resetVerbSession();   // start a fresh 10-question session each time
     pickVerbQuestion();
   } else {
     refMode.style.display = 'block';
@@ -4577,12 +4594,20 @@ function verbPoolForPractice() {
 }
 
 function pickVerbQuestion() {
-  const pool = verbPoolForPractice();
   const area = document.getElementById('vp-area');
+  const pool = verbPoolForPractice();
   if (pool.length === 0) {
     area.innerHTML = `<div class="exercise-card" style="text-align:center; color:#999;">這個篩選沒有動詞，請調整上方的類型／課程篩選。</div>`;
     return;
   }
+  if (verbPractice.sessionDone) { renderVerbResults(); return; }
+  if (verbPractice.sessionCount >= SESSION_LENGTH) {
+    verbPractice.sessionDone = true;
+    renderVerbResults();
+    return;
+  }
+  verbPractice.sessionCount++;
+  verbPractice.currentMarkedWrong = false;
   const verb = pool[Math.floor(Math.random() * pool.length)];
   const form = VERB_FORMS[Math.floor(Math.random() * VERB_FORMS.length)];
   verbPractice.current = { verb, form };
@@ -4598,6 +4623,7 @@ function renderVerbQuestion() {
   const typeLabel = verb.type === 'ru' ? 'Ru-verb' : (verb.type === 'u' ? 'U-verb' : 'Irregular');
   area.innerHTML = `
     <div class="exercise-card">
+      <div class="exercise-progress">📝 第 ${verbPractice.sessionCount} / ${SESSION_LENGTH} 題</div>
       <span class="verb-q-form-tag">${form.short}　${form.label}</span>
       <div class="verb-q-en">${verb.en}</div>
       <div class="verb-q-spec">→ 寫出「${form.label}」</div>
@@ -4613,6 +4639,59 @@ function renderVerbQuestion() {
     </div>
   `;
   setTimeout(() => { const i = document.getElementById('vp-input'); if (i) i.focus(); }, 50);
+}
+
+function renderVerbResults() {
+  const area = document.getElementById('vp-area');
+  if (!area) return;
+  const total = verbPractice.sessionCount;
+  const wrongCount = verbPractice.sessionWrong.length;
+  const correctCount = Math.max(0, total - wrongCount);
+  const pct = total > 0 ? Math.round(100 * correctCount / total) : 0;
+  const grade = pct >= 90 ? '🏆 太棒了！' : pct >= 70 ? '👏 不錯！' : pct >= 50 ? '💪 加油！' : '📚 多複習！';
+
+  let wrongHtml = '';
+  if (wrongCount === 0) {
+    wrongHtml = `<div class="result-allcorrect">🎉 全部答對！</div>`;
+  } else {
+    wrongHtml = `
+      <h4 class="result-section-h">❌ 答錯 / 看答案的題目 (${wrongCount} 題)</h4>
+      <div class="result-wrong-list">
+        ${verbPractice.sessionWrong.map((w, i) => {
+          const correctAns = w.correctAns || '';
+          const userAns = w.userAns || '(看答案)';
+          const safeAns = correctAns.replace(/'/g, "\\'").replace(/[。.]$/,'');
+          return `
+            <div class="result-wrong-item">
+              <div class="result-wrong-num">${i+1}.</div>
+              <div class="result-wrong-content">
+                <div class="result-wrong-prompt">${w.prompt}</div>
+                <div class="result-wrong-user">你的答案：<span class="result-wrong-text">${userAns}</span></div>
+                <div class="result-wrong-ans">正解：<span class="result-correct-text">${correctAns}</span>
+                  <button class="ex-btn-show" style="margin-left:6px; padding:3px 10px; font-size:0.8em;" onclick="speak('${safeAns}')">🔊</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  area.innerHTML = `
+    <div class="exercise-card result-card">
+      <div class="result-title">🎯 練習結束！</div>
+      <div class="result-score">${correctCount} / ${total}</div>
+      <div class="result-pct">正確率 ${pct}% ・ ${grade}</div>
+      ${wrongHtml}
+      <button class="ex-btn-submit" style="width:100%; margin-top:14px;" onclick="restartVerbPractice()">🔄 再來一輪 (${SESSION_LENGTH} 題)</button>
+    </div>
+  `;
+}
+
+function restartVerbPractice() {
+  resetVerbSession();
+  pickVerbQuestion();
 }
 
 function checkVerbAnswer() {
@@ -4640,6 +4719,14 @@ function checkVerbAnswer() {
     inp.focus();
   } else {
     if (verbPractice.attempts === 1) verbPractice.wrong++;
+    if (!verbPractice.currentMarkedWrong) {
+      verbPractice.sessionWrong.push({
+        prompt: `${verb.en} (${form.label})`,
+        userAns: raw,
+        correctAns: answers[0]
+      });
+      verbPractice.currentMarkedWrong = true;
+    }
     inp.classList.add('wrong');
     fb.className = 'exercise-feedback show wrong';
     fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
@@ -4654,6 +4741,14 @@ function showVerbAnswer() {
   if (verbPractice.attempts === 0) verbPractice.wrong++;
   if (inp) inp.readOnly = true;
   const answers = verbFormAnswers(verb, form.key);
+  if (!verbPractice.currentMarkedWrong) {
+    verbPractice.sessionWrong.push({
+      prompt: `${verb.en} (${form.label})`,
+      userAns: (inp && inp.value.trim()) ? inp.value.trim() : '(看答案)',
+      correctAns: answers[0]
+    });
+    verbPractice.currentMarkedWrong = true;
+  }
   const dict = verb.kanji + (verb.kanji !== verb.hira ? `（${verb.hira}）` : '');
   fb.className = 'exercise-feedback show wrong';
   fb.innerHTML = `📖 正解：<span class="answer-shown">${answers[0]}</span>${answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${answers.slice(1).join('、')}</span>` : ''}
@@ -6820,16 +6915,81 @@ function startPractice(set, mountId, kind, direction) {
     correct: 0,
     wrong: 0,
     current: null,
-    mountId: mountId
+    mountId: mountId,
+    sessionCount: 0,
+    sessionWrong: [],
+    sessionDone: false,
+    currentMarkedWrong: false
   };
   nextPractice(key);
 }
 
 function nextPractice(key) {
   const st = practiceState[key];
+  if (st.sessionDone) { renderKanaResults(key); return; }
+  if (st.sessionCount >= SESSION_LENGTH) {
+    st.sessionDone = true;
+    renderKanaResults(key);
+    return;
+  }
+  st.sessionCount++;
+  st.currentMarkedWrong = false;
   const pick = st.pool[Math.floor(Math.random() * st.pool.length)];
   st.current = pick;
   renderPractice(key);
+}
+
+function renderKanaResults(key) {
+  const st = practiceState[key];
+  const m = document.getElementById(st.mountId);
+  const total = st.sessionCount;
+  const wrongCount = st.sessionWrong.length;
+  const correctCount = Math.max(0, total - wrongCount);
+  const pct = total > 0 ? Math.round(100 * correctCount / total) : 0;
+  const grade = pct >= 90 ? '🏆 太棒了！' : pct >= 70 ? '👏 不錯！' : pct >= 50 ? '💪 加油！' : '📚 多複習！';
+  let wrongHtml = '';
+  if (wrongCount === 0) {
+    wrongHtml = `<div class="result-allcorrect">🎉 全部答對！</div>`;
+  } else {
+    wrongHtml = `
+      <h4 class="result-section-h">❌ 答錯的題目 (${wrongCount} 題)</h4>
+      <div class="result-wrong-list">
+        ${st.sessionWrong.map((w, i) => {
+          const safe = String(w.char).replace(/'/g, "\\'");
+          return `<div class="result-wrong-item">
+            <div class="result-wrong-num">${i+1}.</div>
+            <div class="result-wrong-content">
+              <div class="result-wrong-prompt">${w.prompt}</div>
+              <div class="result-wrong-user">你的答案：<span class="result-wrong-text">${w.userAns}</span></div>
+              <div class="result-wrong-ans">正解：<span class="result-correct-text">${w.char} = ${w.romaji}</span>
+                <button class="ex-btn-show" style="margin-left:6px; padding:3px 10px; font-size:0.8em;" onclick="speak('${safe}')">🔊</button>
+              </div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+  }
+  m.innerHTML = `
+    <div class="exercise-card result-card" style="margin:12px 16px;">
+      <div class="result-title">🎯 練習結束！</div>
+      <div class="result-score">${correctCount} / ${total}</div>
+      <div class="result-pct">正確率 ${pct}% ・ ${grade}</div>
+      ${wrongHtml}
+      <button class="ex-btn-submit" style="width:100%; margin-top:14px;" onclick="restartKanaPractice('${key}')">🔄 再來一輪 (${SESSION_LENGTH} 題)</button>
+    </div>
+  `;
+}
+
+function restartKanaPractice(key) {
+  const st = practiceState[key];
+  st.correct = 0; st.wrong = 0;
+  st.sessionCount = 0;
+  st.sessionWrong = [];
+  st.sessionDone = false;
+  st.currentMarkedWrong = false;
+  st.current = null;
+  nextPractice(key);
 }
 
 function renderPractice(key) {
@@ -6838,9 +6998,9 @@ function renderPractice(key) {
   const kanaCls = st.kind === 'kata' ? 'katakana' : '';
   m.innerHTML = `
     <div class="practice-stats">
+      <span>📝 ${st.sessionCount}/${SESSION_LENGTH}</span>
       <span>✅ 對: <span class="ok" id="${key}-ok">${st.correct}</span></span>
       <span>❌ 錯: <span class="ng" id="${key}-ng">${st.wrong}</span></span>
-      <span>📊 ${st.correct + st.wrong > 0 ? Math.round(100*st.correct/(st.correct+st.wrong)) : 0}%</span>
     </div>
     <div class="practice-card" id="${key}-card"></div>
     <div class="practice-controls">
@@ -6895,6 +7055,15 @@ function checkPracticeRomaji(key) {
     setTimeout(() => nextPractice(key), 700);
   } else {
     st.wrong++;
+    if (!st.currentMarkedWrong) {
+      st.sessionWrong.push({
+        prompt: `看字打羅馬字：${st.current.char}`,
+        userAns: ans,
+        char: st.current.char,
+        romaji: st.current.romaji
+      });
+      st.currentMarkedWrong = true;
+    }
     input.classList.add('wrong');
     fb.className = 'practice-feedback wrong';
     fb.textContent = `❌ 正解：${st.current.romaji}（你輸入：${ans}）`;
@@ -6919,6 +7088,15 @@ function checkPracticeKana(key, optIdx, chosenChar) {
     setTimeout(() => nextPractice(key), 800);
   } else {
     st.wrong++;
+    if (!st.currentMarkedWrong) {
+      st.sessionWrong.push({
+        prompt: `看羅馬字選假名：${st.current.romaji}`,
+        userAns: chosenChar,
+        char: st.current.char,
+        romaji: st.current.romaji
+      });
+      st.currentMarkedWrong = true;
+    }
     fb.className = 'practice-feedback wrong';
     fb.textContent = `❌ 正解是 ${st.current.char}`;
     setTimeout(() => nextPractice(key), 1800);
