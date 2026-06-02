@@ -5470,17 +5470,24 @@ function stopPinPlayback() {
 }
 
 function playPinnedVocab(num) {
-  const pinnedSet = getPinnedVocab(num);
-  const items = [];
-  vocabGroups(num).forEach(g => g.items.forEach(it => {
-    if (pinnedSet.has(it.hira)) items.push({ text: it.hira, label: `${it.kanji || it.hira}` });
-  }));
+  // Use the user's saved pin order (respects drag-and-drop reorder)
+  const order = getPinnedVocabArr(num);
+  if (order.length === 0) return;
+  const map = new Map();
+  vocabGroups(num).forEach(g => g.items.forEach(it => map.set(it.hira, it)));
+  const items = order
+    .map(h => map.get(h))
+    .filter(Boolean)
+    .map(it => ({ text: it.hira, label: `${it.kanji || it.hira}` }));
   startPinPlayback(items, `L${num} 釘選単語`);
 }
 
 function playPinnedVerbs() {
-  const pinnedSet = getPinnedVerbs();
-  const verbs = VERBS.filter(v => pinnedSet.has(verbKey(v)));
+  // Use the user's saved pin order (respects drag-and-drop reorder)
+  const order = getPinnedVerbsArr();
+  if (order.length === 0) return;
+  const byKey = new Map(VERBS.map(v => [verbKey(v), v]));
+  const verbs = order.map(k => byKey.get(k)).filter(Boolean);
   if (verbs.length === 0) return;
   const items = [];
   verbs.forEach(v => {
