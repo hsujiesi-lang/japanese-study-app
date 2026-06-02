@@ -4361,14 +4361,30 @@ function togglePause() {
   }
 }
 
+// Sort verbs so pinned ones (in pinned order) come first, rest follow in original order.
+function sortVerbsByPinThenOriginal(verbs) {
+  const pinOrder = getPinnedVerbsArr();
+  const pinIndex = new Map(pinOrder.map((k, i) => [k, i]));
+  const pinned = [];
+  const unpinned = [];
+  verbs.forEach(v => {
+    const k = verbKey(v);
+    if (pinIndex.has(k)) pinned.push(v);
+    else unpinned.push(v);
+  });
+  pinned.sort((a, b) => pinIndex.get(verbKey(a)) - pinIndex.get(verbKey(b)));
+  return pinned.concat(unpinned);
+}
+
 function playAllOfType(typeKey) {
   // Decide which verbs to include (respect current lesson filter only)
-  const verbs = VERBS.filter(v => {
+  let verbs = VERBS.filter(v => {
     if (typeKey !== 'all' && v.type !== typeKey) return false;
     if (filterLesson !== 'all' && String(v.lesson) !== filterLesson) return false;
     return true;
   });
   if (verbs.length === 0) return;
+  verbs = sortVerbsByPinThenOriginal(verbs);  // pinned first, then original order
 
   // Build a flat sequence: for each verb → 6 forms (incl. te-form)
   const items = [];
@@ -4789,7 +4805,7 @@ function updateVerbStats() {
 // Play all verbs that match the current filters (type + lesson + search)
 function playFilteredVerbs() {
   const q = (document.getElementById('verb-search').value || '').trim().toLowerCase();
-  const verbs = VERBS.filter(v => {
+  let verbs = VERBS.filter(v => {
     if (filterType !== 'all' && v.type !== filterType) return false;
     if (filterLesson !== 'all' && String(v.lesson) !== filterLesson) return false;
     if (q) {
@@ -4799,6 +4815,7 @@ function playFilteredVerbs() {
     return true;
   });
   if (verbs.length === 0) return;
+  verbs = sortVerbsByPinThenOriginal(verbs);  // pinned first, then original order
 
   const items = [];
   verbs.forEach(v => {
@@ -6252,15 +6269,26 @@ const lessonPlayback = {};
 function playLessonVocab(num) {
   const vocab = VOCAB[num];
   if (!vocab) return;
-  // Use the same flexible groups helper that the renderer uses, so it
-  // works for both legacy (nouns/naAdjectives/adverbs) and new (groups[]) formats.
+  // Collect all items first, then sort: pinned (in pinned order) → unpinned (original order)
   const all = [];
   vocabGroups(num).forEach(g => g.items.forEach(it => all.push(it)));
   if (all.length === 0) return;
 
-  const items = all.map(it => ({
+  const pinSet = getPinnedVocab(num);
+  const pinOrder = getPinnedVocabArr(num);
+  const pinIndex = new Map(pinOrder.map((h, i) => [h, i]));
+  const pinned = [];
+  const unpinned = [];
+  all.forEach(it => {
+    if (pinSet.has(it.hira)) pinned.push(it);
+    else unpinned.push(it);
+  });
+  pinned.sort((a, b) => (pinIndex.get(a.hira) ?? 0) - (pinIndex.get(b.hira) ?? 0));
+  const sorted = pinned.concat(unpinned);
+
+  const items = sorted.map(it => ({
     text: it.hira,
-    label: `${it.kanji || it.hira} — ${it.en}`
+    label: `${it.kanji || it.hira} — ${it.en}${pinSet.has(it.hira) ? ' 📌' : ''}`
   }));
 
   speechSynthesis.cancel();
