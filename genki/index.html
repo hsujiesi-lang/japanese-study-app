@@ -1531,6 +1531,45 @@ const TIME_DATA = {
   ]
 };
 
+function buildTimeQuiz() {
+  const exercises = [];
+  // From each section: English → Japanese
+  TIME_DATA.sections.forEach(sec => {
+    sec.items.forEach(it => {
+      const answers = [];
+      if (it.jp && it.jp !== it.hira && it.jp.length > 0) answers.push(it.jp);
+      answers.push(it.hira);
+      exercises.push({
+        type:'translate',
+        prompt: it.en,
+        answers: answers
+      });
+    });
+  });
+  // Question patterns
+  TIME_DATA.questions.forEach(q => {
+    const answers = [];
+    if (q.jp) answers.push(q.jp);
+    if (q.hira && q.hira !== q.jp) answers.push(q.hira);
+    exercises.push({
+      type:'translate',
+      prompt: q.en,
+      answers: answers
+    });
+  });
+  return {
+    title: '📅 時間表現練習',
+    explanation: [
+      '<b>用法：</b>看英文意思，輸入日文。',
+      '單字＋問句混合隨機抽題。漢字或平假名都接受。',
+      '答對／看答案後按 Enter 進下一題。'
+    ],
+    examples: [],
+    exercises: exercises
+  };
+}
+GRAMMARS['time-quiz'] = buildTimeQuiz();
+
 function renderTimePage() {
   const root = document.getElementById('time-content');
   if (!root) return;
@@ -1566,7 +1605,18 @@ function renderTimePage() {
     `;
   });
 
+  // Practice section (uses existing grammar infrastructure)
+  html += grammarSectionHTML('time-quiz');
+
   root.innerHTML = html;
+  // Reset session and start first question
+  const st = getGrammarState('time-quiz');
+  st.correct = 0; st.wrong = 0;
+  st.sessionCount = 0; st.sessionWrong = [];
+  st.sessionDone = false; st.currentMarkedWrong = false;
+  st.current = null; st.attempts = 0;
+  st.revealed = false; st.advanceArmed = false;
+  setTimeout(() => pickNextGrammarExercise('time-quiz'), 50);
 }
 
 // ============================
