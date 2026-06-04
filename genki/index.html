@@ -1568,7 +1568,7 @@ function buildTimeQuiz() {
     exercises: exercises
   };
 }
-GRAMMARS['time-quiz'] = buildTimeQuiz();
+// NOTE: GRAMMARS['time-quiz'] = buildTimeQuiz() is registered after `const GRAMMARS = {}` is declared below (see "GRAMMAR PRACTICE — Lesson 6" section). Registering here would hit a TDZ ReferenceError and break all later script.
 
 function renderTimePage() {
   const root = document.getElementById('time-content');
@@ -2183,6 +2183,9 @@ const VERBS = [
 // GRAMMAR PRACTICE — Lesson 6 Grammar 2-7
 // ============================
 const GRAMMARS = {};
+
+// Register time-quiz here (buildTimeQuiz is defined earlier with TIME_DATA)
+GRAMMARS['time-quiz'] = buildTimeQuiz();
 
 GRAMMARS['te-kudasai'] = {
   title: 'Grammar 2 ｜ 〜てください (Please do...)',
