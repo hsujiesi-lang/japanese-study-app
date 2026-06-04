@@ -484,6 +484,60 @@
   }
   .result-correct-text { color: #2E7D32; font-weight: 700; }
 
+  /* Time reference */
+  .time-section-title {
+    background: #E0F7FA; color: #006064; padding: 10px 16px;
+    margin: 16px 16px 8px; border-radius: 8px;
+    font-size: 0.98em; font-weight: 700;
+  }
+  .time-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+    gap: 8px; padding: 0 16px;
+  }
+  .time-card {
+    background: white; border-radius: 10px; padding: 12px 8px;
+    text-align: center; cursor: pointer; user-select: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 2px solid transparent;
+    transition: transform 0.1s;
+    min-height: 78px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .time-card:active { transform: scale(0.96); background: #E0F7FA; }
+  .time-card.special {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    border-color: #FF7043;
+  }
+  .time-card .time-jp {
+    font-size: 1.1em; color: #37474F; font-weight: 700;
+  }
+  .time-card .time-hira {
+    font-size: 0.82em; color: #00695C; margin-top: 2px;
+    font-weight: 600;
+  }
+  .time-card.special .time-hira { color: #BF360C; }
+  .time-card .time-en {
+    font-size: 0.78em; color: #888; margin-top: 4px; font-style: italic;
+  }
+  .time-card .time-note {
+    font-size: 0.7em; color: #E65100; margin-top: 4px; font-weight: 600;
+  }
+  .time-question-box {
+    background: white; border-radius: 12px; padding: 14px 16px;
+    margin: 8px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    border-left: 4px solid #00ACC1;
+  }
+  .time-question-jp {
+    font-size: 1.05em; color: #37474F; font-weight: 700; cursor: pointer;
+  }
+  .time-question-jp:active { color: #00ACC1; }
+  .time-question-hira {
+    font-size: 0.85em; color: #888; margin-top: 4px;
+  }
+  .time-question-en {
+    font-size: 0.85em; color: #00838F; margin-top: 2px; font-style: italic;
+  }
+
   /* Kanji reference */
   .kanji-card {
     background: white; border-radius: 12px; padding: 14px;
@@ -934,6 +988,11 @@
         <div class="lesson-title">漢字 Lessons 3〜6</div>
         <div class="lesson-en">必背發音 + 詞彙 · 點聽發音</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('time')" style="background:linear-gradient(135deg,#E0F7FA 0%,#80DEEA 100%);">
+        <div class="lesson-num" style="color:#006064">📅 TIME</div>
+        <div class="lesson-title">時間表現 (日／月／年／星期)</div>
+        <div class="lesson-en">問法 + 不規則發音 · 點聽發音</div>
+      </div>
       <div class="hub-card" onclick="showPage('hiragana')" style="background:linear-gradient(135deg,#FFE4EC 0%,#FFB3C8 100%);">
         <div class="lesson-num" style="color:#C2185B">ひらがな</div>
         <div class="lesson-title">Hiragana 練習</div>
@@ -1067,6 +1126,20 @@
 </div>
 
 <!-- ============ LESSON PAGES ============ -->
+<!-- ============ TIME PAGE ============ -->
+<div id="page-time" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>📅 時間表現 Time</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="particle-info">
+    💡 點任何卡片可聽發音。<b style="color:#E65100">橘色</b>標記是<b>不規則</b>讀音（要特別記）。
+  </div>
+  <div id="time-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
 <!-- ============ KANJI PAGE ============ -->
 <div id="page-kanji" class="page">
   <div class="top-nav">
@@ -1367,6 +1440,135 @@
 
 
 <script>
+// ============================
+// TIME EXPRESSIONS DATA & RENDER
+// ============================
+const TIME_DATA = {
+  sections: [
+    { title:'📅 星期 (曜日 / Weekdays)', items: [
+      { jp:'月曜日',   hira:'げつようび',   en:'Monday' },
+      { jp:'火曜日',   hira:'かようび',     en:'Tuesday' },
+      { jp:'水曜日',   hira:'すいようび',   en:'Wednesday' },
+      { jp:'木曜日',   hira:'もくようび',   en:'Thursday' },
+      { jp:'金曜日',   hira:'きんようび',   en:'Friday' },
+      { jp:'土曜日',   hira:'どようび',     en:'Saturday' },
+      { jp:'日曜日',   hira:'にちようび',   en:'Sunday' },
+    ]},
+    { title:'☀️ 日 (相對日子)', items: [
+      { jp:'今日',     hira:'きょう',       en:'today',           special:true, note:'不規則' },
+      { jp:'明日',     hira:'あした',       en:'tomorrow',        special:true, note:'另讀 あす' },
+      { jp:'昨日',     hira:'きのう',       en:'yesterday',       special:true, note:'不規則' },
+      { jp:'おととい', hira:'おととい',     en:'the day before yesterday' },
+      { jp:'あさって', hira:'あさって',     en:'the day after tomorrow' },
+      { jp:'毎日',     hira:'まいにち',     en:'every day' },
+      { jp:'今朝',     hira:'けさ',         en:'this morning',    special:true, note:'不規則' },
+      { jp:'今晩',     hira:'こんばん',     en:'tonight' },
+      { jp:'毎晩',     hira:'まいばん',     en:'every night' },
+    ]},
+    { title:'🔢 日 (日期：何日 what date)', items: [
+      { jp:'一日',     hira:'ついたち',     en:'1st',  special:true, note:'不規則！' },
+      { jp:'二日',     hira:'ふつか',       en:'2nd',  special:true, note:'不規則' },
+      { jp:'三日',     hira:'みっか',       en:'3rd',  special:true, note:'不規則' },
+      { jp:'四日',     hira:'よっか',       en:'4th',  special:true, note:'不規則' },
+      { jp:'五日',     hira:'いつか',       en:'5th',  special:true, note:'不規則' },
+      { jp:'六日',     hira:'むいか',       en:'6th',  special:true, note:'不規則' },
+      { jp:'七日',     hira:'なのか',       en:'7th',  special:true, note:'不規則' },
+      { jp:'八日',     hira:'ようか',       en:'8th',  special:true, note:'不規則' },
+      { jp:'九日',     hira:'ここのか',     en:'9th',  special:true, note:'不規則' },
+      { jp:'十日',     hira:'とおか',       en:'10th', special:true, note:'不規則' },
+      { jp:'十四日',   hira:'じゅうよっか', en:'14th', special:true, note:'よっか 結尾' },
+      { jp:'二十日',   hira:'はつか',       en:'20th', special:true, note:'特殊讀法！' },
+      { jp:'二十四日', hira:'にじゅうよっか', en:'24th', special:true, note:'よっか 結尾' },
+      { jp:'何日',     hira:'なんにち',     en:'what date' },
+    ]},
+    { title:'📅 週 (週)', items: [
+      { jp:'今週',     hira:'こんしゅう',   en:'this week' },
+      { jp:'先週',     hira:'せんしゅう',   en:'last week' },
+      { jp:'来週',     hira:'らいしゅう',   en:'next week' },
+      { jp:'毎週',     hira:'まいしゅう',   en:'every week' },
+      { jp:'週末',     hira:'しゅうまつ',   en:'weekend' },
+    ]},
+    { title:'🌙 月 (月份 / What month)', items: [
+      { jp:'一月',     hira:'いちがつ',     en:'January' },
+      { jp:'二月',     hira:'にがつ',       en:'February' },
+      { jp:'三月',     hira:'さんがつ',     en:'March' },
+      { jp:'四月',     hira:'しがつ',       en:'April',     special:true, note:'用 し 不用 よん' },
+      { jp:'五月',     hira:'ごがつ',       en:'May' },
+      { jp:'六月',     hira:'ろくがつ',     en:'June' },
+      { jp:'七月',     hira:'しちがつ',     en:'July',      special:true, note:'用 しち 不用 なな' },
+      { jp:'八月',     hira:'はちがつ',     en:'August' },
+      { jp:'九月',     hira:'くがつ',       en:'September', special:true, note:'用 く 不用 きゅう' },
+      { jp:'十月',     hira:'じゅうがつ',   en:'October' },
+      { jp:'十一月',   hira:'じゅういちがつ', en:'November' },
+      { jp:'十二月',   hira:'じゅうにがつ', en:'December' },
+      { jp:'何月',     hira:'なんがつ',     en:'what month' },
+    ]},
+    { title:'📆 月 (相對月份)', items: [
+      { jp:'今月',     hira:'こんげつ',     en:'this month' },
+      { jp:'先月',     hira:'せんげつ',     en:'last month' },
+      { jp:'来月',     hira:'らいげつ',     en:'next month' },
+      { jp:'毎月',     hira:'まいつき',     en:'every month', special:true, note:'唸 まいつき 不是 まいげつ' },
+      { jp:'一か月',   hira:'いっかげつ',   en:'one month (期間)' },
+    ]},
+    { title:'🗓 年 (Years)', items: [
+      { jp:'今年',     hira:'ことし',       en:'this year',  special:true, note:'不規則！不是 こんねん' },
+      { jp:'去年',     hira:'きょねん',     en:'last year' },
+      { jp:'来年',     hira:'らいねん',     en:'next year' },
+      { jp:'毎年',     hira:'まいとし',     en:'every year', special:true, note:'唸 まいとし 也可讀 まいねん' },
+      { jp:'〜年',     hira:'〜ねん',       en:'... year' },
+      { jp:'何年',     hira:'なんねん',     en:'what year' },
+    ]},
+  ],
+  questions: [
+    { jp:'今日は何曜日ですか。',     hira:'きょうはなんようびですか。',     en:'What day of the week is today?' },
+    { jp:'今日は何月何日ですか。',   hira:'きょうはなんがつなんにちですか。', en:'What month and date is today?' },
+    { jp:'お誕生日はいつですか。',   hira:'おたんじょうびはいつですか。',   en:'When is your birthday?' },
+    { jp:'何月生まれですか。',       hira:'なんがつうまれですか。',         en:'What month were you born?' },
+    { jp:'今何時ですか。',           hira:'いまなんじですか。',             en:'What time is it now?' },
+    { jp:'明日は何曜日ですか。',     hira:'あしたはなんようびですか。',     en:'What day is tomorrow?' },
+    { jp:'今年は何年ですか。',       hira:'ことしはなんねんですか。',       en:'What year is this year?' },
+    { jp:'今週末は何をしますか。',   hira:'こんしゅうまつはなにをしますか。', en:'What will you do this weekend?' },
+  ]
+};
+
+function renderTimePage() {
+  const root = document.getElementById('time-content');
+  if (!root) return;
+  let html = '';
+
+  TIME_DATA.sections.forEach(sec => {
+    html += `<div class="time-section-title">${sec.title}</div>`;
+    html += `<div class="time-grid">`;
+    sec.items.forEach(it => {
+      const safe = it.hira.replace(/'/g, "\\'");
+      html += `
+        <div class="time-card ${it.special ? 'special' : ''}" onclick="speak('${safe}')">
+          <div class="time-jp">${it.jp}</div>
+          <div class="time-hira">${it.hira}</div>
+          <div class="time-en">${it.en}</div>
+          ${it.note ? `<div class="time-note">⚠ ${it.note}</div>` : ''}
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+
+  // Question patterns
+  html += `<div class="time-section-title">❓ 常用問句 (Question Patterns)</div>`;
+  TIME_DATA.questions.forEach(q => {
+    const safe = (q.hira || q.jp).replace(/'/g, "\\'");
+    html += `
+      <div class="time-question-box" onclick="speak('${safe}')">
+        <div class="time-question-jp">${q.jp} 🔊</div>
+        ${q.hira ? `<div class="time-question-hira">${q.hira}</div>` : ''}
+        <div class="time-question-en">${q.en}</div>
+      </div>
+    `;
+  });
+
+  root.innerHTML = html;
+}
+
 // ============================
 // KANJI DATA (L3-L6, only orange-highlighted readings + compounds)
 // ============================
@@ -1991,6 +2193,27 @@ GRAMMARS['te-kudasai'] = {
       answers:['あした電話してください。','あした電話してください','あしたでんわしてください','あしたでんわしてください。','明日電話してください'] },
     { type:'translate', prompt:'11. Please bring your friend.',
       answers:['友だちを連れてきてください。','友だちを連れてきてください','ともだちを連れてきてください','ともだちをつれてきてください'] },
+    // --- Extended (L1-L6 vocab) ---
+    { type:'translate', prompt:'Please write your name.',
+      answers:['名前を書いてください。','名前を書いてください','なまえを書いてください','なまえをかいてください'] },
+    { type:'translate', prompt:'Please take a picture.',
+      answers:['写真を撮ってください。','写真を撮ってください','しゃしんを撮ってください','しゃしんをとってください'] },
+    { type:'translate', prompt:'Please buy bread.',
+      answers:['パンを買ってください。','パンを買ってください','パンをかってください'] },
+    { type:'translate', prompt:'Please drink water.',
+      answers:['水を飲んでください。','水を飲んでください','みずを飲んでください','みずをのんでください'] },
+    { type:'translate', prompt:'Please go to the hospital.',
+      answers:['病院に行ってください。','病院に行ってください','びょういんに行ってください','びょういんにいってください'] },
+    { type:'translate', prompt:'Please return home at 5.',
+      answers:['五時にうちに帰ってください。','五時にうちに帰ってください','ごじにうちにかえってください','五時に家に帰ってください'] },
+    { type:'translate', prompt:'Please borrow the book.',
+      answers:['本を借りてください。','本を借りてください','ほんを借りてください','ほんをかりてください'] },
+    { type:'translate', prompt:'Please open the window.',
+      answers:['窓を開けてください。','窓を開けてください','まどを開けてください','まどをあけてください'] },
+    { type:'translate', prompt:'Please use this pen.',
+      answers:['このペンを使ってください。','このペンを使ってください','このペンをつかってください'] },
+    { type:'translate', prompt:'Please help me.',
+      answers:['手伝ってください。','手伝ってください','てつだってください'] },
   ]
 };
 
@@ -2038,6 +2261,22 @@ GRAMMARS['te-two'] = {
       answers:['食堂に行って、昼ご飯を食べましょう。','食堂に行って、昼ご飯を食べましょう','しょくどうに行って、ひるごはんを食べましょう','しょくどうにいって、ひるごはんをたべましょう'] },
     { type:'translate', prompt:'I take the bus and go to work.',
       answers:['バスに乗って、会社に行きます。','バスに乗って、会社に行きます','バスにのって、かいしゃに行きます','バスにのって、かいしゃにいきます'] },
+    // --- Extended ---
+    { type:'translate', prompt:'I went to the temple and took pictures.',
+      answers:['お寺に行って、写真を撮りました。','お寺に行って、写真を撮りました','おてらに行って、写真を撮りました','おてらにいって、しゃしんをとりました'] },
+    { type:'translate', prompt:'I bought bread at the supermarket and ate it.',
+      answers:['スーパーでパンを買って、食べました。','スーパーでパンを買って、食べました','スーパーでパンをかって、たべました'] },
+    { type:'translate', prompt:'I went to the library and studied.',
+      answers:['図書館に行って、勉強しました。','図書館に行って、勉強しました','としょかんに行って、べんきょうしました','としょかんにいって、べんきょうしました'] },
+    { type:'translate', prompt:'I returned home and took a shower.',
+      answers:['うちに帰って、シャワーを浴びました。','うちに帰って、シャワーを浴びました','うちにかえって、シャワーをあびました'] },
+    { type:'translate', prompt:'I went to the park and played.',
+      answers:['公園に行って、遊びました。','公園に行って、遊びました','こうえんに行って、遊びました','こうえんにいって、あそびました'] },
+    { type:'translate', prompt:'I got up at 7 and ate breakfast.',
+      answers:['七時に起きて、朝ご飯を食べました。','七時に起きて、朝ご飯を食べました','しちじに起きて、あさごはんを食べました','しちじにおきて、あさごはんをたべました'] },
+    { type:'conj', prompt:'読む → 連接型', en:'te-form for joining', answers:['読んで','よんで'] },
+    { type:'conj', prompt:'買う → 連接型', en:'te-form for joining', answers:['買って','かって'] },
+    { type:'conj', prompt:'急ぐ → 連接型', en:'te-form for joining', answers:['急いで','いそいで'] },
   ]
 };
 
@@ -2082,6 +2321,21 @@ GRAMMARS['te-mo-ii'] = {
     { type:'fill', prompt:'エアコンを____もいいですか。', en:'May I turn on the AC?',       answers:['つけて'] },
     { type:'fill', prompt:'教科書を____もいいですか。',   en:'May I look at the textbook?', answers:['見て','みて'] },
     { type:'fill', prompt:'ここに____もいいですか。',     en:'May I sit here?',             answers:['座って','すわって'] },
+    // --- Extended ---
+    { type:'translate', prompt:'May I drink water?',
+      answers:['水を飲んでもいいですか。','水を飲んでもいいですか','みずを飲んでもいいですか','みずをのんでもいいですか'] },
+    { type:'translate', prompt:'May I eat this bread?',
+      answers:['このパンを食べてもいいですか。','このパンを食べてもいいですか','このパンをたべてもいいですか'] },
+    { type:'translate', prompt:'May I borrow this magazine?',
+      answers:['この雑誌を借りてもいいですか。','この雑誌を借りてもいいですか','このざっしを借りてもいいですか','このざっしをかりてもいいですか'] },
+    { type:'translate', prompt:'May I take a picture here?',
+      answers:['ここで写真を撮ってもいいですか。','ここで写真を撮ってもいいですか','ここで写真をとってもいいですか','ここでしゃしんをとってもいいですか'] },
+    { type:'translate', prompt:'May I go home now?',
+      answers:['今うちに帰ってもいいですか。','今うちに帰ってもいいですか','いまうちに帰ってもいいですか','いまうちにかえってもいいですか'] },
+    { type:'translate', prompt:'May I open the door?',
+      answers:['ドアを開けてもいいですか。','ドアを開けてもいいですか','ドアをあけてもいいですか'] },
+    { type:'translate', prompt:'May I bring my dog?',
+      answers:['犬を連れてきてもいいですか。','犬を連れてきてもいいですか','いぬを連れてきてもいいですか','いぬをつれてきてもいいですか'] },
   ]
 };
 
@@ -2125,6 +2379,19 @@ GRAMMARS['te-wa-ikemasen'] = {
       answers:['話して','はなして'] },
     { type:'fill', prompt:'(教室で)　____はいけません。', en:'(in class) You must not sleep.',
       answers:['寝て','ねて'] },
+    // --- Extended ---
+    { type:'translate', prompt:'You must not take pictures in the museum.',
+      answers:['美術館で写真を撮ってはいけません。','美術館で写真を撮ってはいけません','美術館でしゃしんをとってはいけません'] },
+    { type:'translate', prompt:'You must not bring your dog here.',
+      answers:['ここに犬を連れてきてはいけません。','ここに犬を連れてきてはいけません','ここにいぬを連れてきてはいけません','ここにいぬをつれてきてはいけません'] },
+    { type:'translate', prompt:"You must not be late.",
+      answers:['遅れてはいけません。','遅れてはいけません','おくれてはいけません'] },
+    { type:'translate', prompt:'You must not forget the textbook.',
+      answers:['教科書を忘れてはいけません。','教科書を忘れてはいけません','きょうかしょをわすれてはいけません'] },
+    { type:'translate', prompt:'You must not use the computer at the library.',
+      answers:['図書館でパソコンを使ってはいけません。','図書館でパソコンを使ってはいけません','としょかんでパソコンをつかってはいけません'] },
+    { type:'translate', prompt:'You must not stand here.',
+      answers:['ここに立ってはいけません。','ここに立ってはいけません','ここにたってはいけません'] },
   ]
 };
 
@@ -2164,6 +2431,15 @@ GRAMMARS['kara'] = {
     { type:'fill', prompt:'勉強します。あしたテストがあります____。',     en:"I'll study, because we have an exam tomorrow.", answers:['から'] },
     { type:'fill', prompt:'昼ご飯を食べません。お金がありません____。',   en:"I won't eat lunch, because I don't have money.", answers:['から'] },
     { type:'fill', prompt:'バスに乗りましょう。タクシーは高いです____。', en:"Let's take the bus, because taxis are expensive.", answers:['から'] },
+    // --- Extended ---
+    { type:'translate', prompt:"Let's go home. It's already late.",
+      answers:['うちに帰りましょう。もう遅いですから。','うちに帰りましょう。もう遅いですから','うちにかえりましょう。もうおそいですから'] },
+    { type:'translate', prompt:"I won't go out today. It's cold.",
+      answers:['今日は出かけません。寒いですから。','今日は出かけません。寒いですから','きょうは出かけません。さむいですから','きょうはでかけません。さむいですから'] },
+    { type:'translate', prompt:"Let's go to the cafe. I'm tired.",
+      answers:['カフェに行きましょう。疲れましたから。','カフェに行きましょう。疲れましたから','カフェに行きましょう。つかれましたから'] },
+    { type:'fill', prompt:'宿題があります____、勉強します。', en:"Since I have homework, I'll study.", answers:['から'] },
+    { type:'fill', prompt:'病院に行きます。具合が悪いです____。', en:"I'll go to the hospital because I feel sick.", answers:['から'] },
   ]
 };
 
@@ -2629,6 +2905,23 @@ GRAMMARS['l2-kore'] = {
     { type:'fill', prompt:'____は何ですか。 (Point to your own pen.)', en:'What is this?', answers:['これ'] },
     { type:'fill', prompt:'____は何ですか。 (Point to friend\'s shirt.)', en:'What is that (near you)?', answers:['それ'] },
     { type:'fill', prompt:'____は何ですか。 (Point to a distant building.)', en:'What is that over there?', answers:['あれ'] },
+    // --- Extended (using L1-L6 vocab) ---
+    { type:'translate', prompt:'This is a magazine.',
+      answers:['これは雑誌です。','これは雑誌です','これはざっしです','これはざっしです。'] },
+    { type:'translate', prompt:'That (near you) is a newspaper.',
+      answers:['それは新聞です。','それは新聞です','それはしんぶんです','それは新聞です'] },
+    { type:'translate', prompt:'That (over there) is a hospital.',
+      answers:['あれは病院です。','あれは病院です','あれはびょういんです'] },
+    { type:'translate', prompt:'That (over there) is a hotel.',
+      answers:['あれはホテルです。','あれはホテルです'] },
+    { type:'translate', prompt:'This is a flower.',
+      answers:['これは花です。','これは花です','これははなです'] },
+    { type:'translate', prompt:'This is a dog.',
+      answers:['これは犬です。','これは犬です','これはいぬです'] },
+    { type:'translate', prompt:'That (near you) is a chair.',
+      answers:['それはいすです。','それはいすです'] },
+    { type:'translate', prompt:"What's that (over there)? Is it a temple?",
+      answers:['あれは何ですか。お寺ですか。','あれは何ですか。お寺ですか','あれはなんですか。おてらですか'] },
   ]
 };
 
@@ -2672,6 +2965,17 @@ GRAMMARS['l2-kono'] = {
     { type:'fill', prompt:'____ペンはいくらですか。 (Friend is holding the pen)', en:'How much is that pen?', answers:['その'] },
     { type:'fill', prompt:'____ペンはいくらですか。 (Pen is across the room)', en:'How much is that pen over there?', answers:['あの'] },
     { type:'fill', prompt:'____学生が日本人ですか。', en:'Which student is Japanese?', answers:['どの'] },
+    // --- Extended (L3-L6 vocab) ---
+    { type:'translate', prompt:'How much is this magazine?',
+      answers:['この雑誌はいくらですか。','この雑誌はいくらですか','このざっしはいくらですか'] },
+    { type:'translate', prompt:'That movie (over there) is interesting.',
+      answers:['あの映画はおもしろいです。','あの映画はおもしろいです','あのえいがはおもしろいです'] },
+    { type:'translate', prompt:'This food is delicious.',
+      answers:['この食べ物はおいしいです。','この食べ物はおいしいです','このたべものはおいしいです'] },
+    { type:'translate', prompt:'How much is that bicycle (over there)?',
+      answers:['あの自転車はいくらですか。','あの自転車はいくらですか','あのじてんしゃはいくらですか'] },
+    { type:'translate', prompt:'That park (over there) is lively.',
+      answers:['あの公園はにぎやかです。','あの公園はにぎやかです','あのこうえんはにぎやかです'] },
   ]
 };
 
@@ -3028,6 +3332,30 @@ GRAMMARS['l3-particles'] = {
     { type:'fill', prompt:'学校____行きます。', en:'I go to school.', answers:['に','へ'] },
     { type:'fill', prompt:'七時____起きます。', en:'I get up at 7.', answers:['に'] },
     { type:'fill', prompt:'カフェ____コーヒー____飲みます。', en:'I drink coffee at the cafe. (両方の助詞)', answers:['でを','で を'] },
+    // --- Extended: more verbs / places / objects from L1-L6 ---
+    { type:'translate', prompt:'I eat dinner at the restaurant.',
+      answers:['レストランで晩ご飯を食べます。','レストランで晩ご飯を食べます','レストランでばんごはんをたべます'] },
+    { type:'translate', prompt:'I buy bread at the supermarket.',
+      answers:['スーパーでパンを買います。','スーパーでパンを買います','スーパーでパンをかいます'] },
+    { type:'translate', prompt:'I take a picture at the park.',
+      answers:['公園で写真を撮ります。','公園で写真を撮ります','こうえんでしゃしんをとります'] },
+    { type:'translate', prompt:'I meet my friend at the cafe.',
+      answers:['カフェで友達に会います。','カフェで友達に会います','カフェでともだちに会います','カフェでともだちにあいます'] },
+    { type:'translate', prompt:'I wait for the bus at the bus stop.',
+      answers:['バス停でバスを待ちます。','バス停でバスを待ちます','バスていでバスをまちます'] },
+    { type:'translate', prompt:'I write a report at home.',
+      answers:['うちでレポートを書きます。','うちでレポートを書きます','うちでレポートをかきます','家でレポートを書きます'] },
+    { type:'translate', prompt:'I borrow books at the library.',
+      answers:['図書館で本を借ります。','図書館で本を借ります','としょかんで本を借ります','としょかんで本をかります'] },
+    { type:'translate', prompt:'I go to Kyoto on Saturday.',
+      answers:['土曜日に京都に行きます。','土曜日に京都に行きます','どようびに京都に行きます','どようびにきょうとにいきます'] },
+    { type:'translate', prompt:'I return home at 8.',
+      answers:['八時にうちに帰ります。','八時にうちに帰ります','はちじにうちに帰ります','はちじにうちにかえります'] },
+    { type:'translate', prompt:'I drink tea every morning.',
+      answers:['毎朝お茶を飲みます。','毎朝お茶を飲みます','まいあさお茶を飲みます','まいあさおちゃをのみます'] },
+    { type:'fill', prompt:'スーパー____買い物します。', en:'I shop at the supermarket.', answers:['で'] },
+    { type:'fill', prompt:'病院____行きます。', en:'I go to the hospital.', answers:['に','へ'] },
+    { type:'fill', prompt:'昼ご飯____食べます。', en:'I eat lunch.', answers:['を'] },
   ]
 };
 
@@ -3065,6 +3393,21 @@ GRAMMARS['l3-masenka'] = {
       answers:['土曜日はちょっと…。','土曜日はちょっと…','土曜日はちょっと','どようびはちょっと'] },
     { type:'fill', prompt:'映画を____か。', en:"Won't you see a movie?", answers:['見ません','みません'] },
     { type:'fill', prompt:'コーヒーを____か。', en:"Won't you drink coffee?", answers:['飲みません','のみません'] },
+    // --- Extended invitations using L1-L6 vocab ---
+    { type:'translate', prompt:"Won't you go to the temple together?",
+      answers:['一緒にお寺に行きませんか。','一緒にお寺に行きませんか','いっしょにお寺に行きませんか','いっしょにおてらにいきませんか'] },
+    { type:'translate', prompt:"Won't you go shopping?",
+      answers:['買い物しませんか。','買い物しませんか','かいものしませんか'] },
+    { type:'translate', prompt:"Won't you swim at the sea?",
+      answers:['海で泳ぎませんか。','海で泳ぎませんか','うみで泳ぎませんか','うみでおよぎませんか'] },
+    { type:'translate', prompt:"Won't you go to the park on Sunday?",
+      answers:['日曜日に公園に行きませんか。','日曜日に公園に行きませんか','にちようびに公園に行きませんか','にちようびにこうえんにいきませんか'] },
+    { type:'translate', prompt:"Won't you eat ramen together?",
+      answers:['一緒にラーメンを食べませんか。','一緒にラーメンを食べませんか','いっしょにラーメンをたべませんか'] },
+    { type:'translate', prompt:"Won't you go to a restaurant tonight?",
+      answers:['今晩レストランに行きませんか。','今晩レストランに行きませんか','こんばんレストランに行きませんか','こんばんレストランにいきませんか'] },
+    { type:'translate', prompt:"Won't you study at the library tomorrow?",
+      answers:['明日図書館で勉強しませんか。','明日図書館で勉強しませんか','あした図書館で勉強しませんか','あしたとしょかんでべんきょうしませんか'] },
   ]
 };
 
@@ -3106,6 +3449,21 @@ GRAMMARS['l3-freq'] = {
     { type:'fill', prompt:'____カフェに行きます。', en:'I sometimes go to a cafe.', answers:['ときどき','時々'] },
     { type:'fill', prompt:'____テレビを見ません。', en:"I don't watch TV at all.", answers:['全然','ぜんぜん'] },
     { type:'fill', prompt:'____お酒を飲みません。', en:"I don't drink alcohol much.", answers:['あまり'] },
+    // --- Extended ---
+    { type:'translate', prompt:'I usually eat at the cafeteria.',
+      answers:['たいてい食堂で食べます。','たいてい食堂で食べます','たいていしょくどうで食べます','たいていしょくどうでたべます'] },
+    { type:'translate', prompt:'I often go to the convenience store.',
+      answers:['よくコンビニに行きます。','よくコンビニに行きます','よくコンビニにいきます'] },
+    { type:'translate', prompt:'I sometimes read magazines.',
+      answers:['ときどき雑誌を読みます。','ときどき雑誌を読みます','ときどきざっしを読みます','ときどきざっしをよみます'] },
+    { type:'translate', prompt:"I don't go to temples much.",
+      answers:['あまりお寺に行きません。','あまりお寺に行きません','あまりおてらに行きません','あまりおてらにいきません'] },
+    { type:'translate', prompt:"I don't take pictures at all.",
+      answers:['全然写真を撮りません。','全然写真を撮りません','ぜんぜん写真を撮りません','ぜんぜんしゃしんをとりません'] },
+    { type:'translate', prompt:'I usually return home at 6.',
+      answers:['たいてい六時にうちに帰ります。','たいてい六時にうちに帰ります','たいていろくじにうちにかえります'] },
+    { type:'translate', prompt:'I sometimes swim at the sea.',
+      answers:['ときどき海で泳ぎます。','ときどき海で泳ぎます','ときどきうみでおよぎます'] },
   ]
 };
 
@@ -3153,6 +3511,25 @@ GRAMMARS['l4-arimasu'] = {
     { type:'fill', prompt:'(living) 学生が____。', en:'There is a student.', answers:['います'] },
     { type:'fill', prompt:'(animal) 犬が____。', en:'There is a dog.', answers:['います'] },
     { type:'fill', prompt:'机の上____本があります。', en:'There is a book on the desk. (place particle)', answers:['に'] },
+    // --- Extended ---
+    { type:'translate', prompt:'There is a dog in the park.',
+      answers:['公園に犬がいます。','公園に犬がいます','こうえんに犬がいます','こうえんにいぬがいます'] },
+    { type:'translate', prompt:'There is a flower on the desk.',
+      answers:['机の上に花があります。','机の上に花があります','つくえの上に花があります','つくえのうえにはながあります'] },
+    { type:'translate', prompt:'There is a bookstore over there.',
+      answers:['あそこに本屋があります。','あそこに本屋があります','あそこにほんやがあります'] },
+    { type:'translate', prompt:'There is a wallet in the bag.',
+      answers:['かばんの中に財布があります。','かばんの中に財布があります','かばんのなかにさいふがあります'] },
+    { type:'translate', prompt:'I have a homework today.',
+      answers:['今日宿題があります。','今日宿題があります','きょう宿題があります','きょうしゅくだいがあります'] },
+    { type:'translate', prompt:'There will be a test on Wednesday.',
+      answers:['水曜日にテストがあります。','水曜日にテストがあります','すいようびにテストがあります'] },
+    { type:'translate', prompt:'There is a child in the park.',
+      answers:['公園に子供がいます。','公園に子供がいます','こうえんに子供がいます','こうえんにこどもがいます'] },
+    { type:'translate', prompt:'There is a hospital near (here).',
+      answers:['近くに病院があります。','近くに病院があります','ちかくに病院があります','ちかくにびょういんがあります'] },
+    { type:'translate', prompt:"I don't have money.",
+      answers:['お金がありません。','お金がありません','おかねがありません'] },
   ]
 };
 
@@ -3194,6 +3571,21 @@ GRAMMARS['l4-location'] = {
     { type:'fill', prompt:'傘はテーブルの____です。 (under)', en:'under', answers:['下','した'] },
     { type:'fill', prompt:'猫はいすの____です。 (on top)', en:'on', answers:['上','うえ'] },
     { type:'fill', prompt:'A____B____間 (between A and B)', en:'between A and B (particles)', answers:['との','と の'] },
+    // --- Extended ---
+    { type:'translate', prompt:'The umbrella is next to the chair.',
+      answers:['かさはいすの隣です。','かさはいすの隣です','かさはいすのとなりです','傘はいすの隣です'] },
+    { type:'translate', prompt:'The dog is between the desk and the chair.',
+      answers:['犬は机といすの間です。','犬は机といすの間です','いぬはつくえといすのあいだです'] },
+    { type:'translate', prompt:'The cafe is in front of the hotel.',
+      answers:['カフェはホテルの前です。','カフェはホテルの前です','カフェはホテルのまえです'] },
+    { type:'translate', prompt:'The temple is to the right of the park.',
+      answers:['お寺は公園の右です。','お寺は公園の右です','おてらは公園のみぎです','おてらはこうえんのみぎです'] },
+    { type:'translate', prompt:'The bookstore is to the left of the bank.',
+      answers:['本屋は銀行の左です。','本屋は銀行の左です','ほんやはぎんこうのひだりです'] },
+    { type:'translate', prompt:'The cat is behind the desk.',
+      answers:['猫は机の後ろです。','猫は机の後ろです','ねこはつくえのうしろです'] },
+    { type:'translate', prompt:"I'll wait in front of the library.",
+      answers:['図書館の前で待ちます。','図書館の前で待ちます','としょかんの前で待ちます','としょかんのまえでまちます'] },
   ]
 };
 
@@ -3241,6 +3633,27 @@ GRAMMARS['l4-past'] = {
     { type:'conj', prompt:'来る → 過去肯定',  en:'past affirmative',       answers:['来ました','きました'] },
     { type:'conj', prompt:'(です) → 過去肯定', en:'です past affirmative',   answers:['でした'] },
     { type:'conj', prompt:'(です) → 過去否定', en:'です past negative',      answers:['じゃなかったです','じゃありませんでした','ではありませんでした'] },
+    // --- Extended ---
+    { type:'translate', prompt:'I took a picture at the temple yesterday.',
+      answers:['昨日お寺で写真を撮りました。','昨日お寺で写真を撮りました','きのうおてらで写真を撮りました','きのうおてらでしゃしんをとりました'] },
+    { type:'translate', prompt:'I bought a hat last week.',
+      answers:['先週帽子を買いました。','先週帽子を買いました','せんしゅう帽子を買いました','せんしゅうぼうしをかいました'] },
+    { type:'translate', prompt:'I read the newspaper this morning.',
+      answers:['今朝新聞を読みました。','今朝新聞を読みました','けさ新聞を読みました','けさしんぶんをよみました'] },
+    { type:'translate', prompt:'I ate ramen at the restaurant yesterday.',
+      answers:['昨日レストランでラーメンを食べました。','昨日レストランでラーメンを食べました','きのうレストランでラーメンをたべました'] },
+    { type:'translate', prompt:"I didn't return home yesterday.",
+      answers:['昨日帰りませんでした。','昨日帰りませんでした','きのうかえりませんでした','きのう帰りませんでした'] },
+    { type:'translate', prompt:'I met a friend at the park last Saturday.',
+      answers:['先週の土曜日に公園で友達に会いました。','先週の土曜日に公園で友達に会いました','せんしゅうのどようびにこうえんでともだちにあいました'] },
+    { type:'translate', prompt:"I didn't watch TV last night.",
+      answers:['昨日の夜テレビを見ませんでした。','昨日の夜テレビを見ませんでした','きのうのよるテレビをみませんでした'] },
+    { type:'translate', prompt:'Today was a Wednesday.',
+      answers:['今日は水曜日でした。','今日は水曜日でした','きょうは水曜日でした','きょうはすいようびでした'] },
+    { type:'translate', prompt:'Yesterday was not Friday.',
+      answers:['昨日は金曜日じゃなかったです。','昨日は金曜日じゃなかったです','きのうはきんようびじゃなかったです','昨日は金曜日じゃありませんでした'] },
+    { type:'translate', prompt:'I waited at the bus stop for one hour.',
+      answers:['バス停で一時間待ちました。','バス停で一時間待ちました','バスていで一時間待ちました','バスていでいちじかんまちました'] },
   ]
 };
 
@@ -3290,6 +3703,25 @@ GRAMMARS['l5-adj'] = {
       answers:['昨日の天気はよかったです。','昨日の天気はよかったです','きのうの天気はよかったです','きのうのてんきはよかったです'] },
     { type:'translate', prompt:'The town was not lively.',
       answers:['町はにぎやかじゃなかったです。','町はにぎやかじゃなかったです','まちはにぎやかじゃなかったです','町はにぎやかじゃありませんでした'] },
+    // --- Extended ---
+    { type:'translate', prompt:'The fish is delicious.',
+      answers:['魚はおいしいです。','魚はおいしいです','さかなはおいしいです'] },
+    { type:'translate', prompt:'The library is quiet.',
+      answers:['図書館は静かです。','図書館は静かです','としょかんはしずかです'] },
+    { type:'translate', prompt:'The hospital was not far.',
+      answers:['病院は遠くなかったです。','病院は遠くなかったです','びょういんはとおくなかったです'] },
+    { type:'translate', prompt:'The room is small.',
+      answers:['部屋は小さいです。','部屋は小さいです','へやは小さいです','へやはちいさいです'] },
+    { type:'translate', prompt:'The trip was fun.',
+      answers:['旅行は楽しかったです。','旅行は楽しかったです','りょこうは楽しかったです','りょこうはたのしかったです'] },
+    { type:'translate', prompt:'The weather is bad today.',
+      answers:['今日は天気がよくないです。','今日は天気がよくないです','きょうは天気がよくないです','きょうはてんきがよくないです'] },
+    { type:'translate', prompt:"Yesterday's homework was difficult.",
+      answers:['昨日の宿題は難しかったです。','昨日の宿題は難しかったです','きのうの宿題は難しかったです','きのうのしゅくだいはむずかしかったです'] },
+    { type:'translate', prompt:'The cat is small.',
+      answers:['猫は小さいです。','猫は小さいです','ねこは小さいです','ねこはちいさいです'] },
+    { type:'translate', prompt:'My mother is healthy.',
+      answers:['お母さんは元気です。','お母さんは元気です','おかあさんは元気です','おかあさんはげんきです'] },
   ]
 };
 
@@ -3328,6 +3760,27 @@ GRAMMARS['l5-adj-mod'] = {
     { type:'fill', prompt:'きれい____写真 (なadj + N)', en:'a beautiful picture (particle)', answers:['な'] },
     { type:'fill', prompt:'しずか____町 (なadj + N)', en:'a quiet town (particle)', answers:['な'] },
     { type:'fill', prompt:'おおきい____ (large bag)', en:'large bag', answers:['かばん'] },
+    // --- Extended ---
+    { type:'translate', prompt:'an old shrine',
+      answers:['古いお寺','古いお寺。','ふるいおてら'] },
+    { type:'translate', prompt:'a busy day',
+      answers:['忙しい日','忙しい日。','いそがしい日','いそがしいひ'] },
+    { type:'translate', prompt:'a small dog',
+      answers:['小さい犬','小さい犬。','ちいさいいぬ'] },
+    { type:'translate', prompt:'a cold day',
+      answers:['寒い日','寒い日。','さむい日','さむいひ'] },
+    { type:'translate', prompt:'an easy test',
+      answers:['やさしいテスト','やさしいテスト。'] },
+    { type:'translate', prompt:'a kind person',
+      answers:['やさしい人','やさしい人。','やさしいひと'] },
+    { type:'translate', prompt:'a famous (lively) park',
+      answers:['にぎやかな公園','にぎやかな公園。','にぎやかなこうえん'] },
+    { type:'translate', prompt:'a clean room',
+      answers:['きれいな部屋','きれいな部屋。','きれいなへや'] },
+    { type:'translate', prompt:'This is a fun trip.',
+      answers:['これは楽しい旅行です。','これは楽しい旅行です','これはたのしい旅行です','これはたのしいりょこうです'] },
+    { type:'translate', prompt:'Robert is a kind person.',
+      answers:['ロバートさんはやさしい人です。','ロバートさんはやさしい人です','ロバートさんはやさしいひとです'] },
   ]
 };
 
@@ -3366,6 +3819,23 @@ GRAMMARS['l5-suki'] = {
     { type:'fill', prompt:'コーヒー____好きです。', en:'I like coffee. (particle)', answers:['が'] },
     { type:'fill', prompt:'魚____きらいです。', en:'I dislike fish. (particle)', answers:['が'] },
     { type:'fill', prompt:'これは私の好き____本です。', en:'This is my favorite book. (なadj+N)', answers:['な'] },
+    // --- Extended ---
+    { type:'translate', prompt:'I like vegetables.',
+      answers:['野菜が好きです。','野菜が好きです','やさいが好きです','やさいがすきです'] },
+    { type:'translate', prompt:'I love sushi (use ramen).',
+      answers:['ラーメンが大好きです。','ラーメンが大好きです','ラーメンがだいすきです'] },
+    { type:'translate', prompt:'I dislike alcohol.',
+      answers:['お酒がきらいです。','お酒がきらいです','おさけがきらいです'] },
+    { type:'translate', prompt:'My father likes the sea.',
+      answers:['お父さんは海が好きです。','お父さんは海が好きです','おとうさんは海が好きです','おとうさんはうみがすきです'] },
+    { type:'translate', prompt:'I like fun trips.',
+      answers:['楽しい旅行が好きです。','楽しい旅行が好きです','たのしいりょこうがすきです'] },
+    { type:'translate', prompt:'I hate cold weather.',
+      answers:['寒い天気が大嫌いです。','寒い天気が大嫌いです','さむい天気が大嫌いです','さむいてんきがだいきらいです'] },
+    { type:'translate', prompt:'My favorite restaurant is here.',
+      answers:['私の好きなレストランはここです。','私の好きなレストランはここです','わたしの好きなレストランはここです'] },
+    { type:'translate', prompt:'My favorite weather is hot weather.',
+      answers:['私の好きな天気は暑い天気です。','私の好きな天気は暑い天気です','わたしのすきなてんきはあついてんきです'] },
   ]
 };
 
@@ -3400,6 +3870,26 @@ GRAMMARS['l5-mashou'] = {
     { type:'conj', prompt:'食べる → Let\'s eat', en:"let's eat", answers:['食べましょう','たべましょう'] },
     { type:'conj', prompt:'行く → Let\'s go', en:"let's go", answers:['行きましょう','いきましょう'] },
     { type:'conj', prompt:'勉強する → Let\'s study', en:"let's study", answers:['勉強しましょう','べんきょうしましょう'] },
+    // --- Extended ---
+    { type:'translate', prompt:"Let's go to the temple.",
+      answers:['お寺に行きましょう。','お寺に行きましょう','おてらに行きましょう','おてらにいきましょう'] },
+    { type:'translate', prompt:"Let's read a magazine together.",
+      answers:['一緒に雑誌を読みましょう。','一緒に雑誌を読みましょう','いっしょに雑誌を読みましょう','いっしょにざっしをよみましょう'] },
+    { type:'translate', prompt:"Let's swim at the sea.",
+      answers:['海で泳ぎましょう。','海で泳ぎましょう','うみで泳ぎましょう','うみでおよぎましょう'] },
+    { type:'translate', prompt:"Shall we take a picture?",
+      answers:['写真を撮りましょうか。','写真を撮りましょうか','しゃしんをとりましょうか'] },
+    { type:'translate', prompt:"Let's listen to music.",
+      answers:['音楽を聞きましょう。','音楽を聞きましょう','おんがくをききましょう'] },
+    { type:'translate', prompt:"Let's go shopping.",
+      answers:['買い物しましょう。','買い物しましょう','かいものしましょう'] },
+    { type:'translate', prompt:"Let's meet at the park.",
+      answers:['公園で会いましょう。','公園で会いましょう','こうえんで会いましょう','こうえんであいましょう'] },
+    { type:'translate', prompt:"Shall we ride the bus?",
+      answers:['バスに乗りましょうか。','バスに乗りましょうか','バスにのりましょうか'] },
+    { type:'conj', prompt:'飲む → Let\'s drink', en:"let's drink", answers:['飲みましょう','のみましょう'] },
+    { type:'conj', prompt:'買う → Let\'s buy', en:"let's buy", answers:['買いましょう','かいましょう'] },
+    { type:'conj', prompt:'帰る → Let\'s go back', en:"let's go back", answers:['帰りましょう','かえりましょう'] },
   ]
 };
 
@@ -3965,6 +4455,21 @@ GRAMMARS['mashou-ka'] = {
     { type:'fill', prompt:'まどを____か。',   en:'Shall I open the window?',    answers:['開けましょう','あけましょう'] },
     { type:'fill', prompt:'電気を____か。',   en:'Shall I turn off the light?', answers:['消しましょう','けしましょう'] },
     { type:'fill', prompt:'____か。',         en:"Shall I help you?",          answers:['手伝いましょう','てつだいましょう'] },
+    // --- Extended (offering help with L1-L6 vocab) ---
+    { type:'translate', prompt:'Shall I open the door?',
+      answers:['ドアを開けましょうか。','ドアを開けましょうか','ドアをあけましょうか'] },
+    { type:'translate', prompt:'Shall I take the picture?',
+      answers:['写真を撮りましょうか。','写真を撮りましょうか','しゃしんをとりましょうか'] },
+    { type:'translate', prompt:'Shall I bring your bag?',
+      answers:['かばんを持ってきましょうか。','かばんを持ってきましょうか','かばんを持ってきましょうか','かばんをもってきましょうか'] },
+    { type:'translate', prompt:'Shall I call a taxi?',
+      answers:['タクシーを呼びましょうか。','タクシーを呼びましょうか','タクシーをよびましょうか'] },
+    { type:'translate', prompt:"Shall I take you to the hospital?",
+      answers:['病院に連れていきましょうか。','病院に連れていきましょうか','びょういんに連れていきましょうか','びょういんにつれていきましょうか'] },
+    { type:'translate', prompt:'Shall I close the door?',
+      answers:['ドアを閉めましょうか。','ドアを閉めましょうか','ドアをしめましょうか'] },
+    { type:'translate', prompt:'Shall I buy bread for you?',
+      answers:['パンを買いましょうか。','パンを買いましょうか','パンをかいましょうか'] },
   ]
 };
 
@@ -7520,6 +8025,7 @@ function showPage(name) {
   if (name === 'pinmanager') showPinManager();
   if (name === 'numbers') renderNumbersPage();
   if (name === 'kanji') renderKanjiPage();
+  if (name === 'time') renderTimePage();
   if (name === 'hiragana') {
     renderKanaTable(HIRAGANA, 'hira-ref', 'hira');
     startPractice(HIRAGANA, 'hira-p1', 'hira', 'k2r');
