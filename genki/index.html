@@ -538,6 +538,62 @@
     font-size: 0.85em; color: #00838F; margin-top: 2px; font-style: italic;
   }
 
+  /* Counter variations comparison table */
+  .counters-rule-box {
+    background: linear-gradient(135deg,#FFFDE7 0%,#FFF59D 100%);
+    border-left: 5px solid #F9A825;
+    border-radius: 12px; padding: 14px 16px;
+    margin: 12px 16px;
+    color: #4E342E; line-height: 1.7;
+  }
+  .counters-rule-box b { color: #BF360C; }
+  .counters-rule-box .rule-num {
+    display:inline-block; background:#FF6F00; color:white;
+    border-radius:50%; width:26px; height:26px; line-height:26px;
+    text-align:center; font-weight:900; margin-right:6px;
+  }
+  .counters-compare-wrap {
+    margin: 8px 16px 16px; overflow-x: auto;
+    background: white; border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .counters-compare {
+    width: 100%; border-collapse: collapse; font-size: 0.85em;
+    min-width: 460px;
+  }
+  .counters-compare th, .counters-compare td {
+    padding: 8px 6px; text-align: center;
+    border-bottom: 1px solid #ECEFF1;
+  }
+  .counters-compare thead th {
+    background: #00838F; color: white; font-weight: 700;
+    position: sticky; top: 0;
+  }
+  .counters-compare thead th.h4 { background: #C62828; }
+  .counters-compare thead th.h7 { background: #6A1B9A; }
+  .counters-compare thead th.h8 { background: #EF6C00; }
+  .counters-compare thead th.h9 { background: #2E7D32; }
+  .counters-compare td.label {
+    text-align: left; font-weight: 700; color: #37474F;
+    background: #F5F5F5; min-width: 110px;
+  }
+  .counters-compare td.cell {
+    cursor: pointer; user-select: none; font-weight: 600;
+    color: #1A237E;
+  }
+  .counters-compare td.cell.irregular {
+    background: linear-gradient(135deg,#FFF3E0 0%,#FFE0B2 100%);
+    color: #BF360C;
+  }
+  .counters-compare td.cell:active { background: #B3E5FC; }
+  .counters-compare td.cell .reading {
+    display:block; font-size: 1em;
+  }
+  .counters-compare td.cell .warn {
+    display:block; font-size: 0.7em; color:#E65100; margin-top:2px;
+    font-weight: 600;
+  }
+
   /* Kanji reference */
   .kanji-card {
     background: white; border-radius: 12px; padding: 14px;
@@ -983,6 +1039,11 @@
         <div class="lesson-title">数字 1〜10,000</div>
         <div class="lesson-en">含發音變化 · 點數字聽發音</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('counters')" style="background:linear-gradient(135deg,#FFF8E1 0%,#FFE082 100%);">
+        <div class="lesson-num" style="color:#E65100">🧮 数字変化</div>
+        <div class="lesson-title">Counter Variations</div>
+        <div class="lesson-en">4 / 7 / 8 / 9 在不同 counter 的讀法對照</div>
+      </div>
       <div class="hub-card verbs-card" onclick="showPage('kanji')" style="background:linear-gradient(135deg,#F3E5F5 0%,#CE93D8 100%);">
         <div class="lesson-num" style="color:#6A1B9A">📖 KANJI</div>
         <div class="lesson-title">漢字 Lessons 3〜6</div>
@@ -1172,6 +1233,20 @@
     💡 點任何數字可聽發音。<b style="color:#E65100">橘色標示</b> 是<b>發音不規則</b>的數字 (sound change)。
   </div>
   <div id="numbers-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ============ COUNTER VARIATIONS PAGE ============ -->
+<div id="page-counters" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>🧮 数字変化 Counter Variations</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="particle-info">
+    💡 此頁專門整理 <b>4 / 7 / 8 / 9</b> 在不同 counter（時、分、月、歲、年、人、つ、円）下的讀法變化。<b style="color:#E65100">橘色</b>= 不規則 / 特殊讀音。
+  </div>
+  <div id="counters-content"></div>
   <div class="bottom-pad"></div>
 </div>
 
@@ -1635,6 +1710,257 @@ function renderTimePage() {
   st.current = null; st.attempts = 0;
   st.revealed = false; st.advanceArmed = false;
   setTimeout(() => pickNextGrammarExercise('time-quiz'), 50);
+}
+
+// ============================
+// COUNTER VARIATIONS DATA (for 4, 7, 8, 9 cross-counter comparison)
+// ============================
+// Each counter section lists 1-10 readings.
+// `special:true` highlights an irregular / sound-changed reading.
+const COUNTERS_DATA = {
+  // Compact 4 / 7 / 8 / 9 comparison across major counters.
+  // Each row = one counter; columns are the readings for 4 / 7 / 8 / 9.
+  // irregular:true paints the cell orange.
+  focus: [
+    { counter:'〜時 (點鐘)', readings:{
+      '4':{hira:'よじ',       irregular:true,  warn:'よ-, 不是よん' },
+      '7':{hira:'しちじ',     irregular:true,  warn:'しち-, 不用なな' },
+      '8':{hira:'はちじ',     irregular:false },
+      '9':{hira:'くじ',       irregular:true,  warn:'く-, 不是きゅう' },
+    }},
+    { counter:'〜分 (分鐘)', readings:{
+      '4':{hira:'よんぷん',   irregular:true,  warn:'半濁音ぷ' },
+      '7':{hira:'ななふん',   irregular:false, note:'(しちふん也可)' },
+      '8':{hira:'はっぷん',   irregular:true,  warn:'促音+ぷ' },
+      '9':{hira:'きゅうふん', irregular:false },
+    }},
+    { counter:'〜月 (月份)', readings:{
+      '4':{hira:'しがつ',     irregular:true,  warn:'し-, 不是よん／よ' },
+      '7':{hira:'しちがつ',   irregular:true,  warn:'しち-, 不用なな' },
+      '8':{hira:'はちがつ',   irregular:false },
+      '9':{hira:'くがつ',     irregular:true,  warn:'く-, 不是きゅう' },
+    }},
+    { counter:'〜歳 (年齡)', readings:{
+      '4':{hira:'よんさい',   irregular:false },
+      '7':{hira:'ななさい',   irregular:false },
+      '8':{hira:'はっさい',   irregular:true,  warn:'促音 はち→はっ' },
+      '9':{hira:'きゅうさい', irregular:false },
+    }},
+    { counter:'〜年 (幾年)', readings:{
+      '4':{hira:'よねん',     irregular:true,  warn:'よ-, 不是よん' },
+      '7':{hira:'ななねん',   irregular:false, note:'(しちねん也可)' },
+      '8':{hira:'はちねん',   irregular:false },
+      '9':{hira:'きゅうねん', irregular:false },
+    }},
+    { counter:'〜人 (人數)', readings:{
+      '4':{hira:'よにん',     irregular:true,  warn:'よ-, 不是よん' },
+      '7':{hira:'しちにん',   irregular:false, note:'(ななにん也可)' },
+      '8':{hira:'はちにん',   irregular:false },
+      '9':{hira:'きゅうにん', irregular:false, note:'(くにん也可)' },
+    }},
+    { counter:'〜つ (一般)', readings:{
+      '4':{hira:'よっつ',     irregular:true,  warn:'促音' },
+      '7':{hira:'ななつ',     irregular:false },
+      '8':{hira:'やっつ',     irregular:true,  warn:'特殊 や-' },
+      '9':{hira:'ここのつ',   irregular:true,  warn:'特殊讀法' },
+    }},
+    { counter:'〜円 (日圓)', readings:{
+      '4':{hira:'よえん',     irregular:true,  warn:'よ-, 不是よん' },
+      '7':{hira:'ななえん',   irregular:false },
+      '8':{hira:'はちえん',   irregular:false },
+      '9':{hira:'きゅうえん', irregular:false },
+    }},
+  ],
+  // Full 1-10 lists per counter (point any card to hear it).
+  sections: [
+    { title:'⏰ 〜時 (點鐘 o\'clock) — Genki L1', items:[
+      { jp:'1時',  hira:'いちじ',      en:'1 o\'clock' },
+      { jp:'2時',  hira:'にじ',        en:'2 o\'clock' },
+      { jp:'3時',  hira:'さんじ',      en:'3 o\'clock' },
+      { jp:'4時',  hira:'よじ',        en:'4 o\'clock', special:true, note:'よ- 不是よん' },
+      { jp:'5時',  hira:'ごじ',        en:'5 o\'clock' },
+      { jp:'6時',  hira:'ろくじ',      en:'6 o\'clock' },
+      { jp:'7時',  hira:'しちじ',      en:'7 o\'clock', special:true, note:'しち- 不用なな' },
+      { jp:'8時',  hira:'はちじ',      en:'8 o\'clock' },
+      { jp:'9時',  hira:'くじ',        en:'9 o\'clock', special:true, note:'く- 不是きゅう' },
+      { jp:'10時', hira:'じゅうじ',    en:'10 o\'clock' },
+      { jp:'11時', hira:'じゅういちじ', en:'11 o\'clock' },
+      { jp:'12時', hira:'じゅうにじ',   en:'12 o\'clock' },
+      { jp:'何時', hira:'なんじ',      en:'what time' },
+    ]},
+    { title:'⏱️ 〜分 (分鐘 minutes) — Genki L1', items:[
+      { jp:'1分',  hira:'いっぷん',    en:'1 min',  special:true, note:'促音+ぷ' },
+      { jp:'2分',  hira:'にふん',      en:'2 min' },
+      { jp:'3分',  hira:'さんぷん',    en:'3 min',  special:true, note:'半濁音ぷ' },
+      { jp:'4分',  hira:'よんぷん',    en:'4 min',  special:true, note:'半濁音ぷ' },
+      { jp:'5分',  hira:'ごふん',      en:'5 min' },
+      { jp:'6分',  hira:'ろっぷん',    en:'6 min',  special:true, note:'促音+ぷ' },
+      { jp:'7分',  hira:'ななふん',    en:'7 min' },
+      { jp:'8分',  hira:'はっぷん',    en:'8 min',  special:true, note:'促音+ぷ' },
+      { jp:'9分',  hira:'きゅうふん',  en:'9 min' },
+      { jp:'10分', hira:'じゅっぷん',  en:'10 min', special:true, note:'じっぷん也可' },
+      { jp:'何分', hira:'なんぷん',    en:'how many min', special:true, note:'半濁音ぷ' },
+    ]},
+    { title:'📅 〜月 (月份 month) — Genki L4', items:[
+      { jp:'1月',  hira:'いちがつ',    en:'January' },
+      { jp:'2月',  hira:'にがつ',      en:'February' },
+      { jp:'3月',  hira:'さんがつ',    en:'March' },
+      { jp:'4月',  hira:'しがつ',      en:'April',     special:true, note:'し- 不規則' },
+      { jp:'5月',  hira:'ごがつ',      en:'May' },
+      { jp:'6月',  hira:'ろくがつ',    en:'June' },
+      { jp:'7月',  hira:'しちがつ',    en:'July',      special:true, note:'しち- 不用なな' },
+      { jp:'8月',  hira:'はちがつ',    en:'August' },
+      { jp:'9月',  hira:'くがつ',      en:'September', special:true, note:'く- 不是きゅう' },
+      { jp:'10月', hira:'じゅうがつ',  en:'October' },
+      { jp:'11月', hira:'じゅういちがつ', en:'November' },
+      { jp:'12月', hira:'じゅうにがつ',  en:'December' },
+      { jp:'何月', hira:'なんがつ',    en:'what month' },
+    ]},
+    { title:'🎂 〜歳 (年齡 age) — Genki L1', items:[
+      { jp:'1歳',  hira:'いっさい',    en:'1 yr old', special:true, note:'促音 いち→いっ' },
+      { jp:'2歳',  hira:'にさい',      en:'2 yr old' },
+      { jp:'3歳',  hira:'さんさい',    en:'3 yr old' },
+      { jp:'4歳',  hira:'よんさい',    en:'4 yr old' },
+      { jp:'5歳',  hira:'ごさい',      en:'5 yr old' },
+      { jp:'6歳',  hira:'ろくさい',    en:'6 yr old' },
+      { jp:'7歳',  hira:'ななさい',    en:'7 yr old' },
+      { jp:'8歳',  hira:'はっさい',    en:'8 yr old', special:true, note:'促音 はち→はっ' },
+      { jp:'9歳',  hira:'きゅうさい',  en:'9 yr old' },
+      { jp:'10歳', hira:'じっさい',    en:'10 yr old', special:true, note:'じゅっさい也可' },
+      { jp:'20歳', hira:'はたち',      en:'20 yr old', special:true, note:'極特殊！要單獨記' },
+      { jp:'何歳', hira:'なんさい',    en:'how old (一般)' },
+      { jp:'おいくつ', hira:'おいくつ', en:'how old (禮貌)' },
+    ]},
+    { title:'📆 〜年 (年數 year) — Genki L4-5', items:[
+      { jp:'1年',  hira:'いちねん',    en:'1 year' },
+      { jp:'2年',  hira:'にねん',      en:'2 years' },
+      { jp:'3年',  hira:'さんねん',    en:'3 years' },
+      { jp:'4年',  hira:'よねん',      en:'4 years', special:true, note:'よ- 不是よん' },
+      { jp:'5年',  hira:'ごねん',      en:'5 years' },
+      { jp:'6年',  hira:'ろくねん',    en:'6 years' },
+      { jp:'7年',  hira:'ななねん',    en:'7 years', note:'(しちねん也可)' },
+      { jp:'8年',  hira:'はちねん',    en:'8 years' },
+      { jp:'9年',  hira:'きゅうねん',  en:'9 years' },
+      { jp:'10年', hira:'じゅうねん',  en:'10 years' },
+      { jp:'何年', hira:'なんねん',    en:'how many years' },
+    ]},
+    { title:'👥 〜人 (人數 people)', items:[
+      { jp:'1人',  hira:'ひとり',      en:'1 person', special:true, note:'極特殊！' },
+      { jp:'2人',  hira:'ふたり',      en:'2 people', special:true, note:'極特殊！' },
+      { jp:'3人',  hira:'さんにん',    en:'3 people' },
+      { jp:'4人',  hira:'よにん',      en:'4 people', special:true, note:'よ- 不是よん' },
+      { jp:'5人',  hira:'ごにん',      en:'5 people' },
+      { jp:'6人',  hira:'ろくにん',    en:'6 people' },
+      { jp:'7人',  hira:'しちにん',    en:'7 people', note:'(ななにん也可)' },
+      { jp:'8人',  hira:'はちにん',    en:'8 people' },
+      { jp:'9人',  hira:'きゅうにん',  en:'9 people', note:'(くにん也可)' },
+      { jp:'10人', hira:'じゅうにん',  en:'10 people' },
+      { jp:'何人', hira:'なんにん',    en:'how many people' },
+    ]},
+    { title:'🧊 〜つ (一般 general counter, 1-10 only) — Genki L2', items:[
+      { jp:'一つ', hira:'ひとつ',      en:'1', special:true, note:'特殊系列' },
+      { jp:'二つ', hira:'ふたつ',      en:'2', special:true },
+      { jp:'三つ', hira:'みっつ',      en:'3', special:true, note:'促音' },
+      { jp:'四つ', hira:'よっつ',      en:'4', special:true, note:'促音' },
+      { jp:'五つ', hira:'いつつ',      en:'5', special:true },
+      { jp:'六つ', hira:'むっつ',      en:'6', special:true, note:'促音' },
+      { jp:'七つ', hira:'ななつ',      en:'7', special:true },
+      { jp:'八つ', hira:'やっつ',      en:'8', special:true, note:'促音 や-' },
+      { jp:'九つ', hira:'ここのつ',    en:'9', special:true },
+      { jp:'十',   hira:'とお',        en:'10', special:true, note:'沒有「つ」！' },
+      { jp:'いくつ', hira:'いくつ',    en:'how many' },
+    ]},
+    { title:'💴 〜円 (日圓 yen) — Genki L2', items:[
+      { jp:'1円',  hira:'いちえん',    en:'¥1' },
+      { jp:'2円',  hira:'にえん',      en:'¥2' },
+      { jp:'3円',  hira:'さんえん',    en:'¥3' },
+      { jp:'4円',  hira:'よえん',      en:'¥4', special:true, note:'よ- 不是よん' },
+      { jp:'5円',  hira:'ごえん',      en:'¥5' },
+      { jp:'6円',  hira:'ろくえん',    en:'¥6' },
+      { jp:'7円',  hira:'ななえん',    en:'¥7' },
+      { jp:'8円',  hira:'はちえん',    en:'¥8' },
+      { jp:'9円',  hira:'きゅうえん',  en:'¥9' },
+      { jp:'10円', hira:'じゅうえん',  en:'¥10' },
+      { jp:'100円', hira:'ひゃくえん', en:'¥100' },
+      { jp:'1000円', hira:'せんえん',  en:'¥1000' },
+      { jp:'いくら', hira:'いくら',    en:'how much' },
+    ]},
+    { title:'⏳ 〜時間 (持續時間 duration in hours) — Genki L4', items:[
+      { jp:'1時間',  hira:'いちじかん',    en:'1 hour' },
+      { jp:'2時間',  hira:'にじかん',      en:'2 hours' },
+      { jp:'3時間',  hira:'さんじかん',    en:'3 hours' },
+      { jp:'4時間',  hira:'よじかん',      en:'4 hours', special:true, note:'よ- 跟 4時 同源' },
+      { jp:'5時間',  hira:'ごじかん',      en:'5 hours' },
+      { jp:'6時間',  hira:'ろくじかん',    en:'6 hours' },
+      { jp:'7時間',  hira:'しちじかん',    en:'7 hours', note:'(ななじかん也可)' },
+      { jp:'8時間',  hira:'はちじかん',    en:'8 hours' },
+      { jp:'9時間',  hira:'くじかん',      en:'9 hours', special:true, note:'く- 跟 9時 同源' },
+      { jp:'10時間', hira:'じゅうじかん',  en:'10 hours' },
+      { jp:'何時間', hira:'なんじかん',    en:'how many hours' },
+    ]},
+  ]
+};
+
+function renderCountersPage() {
+  const root = document.getElementById('counters-content');
+  if (!root) return;
+  let html = '';
+
+  // === Section 1: rules ===
+  html += `<div class="counters-rule-box">
+    <div style="font-size:1.05em; font-weight:700; margin-bottom:8px; color:#BF360C;">📐 數字變化規則 (4 / 7 / 8 / 9)</div>
+    <div><span class="rule-num">4</span><b>三種讀法</b>：<b>し</b>(月)、<b>よ</b>(時／人／円／年)、<b>よん</b>(分／歲)</div>
+    <div><span class="rule-num">7</span><b>兩種讀法</b>：<b>しち</b>(時／月)、<b>なな</b>(分／歲／円／年／つ)；人／年常二者皆可</div>
+    <div><span class="rule-num" style="background:#EF6C00">8</span><b>固定はち</b>，但在 <b>分／歲</b> 變促音 <b>はっ</b>，在「八つ」變特殊 <b>やっつ</b></div>
+    <div><span class="rule-num" style="background:#2E7D32">9</span><b>兩種讀法</b>：<b>く</b>(時／月)、<b>きゅう</b>(分／歲／年／円)；人二者皆可</div>
+    <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #BF360C;">
+      💡 額外規則：<b>1、6、8、10</b> 接 <b>か/さ/た/は 行</b> 常變 <b>促音</b>（一歲→いっさい、八分→はっぷん、十分→じゅっぷん）。<b>3、何</b> 接 <b>は 行</b> 變半濁音 <b>ぱ/ぴ/ぷ</b>（三分→さんぷん、何分→なんぷん）。
+    </div>
+  </div>`;
+
+  // === Section 2: focused 4/7/8/9 comparison table ===
+  html += `<div class="time-section-title">🎯 4 / 7 / 8 / 9 ─ 跨 counter 對照表（點儲存格聽發音）</div>`;
+  html += `<div class="counters-compare-wrap"><table class="counters-compare"><thead><tr>
+    <th>Counter</th>
+    <th class="h4">4</th>
+    <th class="h7">7</th>
+    <th class="h8">8</th>
+    <th class="h9">9</th>
+  </tr></thead><tbody>`;
+  COUNTERS_DATA.focus.forEach(row => {
+    html += `<tr><td class="label">${row.counter}</td>`;
+    ['4','7','8','9'].forEach(n => {
+      const r = row.readings[n];
+      const safe = r.hira.replace(/'/g, "\\'");
+      html += `<td class="cell ${r.irregular?'irregular':''}" onclick="speak('${safe}')">
+        <span class="reading">${r.hira}</span>
+        ${r.warn ? `<span class="warn">⚠ ${r.warn}</span>` : ''}
+        ${r.note ? `<span class="warn" style="color:#666">${r.note}</span>` : ''}
+      </td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // === Section 3: full 1-10 lists per counter ===
+  COUNTERS_DATA.sections.forEach(sec => {
+    html += `<div class="time-section-title">${sec.title}</div>`;
+    html += `<div class="time-grid">`;
+    sec.items.forEach(it => {
+      const safe = it.hira.replace(/'/g, "\\'");
+      html += `
+        <div class="time-card ${it.special ? 'special' : ''}" onclick="speak('${safe}')">
+          <div class="time-jp">${it.jp}</div>
+          <div class="time-hira">${it.hira}</div>
+          <div class="time-en">${it.en}</div>
+          ${it.note ? `<div class="time-note">⚠ ${it.note}</div>` : ''}
+        </div>
+      `;
+    });
+    html += `</div>`;
+  });
+
+  root.innerHTML = html;
 }
 
 // ============================
@@ -8544,6 +8870,7 @@ function showPage(name) {
   if (name === 'adjectives') renderAdjectives();
   if (name === 'pinmanager') showPinManager();
   if (name === 'numbers') renderNumbersPage();
+  if (name === 'counters') renderCountersPage();
   if (name === 'kanji') renderKanjiPage();
   if (name === 'time') renderTimePage();
   if (name === 'hiragana') {
