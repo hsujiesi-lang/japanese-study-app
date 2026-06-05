@@ -6245,11 +6245,44 @@ function getPinnedVerbsArr() {
     return raw ? JSON.parse(raw) : [];
   } catch(e) { return []; }
 }
+// Run `fn` (which rerenders the list), keeping the viewport visually still.
+// Picks a non-target card that's currently visible, records its top, then
+// after rerender adjusts window scroll so that anchor card stays at the
+// same screen Y. If no anchor is found (e.g. user is on a different page),
+// the function falls through to natural browser behavior.
+function preserveScroll(selector, getKey, skipKey, fn) {
+  const cards = Array.from(document.querySelectorAll(selector));
+  let anchorKey = null, oldTop = 0;
+  for (const c of cards) {
+    const k = getKey(c);
+    if (k === skipKey) continue;
+    const r = c.getBoundingClientRect();
+    if (r.bottom > 0 && r.top < window.innerHeight) {
+      anchorKey = k;
+      oldTop = r.top;
+      break;
+    }
+  }
+  fn();
+  if (anchorKey != null) {
+    const all = document.querySelectorAll(selector);
+    for (const e of all) {
+      if (getKey(e) === anchorKey) {
+        const delta = e.getBoundingClientRect().top - oldTop;
+        if (Math.abs(delta) > 0.5) window.scrollBy(0, delta);
+        break;
+      }
+    }
+  }
+}
+
 function togglePinVerb(key) {
-  const pinned = getPinnedVerbs();
-  if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
-  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
-  renderVerbs();
+  preserveScroll('.verb-card[data-verb-key]', el => el.dataset.verbKey, key, () => {
+    const pinned = getPinnedVerbs();
+    if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
+    try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
+    renderVerbs();
+  });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
 }
 // Reorder a verb pin (move from -> to)
@@ -6614,15 +6647,16 @@ function verbCard(v, isPinned) {
   const c = conjugate(v);
   const te = teForm(v);
   const teRule = teFormRule(v);
+  const key = verbKey(v);
   const div = document.createElement('div');
   div.className = 'verb-card ' + v.type + (isPinned ? ' pinned' : '');
+  div.dataset.verbKey = key;  // used by preserveScroll to anchor the viewport on rerender
 
   const particleBadges = v.particles.length === 0
     ? '<span class="badge badge-particle none">無</span>'
     : v.particles.map(p => `<span class="badge badge-particle" onclick="speak('${p}')">${p}</span>`).join('');
 
   const typeLabel = v.type === 'ru' ? 'Ru-verb' : (v.type === 'u' ? 'U-verb' : 'Irregular');
-  const key = verbKey(v);
 
   const hasKanji = v.kanji && v.kanji !== v.hira;
   const hiraLine = hasKanji ? `<span class="hira">${v.hira}</span>` : '';
@@ -6947,10 +6981,13 @@ function getPinnedVocabArr(num) {
   } catch(e) { return []; }
 }
 function togglePinVocab(num, hira) {
-  const pinned = getPinnedVocab(num);
-  if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
-  try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
-  renderVocabBody(num);
+  const skipKey = `${num}:${hira}`;
+  preserveScroll('.vocab-card[data-vocab-key]', el => el.dataset.vocabKey, skipKey, () => {
+    const pinned = getPinnedVocab(num);
+    if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
+    try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
+    renderVocabBody(num);
+  });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
 }
 // Reorder a vocab pin within its lesson (move from -> to)
@@ -7677,7 +7714,7 @@ function vocabCardHTML(num, item, cls, isPinned) {
   const hiraSub = hasKanji ? `<div class="vocab-hira">${item.hira}</div>` : '';
   const safe = item.hira.replace(/'/g, "\\'");
   return `
-    <div class="vocab-card ${cls} ${isPinned ? 'pinned' : ''}" onclick="speak('${safe}')">
+    <div class="vocab-card ${cls} ${isPinned ? 'pinned' : ''}" data-vocab-key="${num}:${item.hira}" onclick="speak('${safe}')">
       <button class="vocab-pin ${isPinned ? 'active' : ''}" onclick="event.stopPropagation(); togglePinVocab(${num},'${safe}')" title="${isPinned ? '取消釘選' : '釘選置頂'}">📌</button>
       <div class="vocab-jp">
         <div class="vocab-main">${display}</div>
