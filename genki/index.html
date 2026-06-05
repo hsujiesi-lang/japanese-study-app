@@ -1218,7 +1218,18 @@
   <div class="particle-info">
     💡 點漢字、讀音或詞彙都可以聽發音。<b>只列橘色標示</b>的必背讀音與詞彙。
   </div>
-  <div id="kanji-list"></div>
+
+  <div class="verb-mode-tabs">
+    <button class="verb-mode-tab active" id="kanji-tab-ref"  onclick="setKanjiMode('reference')">📋 列表 Reference</button>
+    <button class="verb-mode-tab"        id="kanji-tab-prac" onclick="setKanjiMode('practice')">✏️ 練習 Practice</button>
+  </div>
+
+  <div id="kanji-reference-mode">
+    <div id="kanji-list"></div>
+  </div>
+  <div id="kanji-practice-mode" style="display:none;">
+    <div id="kanji-practice"></div>
+  </div>
   <div class="bottom-pad"></div>
 </div>
 
@@ -2208,11 +2219,36 @@ const KANJI_DATA = [
 ];
 
 let kanjiFilter = 'all';
+let kanjiMode = 'reference';  // 'reference' | 'practice'
 function setKanjiFilter(btn, value) {
   document.querySelectorAll('[data-kanji-l]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   kanjiFilter = value;
   renderKanjiPage();
+  if (kanjiMode === 'practice') rebuildKanjiPractice();
+}
+function setKanjiMode(mode) {
+  kanjiMode = mode;
+  document.getElementById('kanji-tab-ref').classList.toggle('active', mode === 'reference');
+  document.getElementById('kanji-tab-prac').classList.toggle('active', mode === 'practice');
+  document.getElementById('kanji-reference-mode').style.display = (mode === 'reference') ? '' : 'none';
+  document.getElementById('kanji-practice-mode').style.display  = (mode === 'practice')  ? '' : 'none';
+  if (mode === 'practice') rebuildKanjiPractice();
+}
+function rebuildKanjiPractice() {
+  GRAMMARS['kanji-quiz'] = buildKanjiQuiz(kanjiFilter);
+  const root = document.getElementById('kanji-practice');
+  if (!root) return;
+  root.innerHTML = grammarSectionHTML('kanji-quiz');
+  // Reset session state so a fresh 10-question round starts every time the
+  // user enters practice mode or switches the L filter.
+  const st = getGrammarState('kanji-quiz');
+  st.correct = 0; st.wrong = 0;
+  st.sessionCount = 0; st.sessionWrong = [];
+  st.sessionDone = false; st.currentMarkedWrong = false;
+  st.current = null; st.attempts = 0;
+  st.revealed = false; st.advanceArmed = false;
+  setTimeout(() => pickNextGrammarExercise('kanji-quiz'), 50);
 }
 
 function renderKanjiPage() {
@@ -6830,6 +6866,72 @@ const _q4 = buildVocabQuiz(4); if (_q4) GRAMMARS['l4-vocab-quiz'] = _q4;
 const _q5 = buildVocabQuiz(5); if (_q5) GRAMMARS['l5-vocab-quiz'] = _q5;
 const _q6 = buildVocabQuiz(6); if (_q6) GRAMMARS['l6-vocab-quiz'] = _q6;
 
+// ============================
+// KANJI QUIZ — mixed meaning + reading practice over KANJI_DATA
+// filter: 'all' | '3' | '4' | '5' | '6'
+// Question types:
+//   • 「漢字」是什麼意思？  → accept English meaning (case-insensitive, multi-variant)
+//   • 「詞彙」的讀音？      → accept hiragana (split on / for alternates)
+// ============================
+function buildKanjiQuiz(filter) {
+  filter = filter || 'all';
+  const pool = KANJI_DATA.filter(k => filter === 'all' || String(k.lesson) === String(filter));
+  const exercises = [];
+  const seen = new Set();
+  const addEx = (key, ex) => {
+    if (seen.has(key)) return;
+    seen.add(key);
+    exercises.push(ex);
+  };
+
+  pool.forEach(entry => {
+    // Q-type A: kanji → meaning
+    const meaningVariants = [];
+    const raw = entry.meaning;
+    const push = v => { if (v && !meaningVariants.includes(v)) meaningVariants.push(v); };
+    push(raw);
+    raw.split(/[;,／/]/).forEach(p => push(p.trim()));
+    // Drop parenthetical hints: "circle (figure)" → "circle"
+    const noParen = raw.replace(/\([^)]*\)/g, '').trim();
+    push(noParen);
+    noParen.split(/[;,／/]/).forEach(p => push(p.trim()));
+    addEx('m:' + entry.k, {
+      type: 'translate',
+      prompt: `「${entry.k}」是什麼意思？(英文)`,
+      answers: meaningVariants.filter(Boolean)
+    });
+
+    // Q-type B: for each word, ask its reading
+    entry.words.forEach(w => {
+      const [jp, hira, en] = w;
+      if (!jp || !hira) return;
+      // Skip pure-kana words (no kanji practice point)
+      // (Keep them anyway — they reinforce the reading.)
+      const variants = hira.split(/[\/／]/).map(s => s.trim()).filter(Boolean);
+      addEx('r:' + jp + '|' + hira, {
+        type: 'translate',
+        prompt: `請輸入「${jp}」的讀音 (hiragana)　— ${en}`,
+        answers: variants
+      });
+    });
+  });
+
+  if (exercises.length === 0) return null;
+  const label = filter === 'all' ? 'L3-L6' : `L${filter}`;
+  return {
+    title: `📖 漢字クイズ ｜ Kanji Practice (${label})`,
+    explanation: [
+      '<b>用法：</b>混合兩種題型：',
+      '① <b>看漢字寫意思</b>（英文小寫即可，大小寫均接受）',
+      '② <b>看詞彙寫讀音</b>（hiragana；有兩種讀音時任一皆可）',
+      `題庫範圍跟著上方 L 篩選器切換（目前：${label}）。不確定就按 <b>👀 看答案</b>。`
+    ],
+    examples: [],
+    exercises: exercises
+  };
+}
+GRAMMARS['kanji-quiz'] = buildKanjiQuiz('all');
+
 // --- Pin persistence (localStorage) ---
 function getPinnedVocab(num) {
   try {
@@ -7728,7 +7830,8 @@ function grammarSectionHTML(id) {
 
 // Normalize answer for comparison (trim, remove trailing 。, fullwidth spaces)
 function normalizeAns(s) {
-  return s.replace(/[\s　]+/g,'').replace(/[。.]$/,'').trim();
+  // toLowerCase is safe for Japanese (no-op) and lets English answers match case-insensitively (for the kanji-meaning quiz).
+  return s.replace(/[\s　]+/g,'').replace(/[。.]$/,'').toLowerCase().trim();
 }
 
 function pickNextGrammarExercise(id) {
