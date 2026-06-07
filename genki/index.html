@@ -4539,6 +4539,194 @@ GRAMMARS['l4-past'] = {
   ]
 };
 
+// ----- L4 Grammar ｜ 〜時間 (duration in hours/minutes) -----
+GRAMMARS['l4-jikan'] = {
+  title: 'Grammar 6 ｜ 〜時間 (持續時間 Duration)',
+  explanation: [
+    '<b>用法：</b>「(時間量)」直接放在動詞前面，表示「做了多久」。',
+    '結構：<b>(時間量)＋(動詞)</b>。注意：<b>不加に</b>，因為這是「持續時間」不是「時刻」。',
+    '常用單位：<b>一時間</b>(いちじかん)、<b>二時間</b>(にじかん)、<b>三十分</b>(さんじゅっぷん)、<b>一時間半</b>(いちじかんはん, 1.5 小時)。',
+    '對比：<b>七時に</b>起きました (在七點起床) vs. <b>七時間</b>勉強しました (讀了七小時)。',
+    '想說「大約」可用 <b>ぐらい</b>：二時間ぐらい (大約兩小時)。',
+    '想問「多久」用 <b>どのぐらい</b>：どのぐらい勉強しましたか？'
+  ],
+  examples: [
+    { jp:'一時間日本語を勉強しました。',     reading:'いちじかんにほんごをべんきょうしました。', en:'I studied Japanese for one hour.' },
+    { jp:'三時間ぐらい寝ました。',           reading:'さんじかんぐらいねました。',               en:'I slept for about three hours.' },
+    { jp:'一時間半テレビを見ました。',       reading:'いちじかんはんテレビをみました。',         en:'I watched TV for an hour and a half.' },
+    { jp:'三十分待ちました。',               reading:'さんじゅっぷんまちました。',               en:'I waited for thirty minutes.' },
+    { jp:'毎日二時間ぐらい運動します。',     reading:'まいにちにじかんぐらいうんどうします。',   en:'I exercise about two hours every day.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I studied Japanese for one hour.',
+      answers:['一時間日本語を勉強しました。','一時間日本語を勉強しました','いちじかん日本語を勉強しました','いちじかんにほんごをべんきょうしました'] },
+    { type:'translate', prompt:'I slept for about eight hours.',
+      answers:['八時間ぐらい寝ました。','八時間ぐらい寝ました','はちじかんぐらい寝ました','はちじかんぐらいねました'] },
+    { type:'translate', prompt:'I watched TV for two hours.',
+      answers:['二時間テレビを見ました。','二時間テレビを見ました','にじかんテレビを見ました','にじかんテレビをみました'] },
+    { type:'translate', prompt:'I waited at the station for thirty minutes.',
+      answers:['駅で三十分待ちました。','駅で三十分待ちました','えきで三十分待ちました','えきでさんじゅっぷんまちました','駅でさんじっぷんまちました'] },
+    { type:'translate', prompt:'I read a book for an hour and a half.',
+      answers:['一時間半本を読みました。','一時間半本を読みました','いちじかんはん本を読みました','いちじかんはんほんをよみました'] },
+    { type:'translate', prompt:'How long did you study?',
+      answers:['どのぐらい勉強しましたか。','どのぐらい勉強しましたか','どのぐらいべんきょうしましたか'] },
+    { type:'translate', prompt:'I exercised for one hour yesterday.',
+      answers:['昨日一時間運動しました。','昨日一時間運動しました','きのう一時間運動しました','きのういちじかんうんどうしました'] },
+    { type:'translate', prompt:'I worked at the part-time job for four hours.',
+      answers:['四時間アルバイトをしました。','四時間アルバイトをしました','よじかんアルバイトをしました'] },
+    { type:'translate', prompt:'I talked with my friend for two hours.',
+      answers:['二時間友達と話しました。','二時間友達と話しました','にじかんともだちと話しました','にじかんともだちとはなしました'] },
+    { type:'translate', prompt:'I waited for the bus for forty minutes.',
+      answers:['四十分バスを待ちました。','四十分バスを待ちました','よんじゅっぷんバスを待ちました','よんじゅっぷんバスをまちました'] },
+    { type:'translate', prompt:'I want to sleep for nine hours today.',
+      answers:['今日九時間寝たいです。','今日九時間寝たいです','きょう九時間寝たいです','きょうくじかんねたいです'] },
+    { type:'translate', prompt:'I read a magazine for thirty minutes this morning.',
+      answers:['今朝三十分雑誌を読みました。','今朝三十分雑誌を読みました','けさ三十分雑誌をよみました','けささんじゅっぷんざっしをよみました'] },
+    { type:'translate', prompt:'I went to the library for three hours yesterday.',
+      answers:['昨日三時間図書館に行きました。','昨日三時間図書館に行きました','きのうさんじかんとしょかんに行きました'] },
+    { type:'translate', prompt:'I studied Japanese for thirty minutes today.',
+      answers:['今日三十分日本語を勉強しました。','今日三十分日本語を勉強しました','きょう三十分日本語を勉強しました','きょうさんじゅっぷんにほんごをべんきょうしました'] },
+    { type:'translate', prompt:'How long did you sleep last night?',
+      answers:['昨日の夜どのぐらい寝ましたか。','昨日の夜どのぐらい寝ましたか','きのうのよるどのぐらい寝ましたか','きのうのよるどのぐらいねましたか'] },
+    { type:'fill', prompt:'昨日____勉強しました。(for three hours)', en:'three hours = 三時間',
+      answers:['三時間','さんじかん'] },
+    { type:'fill', prompt:'____テレビを見ました。(for one hour and a half)', en:'an hour and a half = 一時間半',
+      answers:['一時間半','いちじかんはん'] },
+    { type:'fill', prompt:'駅で____待ちました。(for thirty minutes)', en:'thirty minutes = 三十分',
+      answers:['三十分','さんじゅっぷん','さんじっぷん'] },
+    { type:'fill', prompt:'どのぐらい____ましたか。(how long did you sleep)', en:'sleep = 寝',
+      answers:['寝','ね'] },
+    { type:'fill', prompt:'毎日二時間ぐらい____します。(exercise)', en:'exercise = 運動',
+      answers:['運動','うんどう'] },
+  ]
+};
+
+// ----- L4 Grammar ｜ と (with / and: connecting nouns) -----
+GRAMMARS['l4-to'] = {
+  title: 'Grammar 8 ｜ と (with [someone] / and [for nouns])',
+  explanation: [
+    '<b>用法 1：</b>「(人) <b>と</b> (動詞)」＝「跟某人一起做某事」。',
+    '例：友達<b>と</b>映画を見ました (跟朋友看了電影)。',
+    '<b>用法 2：</b>「N1 <b>と</b> N2」連接<b>兩個名詞</b>，等於英文 "and"（只用於名詞，不能連接句子！）。',
+    '例：パンと卵を食べました (吃了麵包和雞蛋)。',
+    '⚠️ 連接句子用 <b>そして</b> 或 <b>〜て</b>形，不要用 と。',
+    '⚠️ と 用於有限列舉（A 和 B）；要說「A、B 等等」用 や。',
+    '常見組合：<b>友達と</b>、<b>家族と</b>、<b>クラスメート(classmate)と</b>。',
+  ],
+  examples: [
+    { jp:'昨日友達と映画を見ました。',     reading:'きのうともだちとえいがをみました。',     en:'I watched a movie with a friend yesterday.' },
+    { jp:'パンと卵を食べました。',         reading:'パンとたまごをたべました。',             en:'I ate bread and eggs.' },
+    { jp:'メアリーさんとデートをしました。', reading:'メアリーさんとデートをしました。',     en:'I had a date with Mary.' },
+    { jp:'日本語と英語を話します。',       reading:'にほんごとえいごをはなします。',         en:'I speak Japanese and English.' },
+    { jp:'家族と日本に行きました。',       reading:'かぞくとにほんにいきました。',           en:'I went to Japan with my family.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I watched a movie with my friend yesterday.',
+      answers:['昨日友達と映画を見ました。','昨日友達と映画を見ました','きのうともだちと映画を見ました','きのうともだちとえいがをみました'] },
+    { type:'translate', prompt:'I ate bread and eggs this morning.',
+      answers:['今朝パンと卵を食べました。','今朝パンと卵を食べました','けさパンと卵を食べました','けさパンとたまごをたべました'] },
+    { type:'translate', prompt:'I had a date with Mary.',
+      answers:['メアリーさんとデートをしました。','メアリーさんとデートをしました'] },
+    { type:'translate', prompt:'I went to Japan with my family.',
+      answers:['家族と日本に行きました。','家族と日本に行きました','かぞくと日本に行きました','かぞくとにほんにいきました'] },
+    { type:'translate', prompt:'I speak Japanese and English.',
+      answers:['日本語と英語を話します。','日本語と英語を話します','日本語と英語をはなします','にほんごとえいごをはなします'] },
+    { type:'translate', prompt:'I drank coffee and tea.',
+      answers:['コーヒーとお茶を飲みました。','コーヒーとお茶を飲みました','コーヒーとおちゃをのみました'] },
+    { type:'translate', prompt:'I studied with my classmate yesterday.',
+      answers:['昨日クラスメートと勉強しました。','昨日クラスメートと勉強しました','きのうクラスメートとべんきょうしました'] },
+    { type:'translate', prompt:'I went to the park with my friend.',
+      answers:['友達と公園に行きました。','友達と公園に行きました','ともだちとこうえんに行きました','ともだちとこうえんにいきました'] },
+    { type:'translate', prompt:'I ate ramen and gyoza.',
+      answers:['ラーメンと餃子を食べました。','ラーメンと餃子を食べました','ラーメンとぎょうざをたべました'] },
+    { type:'translate', prompt:'I bought a book and a magazine.',
+      answers:['本と雑誌を買いました。','本と雑誌を買いました','ほんとざっしを買いました','ほんとざっしをかいました'] },
+    { type:'translate', prompt:'I will go to a movie with Tanaka-san tomorrow.',
+      answers:['明日田中さんと映画に行きます。','明日田中さんと映画に行きます','あした田中さんと映画に行きます','あしたたなかさんとえいがにいきます'] },
+    { type:'translate', prompt:'I want to talk with the teacher.',
+      answers:['先生と話したいです。','先生と話したいです','せんせいと話したいです','せんせいとはなしたいです'] },
+    { type:'translate', prompt:'Tanaka-san and Sakura-san are students.',
+      answers:['田中さんとさくらさんは学生です。','田中さんとさくらさんは学生です','たなかさんとさくらさんはがくせいです'] },
+    { type:'translate', prompt:'I waited at the station with my friend.',
+      answers:['駅で友達と待ちました。','駅で友達と待ちました','えきで友達と待ちました','えきでともだちとまちました'] },
+    { type:'translate', prompt:'I took a picture with my family at the temple.',
+      answers:['お寺で家族と写真を撮りました。','お寺で家族と写真を撮りました','おてらで家族と写真を撮りました','おてらでかぞくとしゃしんをとりました'] },
+    { type:'translate', prompt:'I will eat lunch with my mother tomorrow.',
+      answers:['明日母と昼ご飯を食べます。','明日母と昼ご飯を食べます','あした母と昼ご飯を食べます','あしたははとひるごはんをたべます'] },
+    { type:'fill', prompt:'昨日____映画を見ました。(with friend)', en:'with friend = 友達と',
+      answers:['友達と','ともだちと'] },
+    { type:'fill', prompt:'パン____卵を食べました。(and)', en:'and (between nouns) = と',
+      answers:['と'] },
+    { type:'fill', prompt:'____日本に行きました。(with family)', en:'with family = 家族と',
+      answers:['家族と','かぞくと'] },
+    { type:'fill', prompt:'メアリーさん____デートをしました。(with)', en:'with someone = と',
+      answers:['と'] },
+  ]
+};
+
+// ----- L4 Grammar ｜ も (also / too — refresher and with negatives) -----
+GRAMMARS['l4-mo'] = {
+  title: 'Grammar 5 復習 ｜ も (also / too)',
+  explanation: [
+    '<b>用法：</b>「X <b>も</b> 〜」表示「X 也…」。',
+    '<b>取代</b>原本的 は 或 が。<i>絕對不要寫成 はも 或 がも！</i>',
+    '<b>肯定：</b>田中さん<b>も</b>学生です (田中也是學生)。',
+    '<b>否定：</b>テレビを見ません。本<b>も</b>読みません (我不看電視，書也不讀)。',
+    '<b>受詞 (object)：</b>を 通常會被 も 取代 → 本<b>も</b>読みません (不是 をも)。',
+    '<b>地點：</b>に／で 通常會被 も 取代或 + も → 図書館<b>にも</b>行きました (也去了圖書館)。',
+    '想表「兩個都」用 <b>〜も〜も</b>：田中さん<b>も</b>さくらさん<b>も</b>学生です (田中和さくら都是學生)。',
+  ],
+  examples: [
+    { jp:'田中さんも学生です。',         reading:'たなかさんもがくせいです。',           en:'Tanaka-san is also a student.' },
+    { jp:'メアリーさんも日本に行きました。', reading:'メアリーさんもにほんにいきました。', en:'Mary also went to Japan.' },
+    { jp:'コーヒーを飲みません。お茶も飲みません。', reading:'コーヒーをのみません。おちゃものみません。', en:"I don't drink coffee. I don't drink tea either." },
+    { jp:'田中さんもさくらさんも学生です。', reading:'たなかさんもさくらさんもがくせいです。', en:'Both Tanaka and Sakura are students.' },
+    { jp:'昨日図書館にも行きました。',     reading:'きのうとしょかんにもいきました。',   en:'I also went to the library yesterday.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Tanaka-san is also a student.',
+      answers:['田中さんも学生です。','田中さんも学生です','たなかさんも学生です','たなかさんもがくせいです'] },
+    { type:'translate', prompt:'Mary also went to Japan.',
+      answers:['メアリーさんも日本に行きました。','メアリーさんも日本に行きました','メアリーさんもにほんにいきました'] },
+    { type:'translate', prompt:"I don't drink coffee. I don't drink tea either.",
+      answers:['コーヒーを飲みません。お茶も飲みません。','コーヒーを飲みません。お茶も飲みません','コーヒーをのみません。おちゃものみません'] },
+    { type:'translate', prompt:'Both Tanaka and Sakura are students.',
+      answers:['田中さんもさくらさんも学生です。','田中さんもさくらさんも学生です','たなかさんもさくらさんもがくせいです'] },
+    { type:'translate', prompt:'I went to the library yesterday too.',
+      answers:['昨日図書館にも行きました。','昨日図書館にも行きました','きのう図書館にも行きました','きのうとしょかんにもいきました'] },
+    { type:'translate', prompt:'I also bought a book.',
+      answers:['本も買いました。','本も買いました','ほんもかいました'] },
+    { type:'translate', prompt:'Sakura also speaks Japanese.',
+      answers:['さくらさんも日本語を話します。','さくらさんも日本語を話します','さくらさんもにほんごをはなします'] },
+    { type:'translate', prompt:'I did not eat breakfast. I did not eat lunch either.',
+      answers:['朝ご飯を食べませんでした。昼ご飯も食べませんでした。','朝ご飯を食べませんでした。昼ご飯も食べませんでした','あさごはんを食べませんでした。ひるごはんも食べませんでした','あさごはんをたべませんでした。ひるごはんもたべませんでした'] },
+    { type:'translate', prompt:'I also met my friend at the cafe.',
+      answers:['カフェで友達にも会いました。','カフェで友達にも会いました','カフェでともだちにもあいました'] },
+    { type:'translate', prompt:'Mary studies Japanese. Takeshi also studies Japanese.',
+      answers:['メアリーさんは日本語を勉強します。たけしさんも日本語を勉強します。','メアリーさんは日本語を勉強します。たけしさんも日本語を勉強します','メアリーさんはにほんごをべんきょうします。たけしさんもにほんごをべんきょうします'] },
+    { type:'translate', prompt:'I did not watch the movie. I did not read the book either.',
+      answers:['映画を見ませんでした。本も読みませんでした。','映画を見ませんでした。本も読みませんでした','えいがをみませんでした。ほんもよみませんでした'] },
+    { type:'translate', prompt:'I drink tea. I also drink coffee.',
+      answers:['お茶を飲みます。コーヒーも飲みます。','お茶を飲みます。コーヒーも飲みます','おちゃをのみます。コーヒーものみます'] },
+    { type:'translate', prompt:'I went to the park. I also went to the temple.',
+      answers:['公園に行きました。お寺にも行きました。','公園に行きました。お寺にも行きました','こうえんに行きました。おてらにも行きました','こうえんにいきました。おてらにもいきました'] },
+    { type:'translate', prompt:'My older sister is also a student.',
+      answers:['姉も学生です。','姉も学生です','あねもがくせいです'] },
+    { type:'translate', prompt:'I am also Taiwanese.',
+      answers:['私も台湾人です。','私も台湾人です','わたしもたいわんじんです'] },
+    { type:'translate', prompt:'I exercise on Monday. I also exercise on Friday.',
+      answers:['月曜日に運動します。金曜日も運動します。','月曜日に運動します。金曜日も運動します','げつようびにうんどうします。きんようびもうんどうします'] },
+    { type:'fill', prompt:'田中さん____学生です。(also)', en:'also = も',
+      answers:['も'] },
+    { type:'fill', prompt:'コーヒーを飲みません。お茶____飲みません。(also not)', en:'also = も (replaces を)',
+      answers:['も'] },
+    { type:'fill', prompt:'昨日図書館____行きました。(also to)', en:'also to = にも',
+      answers:['にも'] },
+    { type:'fill', prompt:'田中さん____さくらさん____学生です。(both ... and ...)', en:'both...and = も...も',
+      answers:['もも','も　も','も も'] },
+  ]
+};
+
 // ============================
 // LESSON 5 GRAMMARS
 // ============================
@@ -8341,9 +8529,9 @@ function buildLessonContent(num) {
     return;
   }
 
-  // Lesson 4 — vocab + Vocab Quiz + あります/います + Location + Past tense
+  // Lesson 4 — vocab + Vocab Quiz + あります/います + Location + Past tense + 時間 + と + も
   if (VOCAB[num] && num === 4) {
-    const grammarIds = ['l4-vocab-quiz','l4-arimasu','l4-location','l4-past'].filter(id => GRAMMARS[id]);
+    const grammarIds = ['l4-vocab-quiz','l4-arimasu','l4-location','l4-past','l4-jikan','l4-to','l4-mo'].filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
