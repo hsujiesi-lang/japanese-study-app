@@ -6313,8 +6313,26 @@ function renderVerbs() {
   });
 
   const pinnedSet = getPinnedVerbs();
-  const pinnedVerbs = filtered.filter(v => pinnedSet.has(verbKey(v)));
-  const restVerbs   = filtered.filter(v => !pinnedSet.has(verbKey(v)));
+  // Pinned section displays in the user's saved pin order (matches playback).
+  const pinOrder = getPinnedVerbsArr();
+  const filteredByKey = new Map(filtered.map(v => [verbKey(v), v]));
+  const pinnedVerbs = [];
+  const consumedKeys = new Set();
+  pinOrder.forEach(k => {
+    if (pinnedSet.has(k) && filteredByKey.has(k) && !consumedKeys.has(k)) {
+      pinnedVerbs.push(filteredByKey.get(k));
+      consumedKeys.add(k);
+    }
+  });
+  // Catch any pinned verb missing from pinOrder (legacy/cloud-merge edge case)
+  filtered.forEach(v => {
+    const k = verbKey(v);
+    if (pinnedSet.has(k) && !consumedKeys.has(k)) {
+      pinnedVerbs.push(v);
+      consumedKeys.add(k);
+    }
+  });
+  const restVerbs = filtered.filter(v => !pinnedSet.has(verbKey(v)));
 
   if (pinnedVerbs.length > 0) {
     const header = document.createElement('div');
@@ -7732,12 +7750,35 @@ function renderVocabBody(num) {
   if (!body) return;
   const groups = vocabGroups(num);
   const pinned = getPinnedVocab(num);
+  const pinOrder = getPinnedVocabArr(num);
 
   let html = '';
 
-  // Pinned section at the very top
+  // Pinned section at the very top — display in the user's saved pin order
+  // (matches the continuous playback order in playLessonVocab/playPinnedVocab).
+  // Build lookup tables so we can address items by hiragana key.
+  const itemByHira = new Map();
+  const clsByHira  = new Map();
+  groups.forEach(g => g.items.forEach(it => {
+    itemByHira.set(it.hira, it);
+    clsByHira.set(it.hira, g.cls);
+  }));
   const pinnedItems = [];
-  groups.forEach(g => g.items.forEach(it => { if (pinned.has(it.hira)) pinnedItems.push({ item: it, cls: g.cls }); }));
+  const consumed = new Set();
+  pinOrder.forEach(hira => {
+    if (pinned.has(hira) && itemByHira.has(hira) && !consumed.has(hira)) {
+      pinnedItems.push({ item: itemByHira.get(hira), cls: clsByHira.get(hira) });
+      consumed.add(hira);
+    }
+  });
+  // Fallback: any pinned item missing from pinOrder (e.g. legacy/cloud-merge edge
+  // cases) gets appended in lesson order so it never disappears.
+  groups.forEach(g => g.items.forEach(it => {
+    if (pinned.has(it.hira) && !consumed.has(it.hira)) {
+      pinnedItems.push({ item: it, cls: g.cls });
+      consumed.add(it.hira);
+    }
+  }));
   if (pinnedItems.length > 0) {
     html += `<div class="vocab-section-title" style="background:#FFE0B2; color:#E65100;">📌 釘選 Pinned <span class="count">${pinnedItems.length} 個</span></div>`;
     html += `<div class="vocab-grid">`;
