@@ -1010,6 +1010,18 @@
 </head>
 <body>
 
+<!-- ============ GLOBAL PLAYBACK BAR (used by pin manager, time page, etc.) ============ -->
+<div id="pin-playback-bar" style="display:none; background:#5C6BC0; color:white; padding:10px 12px; border-radius:10px; justify-content:space-between; align-items:center; font-size:0.88em; position:fixed; left:8px; right:8px; bottom:14px; z-index:55; box-shadow:0 4px 14px rgba(0,0,0,0.28);">
+  <div style="flex:1; min-width:0;">
+    <div id="pin-pb-status" style="font-weight:600;">▶ 播放中…</div>
+    <div id="pin-pb-progress" style="opacity:0.9; font-size:0.82em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
+  </div>
+  <div style="display:flex; gap:6px; margin-left:10px; flex-shrink:0;">
+    <button id="pin-pause-btn" onclick="togglePinPause()" style="background:white; color:#5C6BC0; border:none; border-radius:14px; padding:5px 12px; font-weight:700; cursor:pointer;">⏸ 暫停</button>
+    <button onclick="stopPinPlayback()" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:14px; padding:5px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
+  </div>
+</div>
+
 <!-- ============ HUB PAGE ============ -->
 <div id="page-hub" class="page active">
   <header>
@@ -1277,16 +1289,6 @@
   <div class="lesson-intro">
     <h3>📋 釘選項目清單</h3>
     <p style="color:#888; font-size:0.85em;">點 🔊 發音 ・ 點 ✕ 移除 ・ 點每個變化形可單獨播放</p>
-    <div id="pin-playback-bar" style="display:none; background:#5C6BC0; color:white; padding:10px 12px; border-radius:10px; margin-top:8px; justify-content:space-between; align-items:center; font-size:0.88em; position:sticky; top:60px; z-index:45; box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-      <div style="flex:1; min-width:0;">
-        <div id="pin-pb-status" style="font-weight:600;">▶ 播放中…</div>
-        <div id="pin-pb-progress" style="opacity:0.9; font-size:0.82em; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"></div>
-      </div>
-      <div style="display:flex; gap:6px; margin-left:10px; flex-shrink:0;">
-        <button id="pin-pause-btn" onclick="togglePinPause()" style="background:white; color:#5C6BC0; border:none; border-radius:14px; padding:5px 12px; font-weight:700; cursor:pointer;">⏸ 暫停</button>
-        <button onclick="stopPinPlayback()" style="background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:14px; padding:5px 12px; font-weight:700; cursor:pointer;">⏹ 停止</button>
-      </div>
-    </div>
     <div id="pin-list" style="margin-top:10px;"></div>
   </div>
 
@@ -1679,8 +1681,20 @@ function renderTimePage() {
   if (!root) return;
   let html = '';
 
-  TIME_DATA.sections.forEach(sec => {
-    html += `<div class="time-section-title">${sec.title}</div>`;
+  // Master play-all button (plays every section back-to-back)
+  const totalCount = TIME_DATA.sections.reduce((n, s) => n + s.items.length, 0);
+  html += `<div style="padding:0 16px; margin:6px 0 10px;">
+    <button onclick="playAllTimeSections()" style="width:100%; background:linear-gradient(135deg,#00838F 0%,#006064 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(0,131,143,0.3);">
+      ▶ 連續播放 全部時間表現 (${totalCount} 個)
+    </button>
+  </div>`;
+
+  TIME_DATA.sections.forEach((sec, i) => {
+    // Section title with per-section play button on the right
+    html += `<div class="time-section-title" style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+      <span style="flex:1; min-width:0;">${sec.title}</span>
+      <button onclick="playTimeSection(${i})" style="background:#00838F; color:white; border:none; border-radius:14px; padding:4px 12px; font-size:0.85em; font-weight:700; cursor:pointer; flex-shrink:0;">▶ 連續播放 (${sec.items.length})</button>
+    </div>`;
     html += `<div class="time-grid">`;
     sec.items.forEach(it => {
       const safe = it.hira.replace(/'/g, "\\'");
@@ -1721,6 +1735,35 @@ function renderTimePage() {
   st.current = null; st.attempts = 0;
   st.revealed = false; st.advanceArmed = false;
   setTimeout(() => pickNextGrammarExercise('time-quiz'), 50);
+}
+
+// Build playback items from a TIME_DATA section index.
+// Inserts a longer pause (boundary:true) at the end of the LAST item so the
+// "play all" case can mark section boundaries cleanly.
+function timeSectionItems(sec, isLastInRun) {
+  return sec.items.map((it, idx) => ({
+    text: it.hira,
+    label: `${it.jp} — ${it.en}`,
+    boundary: idx === sec.items.length - 1 && !isLastInRun  // pause between sections
+  }));
+}
+
+function playTimeSection(idx) {
+  const sec = TIME_DATA.sections[idx];
+  if (!sec) return;
+  const items = timeSectionItems(sec, true);  // single section → no extra trailing boundary
+  // Strip emoji prefix from title for kind label
+  const kind = sec.title.replace(/^[^\p{L}]+/u, '').trim() || `Section ${idx+1}`;
+  startPinPlayback(items, kind);
+}
+
+function playAllTimeSections() {
+  const items = [];
+  TIME_DATA.sections.forEach((sec, i) => {
+    const isLast = i === TIME_DATA.sections.length - 1;
+    items.push(...timeSectionItems(sec, isLast));
+  });
+  startPinPlayback(items, '全部時間表現');
 }
 
 // ============================
