@@ -4770,6 +4770,168 @@ GRAMMARS['l4-mo'] = {
   ]
 };
 
+// ----- L4 Grammar 7 ｜ たくさん (many / a lot) -----
+GRAMMARS['l4-takusan'] = {
+  title: 'Grammar 7 ｜ たくさん (many / a lot)',
+  explanation: [
+    '<b>用法：</b>「たくさん」是<b>副詞</b>，意思是「很多」。',
+    '<b>結構 1（修飾名詞數量）：</b> N <b>が たくさん</b> あります／います',
+    '　例：京都にお寺<b>がたくさん</b>あります (京都有很多寺廟)。',
+    '<b>結構 2（修飾動詞）：</b> O <b>を たくさん</b> [動詞]',
+    '　例：写真<b>をたくさん</b>撮りました (拍了很多照片)。',
+    '⚠️ <b>たくさん 通常放在動詞前面</b>。「たくさんの N」也可，但口語比較少用。',
+    '⚠️ 不要跟 い-形容詞「<b>おおい</b> (多い)」搞混 — おおい 是形容詞，たくさん 是副詞。'
+  ],
+  examples: [
+    { jp:'人がたくさんいました。',           reading:'ひとがたくさんいました。',                 en:'There were many people.' },
+    { jp:'お寺で写真をたくさん撮りました。', reading:'おてらでしゃしんをたくさんとりました。',   en:'I took many photos at the temple.' },
+    { jp:'時間がたくさんあります。',         reading:'じかんがたくさんあります。',               en:'I have a lot of time.' },
+    { jp:'昨日たくさん勉強しました。',       reading:'きのうたくさんべんきょうしました。',       en:'I studied a lot yesterday.' },
+    { jp:'京都にお寺がたくさんあります。',   reading:'きょうとにおてらがたくさんあります。',     en:'There are many temples in Kyoto.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'There were many people.',
+      answers:['人がたくさんいました。','人がたくさんいました','ひとがたくさんいました'] },
+    { type:'translate', prompt:'I took many photos at the temple.',
+      answers:['お寺で写真をたくさん撮りました。','お寺で写真をたくさん撮りました','おてらで写真をたくさん撮りました','おてらでしゃしんをたくさんとりました'] },
+    { type:'translate', prompt:'I have a lot of time.',
+      answers:['時間がたくさんあります。','時間がたくさんあります','じかんがたくさんあります'] },
+    { type:'translate', prompt:'There are many temples in Kyoto.',
+      answers:['京都にお寺がたくさんあります。','京都にお寺がたくさんあります','きょうとにお寺がたくさんあります','きょうとにおてらがたくさんあります'] },
+    { type:'translate', prompt:'I studied a lot yesterday.',
+      answers:['昨日たくさん勉強しました。','昨日たくさん勉強しました','きのうたくさん勉強しました','きのうたくさんべんきょうしました'] },
+    { type:'translate', prompt:'I ate a lot this morning.',
+      answers:['今朝たくさん食べました。','今朝たくさん食べました','けさたくさん食べました','けさたくさんたべました'] },
+    { type:'translate', prompt:'I have a lot of friends.',
+      answers:['友達がたくさんいます。','友達がたくさんいます','ともだちがたくさんいます'] },
+    { type:'translate', prompt:'I bought many books at the bookstore.',
+      answers:['本屋で本をたくさん買いました。','本屋で本をたくさん買いました','ほんやで本をたくさん買いました','ほんやでほんをたくさんかいました'] },
+    { type:'translate', prompt:"I don't have a lot of money.",
+      answers:['お金がたくさんありません。','お金がたくさんありません','おかねがたくさんありません'] },
+    { type:'translate', prompt:'There are many cats in the park.',
+      answers:['公園に猫がたくさんいます。','公園に猫がたくさんいます','こうえんに猫がたくさんいます','こうえんにねこがたくさんいます'] },
+    { type:'translate', prompt:'I drank a lot of coffee today.',
+      answers:['今日コーヒーをたくさん飲みました。','今日コーヒーをたくさん飲みました','きょうコーヒーをたくさん飲みました','きょうコーヒーをたくさんのみました'] },
+    { type:'translate', prompt:'There were many students at the cafe.',
+      answers:['カフェに学生がたくさんいました。','カフェに学生がたくさんいました','カフェにがくせいがたくさんいました'] },
+    { type:'translate', prompt:'I want to take many photos in Japan.',
+      answers:['日本で写真をたくさん撮りたいです。','日本で写真をたくさん撮りたいです','にほんでしゃしんをたくさんとりたいです'] },
+    { type:'translate', prompt:'There are many books in the library.',
+      answers:['図書館に本がたくさんあります。','図書館に本がたくさんあります','としょかんに本がたくさんあります','としょかんにほんがたくさんあります'] },
+    { type:'fill', prompt:'お寺で写真を____撮りました。(many)', en:'many = たくさん',
+      answers:['たくさん'] },
+    { type:'fill', prompt:'人が____いました。(many)', en:'many = たくさん',
+      answers:['たくさん'] },
+    { type:'fill', prompt:'時間が____あります。(a lot)', en:'a lot = たくさん',
+      answers:['たくさん'] },
+  ]
+};
+
+// ----- L4 Useful Expression ｜ 〜人で (alone / together as a group) -----
+GRAMMARS['l4-hitoride'] = {
+  title: 'Useful Expression ｜ 〜人で (alone / together)',
+  explanation: [
+    '<b>用法：</b>「[人數] + <b>で</b>」表示「以 N 個人之姿做某事」。',
+    '<b>一人で</b> (ひとりで) = 一個人（單獨）',
+    '<b>二人で</b> (ふたりで) = 兩個人一起',
+    '<b>三人で</b> (さんにんで) = 三個人一起',
+    '<b>家族で</b> = 全家一起',
+    '⚠️ 跟 <b>と</b>（跟誰）對比：「友達<b>と</b>映画を見ました」(跟朋友看電影) vs 「二人<b>で</b>映画を見ました」(我們兩個人去看電影)。',
+    '⚠️ で 的這個用法跟「在＋地點」「用＋工具」是同一個 で，但這裡的意思是「以...的狀態／方式」。'
+  ],
+  examples: [
+    { jp:'一人で本屋とお寺に行きました。', reading:'ひとりでほんやとおてらにいきました。', en:'I went alone to a bookshop and a temple.' },
+    { jp:'一人で映画を見ました。',         reading:'ひとりでえいがをみました。',           en:'I watched a movie alone.' },
+    { jp:'二人でデートをしました。',       reading:'ふたりでデートをしました。',           en:'The two of us went on a date.' },
+    { jp:'家族で日本に行きました。',       reading:'かぞくでにほんにいきました。',         en:'We went to Japan as a family.' },
+    { jp:'一人で勉強しました。',           reading:'ひとりでべんきょうしました。',         en:'I studied alone.' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'I went alone to a bookshop and a temple.',
+      answers:['一人で本屋とお寺に行きました。','一人で本屋とお寺に行きました','ひとりで本屋とお寺に行きました','ひとりでほんやとおてらにいきました'] },
+    { type:'translate', prompt:'I watched a movie alone yesterday.',
+      answers:['昨日一人で映画を見ました。','昨日一人で映画を見ました','きのう一人で映画を見ました','きのうひとりでえいがをみました'] },
+    { type:'translate', prompt:'The two of us went on a date.',
+      answers:['二人でデートをしました。','二人でデートをしました','ふたりでデートをしました'] },
+    { type:'translate', prompt:'We went to Japan as a family.',
+      answers:['家族で日本に行きました。','家族で日本に行きました','かぞくで日本に行きました','かぞくでにほんにいきました'] },
+    { type:'translate', prompt:'I studied alone at the library.',
+      answers:['図書館で一人で勉強しました。','図書館で一人で勉強しました','としょかんで一人で勉強しました','としょかんでひとりでべんきょうしました'] },
+    { type:'translate', prompt:'I ate lunch alone today.',
+      answers:['今日一人で昼ご飯を食べました。','今日一人で昼ご飯を食べました','きょう一人で昼ご飯を食べました','きょうひとりでひるごはんをたべました'] },
+    { type:'translate', prompt:'The three of us went to the park.',
+      answers:['三人で公園に行きました。','三人で公園に行きました','さんにんで公園に行きました','さんにんでこうえんにいきました'] },
+    { type:'translate', prompt:'I went to the cafe alone this morning.',
+      answers:['今朝一人でカフェに行きました。','今朝一人でカフェに行きました','けさ一人でカフェに行きました','けさひとりでカフェに行きました'] },
+    { type:'translate', prompt:'The two of us studied together.',
+      answers:['二人で勉強しました。','二人で勉強しました','ふたりで勉強しました','ふたりでべんきょうしました'] },
+    { type:'translate', prompt:'I went shopping alone at the department store.',
+      answers:['デパートで一人で買い物をしました。','デパートで一人で買い物をしました','デパートでひとりでかいものをしました'] },
+    { type:'translate', prompt:'I waited at the station alone for thirty minutes.',
+      answers:['駅で一人で三十分待ちました。','駅で一人で三十分待ちました','えきで一人で三十分待ちました','えきでひとりでさんじゅっぷんまちました'] },
+    { type:'fill', prompt:'____本屋とお寺に行きました。(alone)', en:'alone = 一人で',
+      answers:['一人で','ひとりで'] },
+    { type:'fill', prompt:'____デートをしました。(the two of us)', en:'the two of us = 二人で',
+      answers:['二人で','ふたりで'] },
+    { type:'fill', prompt:'____日本に行きました。(as a family)', en:'as a family = 家族で',
+      answers:['家族で','かぞくで'] },
+  ]
+};
+
+// ----- L4 Useful Expression ｜ どうして・だから (why / so therefore) -----
+GRAMMARS['l4-doushite-dakara'] = {
+  title: 'Useful Expression ｜ どうして・だから (why / so therefore)',
+  explanation: [
+    '<b>どうして</b> = 為什麼 (詢問原因，口語常用)',
+    '<b>だから</b> = 所以、因此 (連接 "[原因]。だから、[結果]" 兩個句子)',
+    '<b>對話典型：</b>',
+    '　A：〜ません／〜ませんでした。',
+    '　B：<b>どうして</b>ですか？',
+    '　A：[理由]。<b>だから</b>、[結果]。',
+    '⚠️ <b>どうして</b> 跟「なぜ」意思一樣，但どうして比較口語、日常。',
+    '⚠️ <b>だから</b> 放在句首，前面是原因、後面是結果（中間用 。 隔開）。'
+  ],
+  examples: [
+    { jp:'どうしてですか。',                             reading:'どうしてですか。',                             en:'Why?' },
+    { jp:'どうして来ませんでしたか。',                   reading:'どうしてきませんでしたか。',                   en:"Why didn't you come?" },
+    { jp:'時間がありません。だから、行きません。',       reading:'じかんがありません。だから、いきません。',     en:"I don't have time. So I'm not going." },
+    { jp:'お金がありませんでした。だから、買いませんでした。', reading:'おかねがありませんでした。だから、かいませんでした。', en:"I didn't have money. So I didn't buy it." },
+    { jp:'雨でした。だから、家にいました。',             reading:'あめでした。だから、うちにいました。',         en:"It was raining. So I stayed home." },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Why?',
+      answers:['どうしてですか。','どうしてですか'] },
+    { type:'translate', prompt:"Why didn't you come?",
+      answers:['どうして来ませんでしたか。','どうして来ませんでしたか','どうしてきませんでしたか'] },
+    { type:'translate', prompt:"Why didn't you eat breakfast?",
+      answers:['どうして朝ご飯を食べませんでしたか。','どうして朝ご飯を食べませんでしたか','どうしてあさごはんを食べませんでしたか','どうしてあさごはんをたべませんでしたか'] },
+    { type:'translate', prompt:"I don't have time. So I'm not going to the movie.",
+      answers:['時間がありません。だから、映画に行きません。','時間がありません。だから、映画に行きません','じかんがありません。だから、えいがにいきません'] },
+    { type:'translate', prompt:"I didn't have money. So I didn't buy a hat.",
+      answers:['お金がありませんでした。だから、帽子を買いませんでした。','お金がありませんでした。だから、帽子を買いませんでした','おかねがありませんでした。だから、ぼうしをかいませんでした'] },
+    { type:'translate', prompt:"It was raining. So I stayed home.",
+      answers:['雨でした。だから、家にいました。','雨でした。だから、家にいました','あめでした。だから、うちにいました'] },
+    { type:'translate', prompt:"Why are you going to the library?",
+      answers:['どうして図書館に行きますか。','どうして図書館に行きますか','どうしてとしょかんに行きますか','どうしてとしょかんにいきますか'] },
+    { type:'translate', prompt:"I was busy. So I didn't watch TV.",
+      answers:['忙しかったです。だから、テレビを見ませんでした。','忙しかったです。だから、テレビを見ませんでした','いそがしかったです。だから、テレビをみませんでした'] },
+    { type:'translate', prompt:"Why don't you like coffee?",
+      answers:['どうしてコーヒーが好きじゃないですか。','どうしてコーヒーが好きじゃないですか','どうしてコーヒーがすきじゃないですか'] },
+    { type:'translate', prompt:"Takeshi didn't come. So I went alone.",
+      answers:['たけしさんは来ませんでした。だから、一人で行きました。','たけしさんは来ませんでした。だから、一人で行きました','たけしさんはきませんでした。だから、ひとりでいきました'] },
+    { type:'translate', prompt:"I didn't understand. So I asked the teacher.",
+      answers:['わかりませんでした。だから、先生に聞きました。','わかりませんでした。だから、先生に聞きました','わかりませんでした。だから、せんせいにききました'] },
+    { type:'translate', prompt:"Why are you alone?",
+      answers:['どうして一人ですか。','どうして一人ですか','どうしてひとりですか'] },
+    { type:'fill', prompt:'____ですか。(why)', en:'why = どうして',
+      answers:['どうして'] },
+    { type:'fill', prompt:'時間がありません。____、行きません。(so)', en:'so = だから',
+      answers:['だから'] },
+    { type:'fill', prompt:'お金がありませんでした。____、買いませんでした。(so)', en:'so = だから',
+      answers:['だから'] },
+  ]
+};
+
 // ============================
 // LESSON 5 GRAMMARS
 // ============================
@@ -8572,9 +8734,9 @@ function buildLessonContent(num) {
     return;
   }
 
-  // Lesson 4 — vocab + Vocab Quiz + あります/います + Location + Past tense + 時間 + と + も
+  // Lesson 4 — vocab + Vocab Quiz + あります/います + Location + Past tense + 時間 + と + も + たくさん + 一人で + どうして/だから
   if (VOCAB[num] && num === 4) {
-    const grammarIds = ['l4-vocab-quiz','l4-arimasu','l4-location','l4-past','l4-jikan','l4-to','l4-mo'].filter(id => GRAMMARS[id]);
+    const grammarIds = ['l4-vocab-quiz','l4-arimasu','l4-location','l4-past','l4-jikan','l4-to','l4-mo','l4-takusan','l4-hitoride','l4-doushite-dakara'].filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
