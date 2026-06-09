@@ -6678,6 +6678,30 @@ function togglePinVerb(key) {
   });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
 }
+
+// --- Adjective pin persistence (localStorage) — mirrors the verb pin API ---
+function adjKey(a) { return a.lesson + '-' + a.hira; }
+function getPinnedAdj() {
+  try {
+    const raw = localStorage.getItem('genki-adj-pinned');
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch(e) { return new Set(); }
+}
+function getPinnedAdjArr() {
+  try {
+    const raw = localStorage.getItem('genki-adj-pinned');
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function togglePinAdj(key) {
+  preserveScroll('.verb-card[data-adj-key]', el => el.dataset.adjKey, key, () => {
+    const pinned = getPinnedAdj();
+    if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
+    try { localStorage.setItem('genki-adj-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
+    renderAdjectives();
+  });
+  if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+}
 // Reorder a verb pin (move from -> to)
 function reorderVerbPin(fromIdx, toIdx) {
   const arr = getPinnedVerbsArr();
@@ -7421,13 +7445,15 @@ function knownVocabLessons() {
 }
 
 function collectAllPins() {
-  const data = { vocab: {}, verbs: [] };
+  const data = { vocab: {}, verbs: [], adj: [] };
   knownVocabLessons().forEach(num => {
-    const arr = Array.from(getPinnedVocab(num));
+    const arr = getPinnedVocabArr(num);
     if (arr.length) data.vocab[num] = arr;
   });
-  const v = Array.from(getPinnedVerbs());
+  const v = getPinnedVerbsArr();
   if (v.length) data.verbs = v;
+  const a = getPinnedAdjArr();
+  if (a.length) data.adj = a;
   return data;
 }
 
@@ -7435,6 +7461,7 @@ function pinCount(data) {
   let n = 0;
   Object.values(data.vocab || {}).forEach(arr => n += arr.length);
   n += (data.verbs || []).length;
+  n += (data.adj || []).length;
   return n;
 }
 
@@ -7445,8 +7472,9 @@ function showPinManager() {
     return `・L${num} 単語：<b>${arr.length}</b> 個`;
   }).join('<br>');
   const verbLine = `・動詞：<b>${(data.verbs||[]).length}</b> 個`;
+  const adjLine  = `・形容詞：<b>${(data.adj||[]).length}</b> 個`;
   document.getElementById('pin-stats').innerHTML =
-    `${vocabLines}<br>${verbLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
+    `${vocabLines}<br>${verbLine}<br>${adjLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
 
   renderPinList();
   refreshPinnedPractice();
@@ -7730,11 +7758,71 @@ function renderPinList() {
     }
   }
 
-  if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞頁點 📌 開始釘選。</p>';
+  // ----- Adjective pins (iterate saved order) -----
+  const adjOrder = getPinnedAdjArr();
+  if (adjOrder.length > 0) {
+    const byAdjKey = new Map(ADJECTIVES.map(a => [adjKey(a), a]));
+    const adjList = adjOrder.map(k => byAdjKey.get(k)).filter(Boolean);
+    if (adjList.length > 0) {
+      html += `<div class="pin-list-section-title">🌸 形容詞 (${adjList.length}) <button class="pin-list-play-all" onclick="playPinnedAdj()">▶ 連續播放全部變化</button></div>`;
+      html += `<div class="pin-sortable-group" data-pin-kind="adj">`;
+      adjList.forEach(a => {
+        const display = (a.kanji && a.kanji !== a.hira) ? `${a.kanji} [${a.hira}]` : a.hira;
+        const typeLabel = a.type === 'i' ? 'い-adj' : 'な-adj';
+        const safeKey = adjKey(a).replace(/'/g, "\\'");
+        const c = adjConjugate(a);
+        const forms = [
+          { label: '辞書',   text: a.hira },
+          { label: '現·肯', text: c.presentAff },
+          { label: '現·否', text: c.presentNeg },
+          { label: '過·肯', text: c.pastAff },
+          { label: '過·否', text: c.pastNeg },
+        ];
+        const chips = forms.map(f => `<button class="pin-form-chip" onclick="speak('${f.text}')"><b>${f.label}</b>${f.text}</button>`).join('');
+        html += `<div class="pin-list-item pin-list-verb" data-key="${adjKey(a)}">
+          <span class="pin-drag-handle" title="拖曳排序">≡</span>
+          <div class="pin-list-text">
+            <div>
+              <span class="pin-list-jp">${display}</span>
+              <span class="pin-list-en">${a.en}</span>
+              <span class="pin-list-meta">L${a.lesson} · ${typeLabel}</span>
+            </div>
+            <div class="pin-form-chips">${chips}</div>
+          </div>
+          <div class="pin-list-actions">
+            <button class="pin-list-speak" title="連續播放全部變化" onclick="speakAdjAll('${a.hira}','${c.presentAff}','${c.presentNeg}','${c.pastAff}','${c.pastNeg}')">🔊</button>
+            <button class="pin-list-remove" title="移除釘選" onclick="togglePinAdj('${safeKey}'); showPinManager();">✕</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞／形容詞頁點 📌 開始釘選。</p>';
   container.innerHTML = html;
 
   // Initialize SortableJS on each draggable group
   initPinSortables();
+}
+
+// Play all pinned adjectives (辞書形 → 現·肯 → 現·否 → 過·肯 → 過·否)
+function playPinnedAdj() {
+  const order = getPinnedAdjArr();
+  if (order.length === 0) return;
+  const byKey = new Map(ADJECTIVES.map(a => [adjKey(a), a]));
+  const adjs = order.map(k => byKey.get(k)).filter(Boolean);
+  if (adjs.length === 0) return;
+  const items = [];
+  adjs.forEach(a => {
+    const c = adjConjugate(a);
+    items.push({ text: a.hira,       label: `${a.kanji} 辞書形` });
+    items.push({ text: c.presentAff, label: `${a.kanji} 現·肯` });
+    items.push({ text: c.presentNeg, label: `${a.kanji} 現·否` });
+    items.push({ text: c.pastAff,    label: `${a.kanji} 過·肯` });
+    items.push({ text: c.pastNeg,    label: `${a.kanji} 過·否`, boundary: true });
+  });
+  startPinPlayback(items, '釘選形容詞全部變化');
 }
 
 function initPinSortables() {
@@ -7756,6 +7844,9 @@ function initPinSortables() {
         } else if (kind === 'verb') {
           const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
           try { localStorage.setItem('genki-verb-pinned', JSON.stringify(newOrder)); } catch(e){}
+        } else if (kind === 'adj') {
+          const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
+          try { localStorage.setItem('genki-adj-pinned', JSON.stringify(newOrder)); } catch(e){}
         }
         if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
         refreshPinnedPractice();  // practice pool reflects new order
@@ -7893,6 +7984,7 @@ function clearAllPins() {
     try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){}
   });
   try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
+  try { localStorage.removeItem('genki-adj-pinned'); } catch(e){}
   alert('已清除所有釘選。');
   showPinManager();
 }
@@ -7916,6 +8008,7 @@ function applyPinData(data, mode) {
   if (mode === 'replace') {
     knownVocabLessons().forEach(num => { try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){} });
     try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
+    try { localStorage.removeItem('genki-adj-pinned'); } catch(e){}
   }
   Object.entries(data.vocab || {}).forEach(([num, arr]) => {
     const current = getPinnedVocab(num);
@@ -7925,6 +8018,9 @@ function applyPinData(data, mode) {
   const verbs = getPinnedVerbs();
   (data.verbs || []).forEach(k => verbs.add(k));
   try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(verbs))); } catch(e){}
+  const adjs = getPinnedAdj();
+  (data.adj || []).forEach(k => adjs.add(k));
+  try { localStorage.setItem('genki-adj-pinned', JSON.stringify(Array.from(adjs))); } catch(e){}
 }
 
 function importPinCode(mode) {
@@ -7948,6 +8044,7 @@ function importPinCode(mode) {
 // Re-render visible vocab/verb lists after pin changes
 function refreshVisibleVocabAndVerbs() {
   if (document.getElementById('page-verbs') && document.getElementById('page-verbs').classList.contains('active')) renderVerbs();
+  if (document.getElementById('page-adjectives') && document.getElementById('page-adjectives').classList.contains('active')) renderAdjectives();
   knownVocabLessons().forEach(num => {
     if (document.getElementById('vocab-body-' + num)) renderVocabBody(num);
   });
@@ -8882,7 +8979,36 @@ function renderAdjectives() {
     return true;
   });
 
-  filtered.forEach(a => list.appendChild(adjCard(a)));
+  // Pinned section first (in saved pin order — same pattern as verbs / vocab).
+  const pinnedSet = getPinnedAdj();
+  const pinOrder = getPinnedAdjArr();
+  const filteredByKey = new Map(filtered.map(a => [adjKey(a), a]));
+  const pinnedAdjs = [];
+  const consumedKeys = new Set();
+  pinOrder.forEach(k => {
+    if (pinnedSet.has(k) && filteredByKey.has(k) && !consumedKeys.has(k)) {
+      pinnedAdjs.push(filteredByKey.get(k));
+      consumedKeys.add(k);
+    }
+  });
+  filtered.forEach(a => {
+    const k = adjKey(a);
+    if (pinnedSet.has(k) && !consumedKeys.has(k)) {
+      pinnedAdjs.push(a);
+      consumedKeys.add(k);
+    }
+  });
+  const restAdjs = filtered.filter(a => !pinnedSet.has(adjKey(a)));
+
+  if (pinnedAdjs.length > 0) {
+    const header = document.createElement('div');
+    header.className = 'vocab-section-title';
+    header.style.cssText = 'background:#FFE0B2; color:#E65100; margin:12px 16px 6px;';
+    header.innerHTML = `📌 釘選 Pinned <span class="count">${pinnedAdjs.length} 個</span>`;
+    list.appendChild(header);
+    pinnedAdjs.forEach(a => list.appendChild(adjCard(a, true)));
+  }
+  restAdjs.forEach(a => list.appendChild(adjCard(a, false)));
 
   document.getElementById('adj-stat-i').textContent = ADJECTIVES.filter(a=>a.type==='i').length;
   document.getElementById('adj-stat-na').textContent = ADJECTIVES.filter(a=>a.type==='na').length;
@@ -8897,7 +9023,7 @@ function renderAdjectives() {
 // Play all adjectives that match the current filters (type + lesson + search)
 function playFilteredAdjectives() {
   const q = (document.getElementById('adj-search').value || '').trim().toLowerCase();
-  const adjs = ADJECTIVES.filter(a => {
+  let adjs = ADJECTIVES.filter(a => {
     if (adjFilterType !== 'all' && a.type !== adjFilterType) return false;
     if (adjFilterLesson !== 'all' && String(a.lesson) !== adjFilterLesson) return false;
     if (q) {
@@ -8907,6 +9033,13 @@ function playFilteredAdjectives() {
     return true;
   });
   if (adjs.length === 0) return;
+  // Pinned first (in user-saved pin order), then the rest in original order.
+  const pinOrder = getPinnedAdjArr();
+  const pinIndex = new Map(pinOrder.map((k, i) => [k, i]));
+  const pinned = [], unpinned = [];
+  adjs.forEach(a => (pinIndex.has(adjKey(a)) ? pinned : unpinned).push(a));
+  pinned.sort((x, y) => pinIndex.get(adjKey(x)) - pinIndex.get(adjKey(y)));
+  adjs = pinned.concat(unpinned);
 
   const items = [];
   adjs.forEach(a => {
@@ -8940,11 +9073,13 @@ function playFilteredAdjectives() {
   playNextAdjItem(adjPlayback.token);
 }
 
-function adjCard(a) {
+function adjCard(a, isPinned) {
   const c = adjConjugate(a);
   const div = document.createElement('div');
   const typeClass = a.type === 'i' ? 'adj-i' : 'adj-na';
-  div.className = 'verb-card ' + typeClass;
+  div.className = 'verb-card ' + typeClass + (isPinned ? ' pinned' : '');
+  const key = adjKey(a);
+  div.dataset.adjKey = key;  // used by preserveScroll to anchor the viewport on rerender
 
   const typeLabel = a.type === 'i' ? 'い-adjective' : 'な-adjective';
   const irrTag = a.irregular ? '<span class="adj-irregular-tag">⚠ 不規則</span>' : '';
@@ -8962,7 +9097,10 @@ function adjCard(a) {
         </div>
         ${aHiraLine}
       </div>
-      <div class="verb-en">${a.en}</div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="verb-en">${a.en}</div>
+        <button class="verb-pin ${isPinned ? 'active' : ''}" onclick="event.stopPropagation(); togglePinAdj('${key}')" title="${isPinned ? '取消釘選' : '釘選置頂'}">📌</button>
+      </div>
     </div>
     <div class="verb-meta">
       <span class="badge badge-lesson">L${a.lesson}</span>
