@@ -1362,17 +1362,41 @@
     <button class="filter-chip" data-adj-lesson="6" onclick="setAdjFilter(this,'lesson','6')">L6</button>
   </div>
 
-  <div class="particle-info">
-    💡 <b>提示</b>：點任何日文字會發音。<b style="color:#D81B60">粉=い形</b>，<b style="color:#00897B">綠=な形</b>。⚠️ <b>いい・かっこいい</b> 是不規則：第一音節 い→よ。
+  <div class="verb-mode-tabs">
+    <button class="verb-mode-tab active" id="adj-tab-ref"  onclick="setAdjMode('reference')">📋 列表 Reference</button>
+    <button class="verb-mode-tab"        id="adj-tab-prac" onclick="setAdjMode('practice')">✏️ 練習 Practice</button>
   </div>
 
-  <div style="padding:0 16px; margin-bottom:8px;">
-    <button onclick="playFilteredAdjectives()" id="adj-play-filtered-btn" style="width:100%; background:linear-gradient(135deg,#0288D1 0%,#01579B 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(2,136,209,0.3);">
-      ▶ 播放目前篩選的 <span id="adj-filtered-count">0</span> 個形容詞 (全部變化形)
-    </button>
+  <!-- Reference mode -->
+  <div id="adj-reference-mode">
+    <div class="particle-info">
+      💡 <b>提示</b>：點任何日文字會發音。<b style="color:#D81B60">粉=い形</b>，<b style="color:#00897B">綠=な形</b>。⚠️ <b>いい・かっこいい</b> 是不規則：第一音節 い→よ。
+    </div>
+    <div style="padding:0 16px; margin-bottom:8px;">
+      <button onclick="playFilteredAdjectives()" id="adj-play-filtered-btn" style="width:100%; background:linear-gradient(135deg,#0288D1 0%,#01579B 100%); color:white; border:none; border-radius:12px; padding:14px; font-size:1em; font-weight:700; cursor:pointer; box-shadow:0 2px 6px rgba(2,136,209,0.3);">
+        ▶ 播放目前篩選的 <span id="adj-filtered-count">0</span> 個形容詞 (全部變化形)
+      </button>
+    </div>
+    <div id="adj-list"></div>
   </div>
 
-  <div id="adj-list"></div>
+  <!-- Practice mode -->
+  <div id="adj-practice-mode" style="display:none;">
+    <div class="particle-info">
+      ✏️ <b>主動練習</b>：看英文意思＋指定變化形，打出日文（漢字或平假名都接受）。會依上方的 <b>類型／課程</b> 篩選出題。
+    </div>
+    <div class="practice-zone" style="margin-top:8px;">
+      <div class="practice-zone-header">
+        <h4>✏️ 形容詞活用練習</h4>
+        <div class="practice-zone-stats">
+          ✅<span class="ok" id="ap-stat-ok">0</span> ・
+          ❌<span class="ng" id="ap-stat-ng">0</span>
+        </div>
+      </div>
+      <div id="ap-area"></div>
+    </div>
+  </div>
+
   <div class="bottom-pad"></div>
 </div>
 
@@ -7027,6 +7051,322 @@ function updateVerbStats() {
   if (ng) ng.textContent = verbPractice.wrong;
 }
 
+// ============================
+// ADJECTIVE ACTIVE PRACTICE (type the Japanese form)
+// ============================
+const ADJ_FORMS = [
+  { key:'presentAff', label:'現在 Present ・ 肯定 Affirmative', short:'～です' },
+  { key:'presentNeg', label:'現在 Present ・ 否定 Negative',    short:'い→～くないです / な→～じゃないです' },
+  { key:'pastAff',    label:'過去 Past ・ 肯定 Affirmative',    short:'い→～かったです / な→～でした' },
+  { key:'pastNeg',    label:'過去 Past ・ 否定 Negative',       short:'い→～くなかったです / な→～じゃなかったです' },
+];
+
+// Build accepted answers for a given adjective form. Handles:
+// • i-adj: standard くないです / かったです / くなかったです plus くありません(でした) variants
+// • na-adj: standard じゃないです etc. plus では…/ ありません 變體
+// • kanji-spelled versions when kanji ≠ hira
+function adjFormAnswers(adj, formKey) {
+  const c = adjConjugate(adj);
+  const ans = new Set();
+  ans.add(c[formKey]);
+
+  const hira = adj.hira;
+  const kanji = (adj.kanji && adj.kanji !== adj.hira) ? adj.kanji : null;
+  // Compute the "stem" by stripping the dictionary-form ending — needed for i-adj negatives/past.
+  const iStemHira  = adj.irregular ? hira.replace(/いい$/, 'よ') : hira.slice(0, -1);
+  const iStemKanji = kanji ? (adj.irregular ? kanji.replace(/いい$/, 'よ') : kanji.slice(0, -1)) : null;
+
+  if (formKey === 'presentAff') {
+    if (kanji) ans.add(kanji + 'です');
+  }
+  if (adj.type === 'i') {
+    if (formKey === 'presentNeg') {
+      ans.add(iStemHira + 'くありません');
+      if (iStemKanji) {
+        ans.add(iStemKanji + 'くないです');
+        ans.add(iStemKanji + 'くありません');
+      }
+    }
+    if (formKey === 'pastAff') {
+      if (iStemKanji) ans.add(iStemKanji + 'かったです');
+    }
+    if (formKey === 'pastNeg') {
+      ans.add(iStemHira + 'くありませんでした');
+      if (iStemKanji) {
+        ans.add(iStemKanji + 'くなかったです');
+        ans.add(iStemKanji + 'くありませんでした');
+      }
+    }
+  } else { // na-adj
+    if (formKey === 'presentNeg') {
+      ans.add(hira + 'ではないです');
+      ans.add(hira + 'じゃありません');
+      ans.add(hira + 'ではありません');
+      if (kanji) {
+        ans.add(kanji + 'じゃないです');
+        ans.add(kanji + 'ではないです');
+        ans.add(kanji + 'じゃありません');
+        ans.add(kanji + 'ではありません');
+      }
+    }
+    if (formKey === 'pastAff') {
+      if (kanji) ans.add(kanji + 'でした');
+    }
+    if (formKey === 'pastNeg') {
+      ans.add(hira + 'ではなかったです');
+      ans.add(hira + 'じゃありませんでした');
+      ans.add(hira + 'ではありませんでした');
+      if (kanji) {
+        ans.add(kanji + 'じゃなかったです');
+        ans.add(kanji + 'ではなかったです');
+        ans.add(kanji + 'じゃありませんでした');
+        ans.add(kanji + 'ではありませんでした');
+      }
+    }
+  }
+  return Array.from(ans);
+}
+
+const adjPractice = {
+  correct: 0, wrong: 0, current: null, attempts: 0,
+  revealed: false, advanceArmed: false,
+  sessionCount: 0, sessionWrong: [], sessionDone: false,
+  currentMarkedWrong: false
+};
+
+function resetAdjSession() {
+  adjPractice.correct = 0;
+  adjPractice.wrong = 0;
+  adjPractice.sessionCount = 0;
+  adjPractice.sessionWrong = [];
+  adjPractice.sessionDone = false;
+  adjPractice.currentMarkedWrong = false;
+  adjPractice.current = null;
+  adjPractice.attempts = 0;
+  adjPractice.revealed = false;
+  adjPractice.advanceArmed = false;
+  updateAdjStats();
+}
+
+function setAdjMode(mode) {
+  const refMode = document.getElementById('adj-reference-mode');
+  const pracMode = document.getElementById('adj-practice-mode');
+  const refTab = document.getElementById('adj-tab-ref');
+  const pracTab = document.getElementById('adj-tab-prac');
+  if (mode === 'practice') {
+    refMode.style.display = 'none';
+    pracMode.style.display = 'block';
+    refTab.classList.remove('active');
+    pracTab.classList.add('active');
+    resetAdjSession();
+    pickAdjQuestion();
+  } else {
+    refMode.style.display = 'block';
+    pracMode.style.display = 'none';
+    pracTab.classList.remove('active');
+    refTab.classList.add('active');
+  }
+}
+
+function adjPoolForPractice() {
+  return ADJECTIVES.filter(a => {
+    if (adjFilterType !== 'all' && a.type !== adjFilterType) return false;
+    if (adjFilterLesson !== 'all' && String(a.lesson) !== adjFilterLesson) return false;
+    return true;
+  });
+}
+
+function pickAdjQuestion() {
+  const area = document.getElementById('ap-area');
+  const pool = adjPoolForPractice();
+  if (pool.length === 0) {
+    area.innerHTML = `<div class="exercise-card" style="text-align:center; color:#999;">這個篩選沒有形容詞，請調整上方的類型／課程篩選。</div>`;
+    return;
+  }
+  if (adjPractice.sessionDone) { renderAdjResults(); return; }
+  if (adjPractice.sessionCount >= SESSION_LENGTH) {
+    adjPractice.sessionDone = true;
+    renderAdjResults();
+    return;
+  }
+  adjPractice.sessionCount++;
+  adjPractice.currentMarkedWrong = false;
+  const adj = pool[Math.floor(Math.random() * pool.length)];
+  const form = ADJ_FORMS[Math.floor(Math.random() * ADJ_FORMS.length)];
+  adjPractice.current = { adj, form };
+  adjPractice.attempts = 0;
+  adjPractice.revealed = false;
+  adjPractice.advanceArmed = false;
+  renderAdjQuestion();
+}
+
+function renderAdjQuestion() {
+  const { adj, form } = adjPractice.current;
+  const area = document.getElementById('ap-area');
+  const typeLabel = adj.type === 'i' ? 'い-adjective' : 'な-adjective';
+  const irrTag = adj.irregular ? ' ⚠️ 不規則' : '';
+  area.innerHTML = `
+    <div class="exercise-card">
+      <div class="exercise-progress">📝 第 ${adjPractice.sessionCount} / ${SESSION_LENGTH} 題</div>
+      <span class="verb-q-form-tag">${form.short}　${form.label}</span>
+      <div class="verb-q-en">${adj.en}</div>
+      <div class="verb-q-spec">→ 寫出「${form.label}」</div>
+      <div class="verb-q-meta">L${adj.lesson} ・ ${typeLabel}${irrTag} ・ 辞書形提示：點「看答案」</div>
+      <div class="input-hint">💡 漢字或平假名都可（句尾 。 可有可無）</div>
+      <input type="text" class="exercise-input" id="ap-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="輸入日文…" onkeydown="if(event.key==='Enter' && !event.isComposing && event.keyCode!==229){event.preventDefault(); handleAdjEnter();}">
+      <div class="exercise-buttons">
+        <button class="ex-btn-submit" onclick="checkAdjAnswer()">✅ 確認</button>
+        <button class="ex-btn-show"   onclick="showAdjAnswer()">👀 看答案</button>
+        <button class="ex-btn-skip"   onclick="pickAdjQuestion()">⏭ 跳過</button>
+      </div>
+      <div class="exercise-feedback" id="ap-fb"></div>
+    </div>
+  `;
+  setTimeout(() => { const i = document.getElementById('ap-input'); if (i) i.focus(); }, 50);
+}
+
+function renderAdjResults() {
+  const area = document.getElementById('ap-area');
+  if (!area) return;
+  const total = adjPractice.sessionCount;
+  const wrongCount = adjPractice.sessionWrong.length;
+  const correctCount = Math.max(0, total - wrongCount);
+  const pct = total > 0 ? Math.round(100 * correctCount / total) : 0;
+  const grade = pct >= 90 ? '🏆 太棒了！' : pct >= 70 ? '👏 不錯！' : pct >= 50 ? '💪 加油！' : '📚 多複習！';
+  let wrongHtml = '';
+  if (wrongCount === 0) {
+    wrongHtml = `<div class="result-allcorrect">🎉 全部答對！</div>`;
+  } else {
+    wrongHtml = `
+      <h4 class="result-section-h">❌ 答錯 / 看答案的題目 (${wrongCount} 題)</h4>
+      <div class="result-wrong-list">
+        ${adjPractice.sessionWrong.map((w, i) => {
+          const correctAns = w.correctAns || '';
+          const userAns = w.userAns || '(看答案)';
+          const safeAns = correctAns.replace(/'/g, "\\'").replace(/[。.]$/,'');
+          return `
+            <div class="result-wrong-item">
+              <div class="result-wrong-num">${i+1}.</div>
+              <div class="result-wrong-content">
+                <div class="result-wrong-prompt">${w.prompt}</div>
+                <div class="result-wrong-user">你的答案：<span class="result-wrong-text">${userAns}</span></div>
+                <div class="result-wrong-ans">正解：<span class="result-correct-text">${correctAns}</span>
+                  <button class="ex-btn-show" style="margin-left:6px; padding:3px 10px; font-size:0.8em;" onclick="speak('${safeAns}')">🔊</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+  area.innerHTML = `
+    <div class="exercise-card result-card">
+      <div class="result-title">🎯 練習結束！</div>
+      <div class="result-score">${correctCount} / ${total}</div>
+      <div class="result-pct">正確率 ${pct}% ・ ${grade}</div>
+      ${wrongHtml}
+      <button class="ex-btn-submit" style="width:100%; margin-top:14px;" onclick="restartAdjPractice()">🔄 再來一輪 (${SESSION_LENGTH} 題)</button>
+    </div>
+  `;
+}
+
+function restartAdjPractice() {
+  resetAdjSession();
+  pickAdjQuestion();
+}
+
+function checkAdjAnswer() {
+  const { adj, form } = adjPractice.current;
+  const inp = document.getElementById('ap-input');
+  const fb = document.getElementById('ap-fb');
+  const raw = inp.value.trim();
+  if (!raw) return;
+  const answers = adjFormAnswers(adj, form.key);
+  const accepted = answers.map(normalizeAns);
+  const userAns = normalizeAns(raw);
+  adjPractice.attempts++;
+  if (accepted.includes(userAns)) {
+    if (adjPractice.attempts === 1) adjPractice.correct++;
+    inp.classList.add('correct');
+    inp.readOnly = true;
+    fb.className = 'exercise-feedback show correct';
+    fb.innerHTML = `⭕ <b>正解！</b> <span class="answer-shown">${answers[0]}</span>
+      <div style="margin-top:6px; color:#2E7D32; font-size:0.88em; font-weight:600;">↵ 再按一次 Enter 進入下一題</div>`;
+    speak(answers[0]);
+    updateAdjStats();
+    adjPractice.revealed = true;
+    adjPractice.advanceArmed = true;
+    inp.focus();
+  } else {
+    if (adjPractice.attempts === 1) adjPractice.wrong++;
+    if (!adjPractice.currentMarkedWrong) {
+      adjPractice.sessionWrong.push({
+        prompt: `${adj.en} (${form.label})`,
+        userAns: raw,
+        correctAns: answers[0]
+      });
+      adjPractice.currentMarkedWrong = true;
+    }
+    inp.classList.add('wrong');
+    fb.className = 'exercise-feedback show wrong';
+    fb.innerHTML = `❌ 不對哦 ── 你輸入：<b>${raw}</b><br>再試試看，或按「看答案」`;
+    updateAdjStats();
+  }
+}
+
+function showAdjAnswer() {
+  const { adj, form } = adjPractice.current;
+  const inp = document.getElementById('ap-input');
+  const fb = document.getElementById('ap-fb');
+  if (adjPractice.attempts === 0) adjPractice.wrong++;
+  if (inp) inp.readOnly = true;
+  const answers = adjFormAnswers(adj, form.key);
+  if (!adjPractice.currentMarkedWrong) {
+    adjPractice.sessionWrong.push({
+      prompt: `${adj.en} (${form.label})`,
+      userAns: (inp && inp.value.trim()) ? inp.value.trim() : '(看答案)',
+      correctAns: answers[0]
+    });
+    adjPractice.currentMarkedWrong = true;
+  }
+  const dict = adj.kanji + (adj.kanji !== adj.hira ? `（${adj.hira}）` : '');
+  fb.className = 'exercise-feedback show wrong';
+  fb.innerHTML = `📖 正解：<span class="answer-shown">${answers[0]}</span>${answers.length > 1 ? `<br><span style="font-size:0.85em; opacity:0.85;">也接受：${answers.slice(1).join('、')}</span>` : ''}
+    <div style="margin-top:4px; font-size:0.82em; opacity:0.85;">辞書形：${dict}</div>
+    <div style="margin-top:8px; color:#C62828; font-size:0.88em; font-weight:600;">↵ 按 Enter 兩下進入下一題</div>`;
+  speak(answers[0]);
+  updateAdjStats();
+  adjPractice.revealed = true;
+  adjPractice.advanceArmed = false;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  if (inp) setTimeout(() => inp.focus(), 0);
+}
+
+function handleAdjEnter() {
+  if (!adjPractice.revealed) { checkAdjAnswer(); return; }
+  if (!adjPractice.advanceArmed) {
+    adjPractice.advanceArmed = true;
+    const fb = document.getElementById('ap-fb');
+    if (fb && !fb.querySelector('div[data-arm]')) {
+      const note = document.createElement('div');
+      note.setAttribute('data-arm','1');
+      note.style.cssText = 'margin-top:6px; color:#E64A19; font-weight:700; font-size:0.92em;';
+      note.innerHTML = '↵ 再按一次 Enter 進入下一題';
+      fb.appendChild(note);
+    }
+    return;
+  }
+  pickAdjQuestion();
+}
+
+function updateAdjStats() {
+  const ok = document.getElementById('ap-stat-ok');
+  const ng = document.getElementById('ap-stat-ng');
+  if (ok) ok.textContent = adjPractice.correct;
+  if (ng) ng.textContent = adjPractice.wrong;
+}
+
 // Play all verbs that match the current filters (type + lesson + search)
 function playFilteredVerbs() {
   const q = (document.getElementById('verb-search').value || '').trim().toLowerCase();
@@ -8962,6 +9302,14 @@ function setAdjFilter(btn, kind, value) {
     adjFilterLesson = value;
   }
   renderAdjectives();
+  // If user is currently in practice mode, restart the session so the new
+  // filter takes effect immediately (otherwise the current 10-question pool
+  // is still drawn from the old filter).
+  const pracMode = document.getElementById('adj-practice-mode');
+  if (pracMode && pracMode.style.display !== 'none') {
+    resetAdjSession();
+    pickAdjQuestion();
+  }
 }
 
 function renderAdjectives() {
