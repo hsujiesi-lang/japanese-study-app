@@ -1056,6 +1056,11 @@
         <div class="lesson-title">Counter Variations</div>
         <div class="lesson-en">4 / 7 / 8 / 9 在不同 counter 的讀法對照</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('particles')" style="background:linear-gradient(135deg,#FCE4EC 0%,#F48FB1 100%);">
+        <div class="lesson-num" style="color:#AD1457">🎯 助詞</div>
+        <div class="lesson-title">Particles 練習 (に / で / を / へ)</div>
+        <div class="lesson-en">3 種句型 + に 規則 + 頻率副詞 · 150+ 題</div>
+      </div>
       <div class="hub-card verbs-card" onclick="showPage('kanji')" style="background:linear-gradient(135deg,#F3E5F5 0%,#CE93D8 100%);">
         <div class="lesson-num" style="color:#6A1B9A">📖 KANJI</div>
         <div class="lesson-title">漢字 Lessons 3〜6</div>
@@ -1270,6 +1275,20 @@
     💡 此頁專門整理 <b>4 / 7 / 8 / 9</b> 在不同 counter（時、分、月、歲、年、人、つ、円）下的讀法變化。<b style="color:#E65100">橘色</b>= 不規則 / 特殊讀音。
   </div>
   <div id="counters-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ============ PARTICLES PRACTICE PAGE ============ -->
+<div id="page-particles" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>🎯 助詞 Particles</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="particle-info">
+    💡 練習 <b>に / で / を / へ</b> 等助詞。每個 section 對應一個句型。<b>遇到「不需要助詞」</b>時，請填 <b style="color:#C62828">×</b>（也接受 <b>x / なし / 無</b>）。
+  </div>
+  <div id="particles-content"></div>
   <div class="bottom-pad"></div>
 </div>
 
@@ -1788,6 +1807,55 @@ function playAllTimeSections() {
     items.push(...timeSectionItems(sec, isLast));
   });
   startPinPlayback(items, '全部時間表現');
+}
+
+// ============================
+// PARTICLES PAGE — renders cheat sheet + 7 sub-quizzes
+// ============================
+const PARTICLE_GRAMMARS = ['part-s1','part-s2','part-s3','part-ni','part-verb-particle','part-freq','part-masenka'];
+
+function renderParticlesPage() {
+  const root = document.getElementById('particles-content');
+  if (!root) return;
+
+  // Cheat sheet HTML up top
+  let html = `
+    <div class="counters-rule-box" style="background:linear-gradient(135deg,#FCE4EC 0%,#F8BBD0 100%); border-left-color:#AD1457;">
+      <div style="font-size:1.05em; font-weight:700; margin-bottom:8px; color:#880E4F;">📐 三大句型速查表</div>
+      <div style="margin:6px 0;"><b>S1：</b>(時間)<b>に</b> + (場所)<b>で</b> + (受詞)<b>を</b> + V（食べる・飲む・見る・買う…）</div>
+      <div style="margin:6px 0;"><b>S2：</b>(時間)<b>に</b> + (目的地)<b>に／へ</b> + V（行く・来る・帰る）</div>
+      <div style="margin:6px 0;"><b>S3：</b>(時間)<b>に</b> + V（寝る・起きる）</div>
+      <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #AD1457;">
+        <b>⏰ 時間 に 規則：</b><br>
+        　✅ 加 に：時刻 (9時)、星期 (月曜日)、月份 (4月)、日期 (1日)、年份<br>
+        　❌ 不加：今／今日／明日／昨日／今朝／今晩、毎日／毎週／毎月／毎朝／毎晩
+      </div>
+      <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #AD1457;">
+        <b>⚠️ 易錯：</b><br>
+        　• 友達<b>に</b>会う（不是 を）<br>
+        　• 学校<b>に</b>行く（不是 を）<br>
+        　• あまり / ぜんぜん → 必須接<b>否定</b>動詞
+      </div>
+    </div>
+  `;
+
+  // Inject each grammar's practice section using existing engine
+  html += PARTICLE_GRAMMARS.filter(id => GRAMMARS[id]).map(id => grammarSectionHTML(id)).join('');
+
+  root.innerHTML = html;
+
+  // Reset each session and kick off first question
+  PARTICLE_GRAMMARS.filter(id => GRAMMARS[id]).forEach(id => {
+    const st = getGrammarState(id);
+    st.correct = 0; st.wrong = 0;
+    st.sessionCount = 0; st.sessionWrong = [];
+    st.sessionDone = false; st.currentMarkedWrong = false;
+    st.current = null; st.attempts = 0;
+    st.revealed = false; st.advanceArmed = false;
+  });
+  setTimeout(() => {
+    PARTICLE_GRAMMARS.filter(id => GRAMMARS[id]).forEach(id => pickNextGrammarExercise(id));
+  }, 50);
 }
 
 // ============================
@@ -2633,6 +2701,392 @@ const GRAMMARS = {};
 
 // Register time-quiz here (buildTimeQuiz is defined earlier with TIME_DATA)
 GRAMMARS['time-quiz'] = buildTimeQuiz();
+
+// ============================================================
+// PARTICLES PRACTICE — 助詞練習 (に / で / を / へ + frequency + 〜ませんか)
+// All vocabulary drawn from Lesson 1-4 only.
+// Convention: when no particle is needed, accept × / x / なし / 無 / no.
+// ============================================================
+const NO_PARTICLE = ['×','x','なし','無','no','×','X'];
+
+GRAMMARS['part-s1'] = {
+  title: '🎯 Structure 1 ｜ 時間に + 場所で + 物を + 動詞',
+  explanation: [
+    '<b>結構：</b>(時間) <b>に</b> + (場所) <b>で</b> + (受詞) <b>を</b> + (動詞)',
+    '<b>で</b> = 在哪裡做事（地點動作）。<b>を</b> = 對什麼東西做（受詞）。<b>に</b> = 在某時刻發生。',
+    '適用動詞：<b>食べる、飲む、見る、聞く、話す、する、勉強する、買う、読む、書く、撮る、待つ</b>',
+    '⚠️ 特別：<b>会う</b> 用「(人) <b>に</b> 会う」（不是 を！）',
+    '例：9時に カフェで コーヒーを 飲みます。',
+    '例：月曜日に 大学で 日本語を 勉強します。',
+    '例：お寺で 写真を 撮ります。'
+  ],
+  examples: [
+    { jp:'9時にカフェでコーヒーを飲みます。',           reading:'くじにカフェでコーヒーをのみます。',           en:'I drink coffee at the cafe at 9.' },
+    { jp:'月曜日に大学で日本語を勉強します。',         reading:'げつようびにだいがくでにほんごをべんきょうします。', en:'I study Japanese at university on Monday.' },
+    { jp:'昨日レストランで昼ご飯を食べました。',       reading:'きのうレストランでひるごはんをたべました。',     en:'I ate lunch at the restaurant yesterday.' },
+    { jp:'お寺で友達に会いました。',                   reading:'おてらでともだちにあいました。',                 en:'I met a friend at the temple.' },
+  ],
+  exercises: [
+    // --- 受詞 を ---
+    { type:'fill', prompt:'カフェでコーヒー____飲みます。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'うちで朝ご飯____食べます。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'図書館で本____読みます。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'うちで映画____見ます。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'家で音楽____聞きます。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'デパートで帽子____買いました。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'カフェでハンバーガー____食べました。', en:'受詞 particle', answers:['を'] },
+    { type:'fill', prompt:'お寺で写真____撮りました。', en:'受詞 particle', answers:['を'] },
+    // --- 場所 で ---
+    { type:'fill', prompt:'カフェ____コーヒーを飲みます。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'うち____テレビを見ます。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'大学____日本語を勉強します。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'レストラン____昼ご飯を食べました。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'お寺____写真を撮ります。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'本屋____本を買いました。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'図書館____勉強します。', en:'場所 particle', answers:['で'] },
+    { type:'fill', prompt:'スーパー____お茶を買います。', en:'場所 particle', answers:['で'] },
+    // --- 時間 (clock) に ---
+    { type:'fill', prompt:'7時____朝ご飯を食べます。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'12時____昼ご飯を食べます。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'8時____テレビを見ます。', en:'時刻 particle', answers:['に'] },
+    // --- 星期 / 月 に ---
+    { type:'fill', prompt:'月曜日____日本語を勉強します。', en:'星期 particle', answers:['に'] },
+    { type:'fill', prompt:'土曜日____映画を見ました。', en:'星期 particle', answers:['に'] },
+    { type:'fill', prompt:'日曜日____お寺で写真を撮りました。', en:'星期 particle', answers:['に'] },
+    { type:'fill', prompt:'4月____学校で勉強します。', en:'月份 particle', answers:['に'] },
+    // --- Time reference 不接 に ---
+    { type:'fill', prompt:'今日____カフェでコーヒーを飲みます。(若不需要助詞填 ×)', en:'今日 = time reference, no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'明日____レストランで昼ご飯を食べます。(若不需要助詞填 ×)', en:'明日 = time reference, no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎日____コーヒーを飲みます。(若不需要助詞填 ×)', en:'毎日 = time reference, no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎朝____朝ご飯を食べます。(若不需要助詞填 ×)', en:'毎朝 = time reference, no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'昨日____お寺で写真を撮りました。(若不需要助詞填 ×)', en:'昨日 = time reference, no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'今____テレビを見ます。(若不需要助詞填 ×)', en:'今 = time reference, no に', answers:NO_PARTICLE },
+    // --- 会う (people に) ---
+    { type:'fill', prompt:'カフェで友達____会いました。', en:'meet someone → に', answers:['に'] },
+    { type:'fill', prompt:'お寺で先生____会いました。', en:'meet someone → に', answers:['に'] },
+    { type:'fill', prompt:'昨日メアリーさん____会いました。', en:'meet someone → に', answers:['に'] },
+    // --- Full sentence translation ---
+    { type:'translate', prompt:'I drink coffee at the cafe at 9.',
+      answers:['9時にカフェでコーヒーを飲みます。','9時にカフェでコーヒーを飲みます','九時にカフェでコーヒーを飲みます','くじにカフェでコーヒーをのみます'] },
+    { type:'translate', prompt:'I eat hamburgers at home.',
+      answers:['うちでハンバーガーを食べます。','うちでハンバーガーを食べます','家でハンバーガーを食べます','うちでハンバーガーをたべます'] },
+    { type:'translate', prompt:'I study Japanese at the library.',
+      answers:['図書館で日本語を勉強します。','図書館で日本語を勉強します','としょかんで日本語を勉強します','としょかんでにほんごをべんきょうします'] },
+    { type:'translate', prompt:'I drink tea at home every day.',
+      answers:['毎日うちでお茶を飲みます。','毎日うちでお茶を飲みます','まいにちうちでお茶を飲みます','まいにちうちでおちゃをのみます'] },
+    { type:'translate', prompt:'I read a book at the library on Saturday.',
+      answers:['土曜日に図書館で本を読みます。','土曜日に図書館で本を読みます','どようびに図書館で本を読みます','どようびにとしょかんでほんをよみます'] },
+    { type:'translate', prompt:'I watched a movie at home yesterday.',
+      answers:['昨日うちで映画を見ました。','昨日うちで映画を見ました','きのううちで映画を見ました','きのううちでえいがをみました'] },
+    { type:'translate', prompt:'I bought a hat at the department store.',
+      answers:['デパートで帽子を買いました。','デパートで帽子を買いました','デパートでぼうしをかいました'] },
+    { type:'translate', prompt:'I took photos with my friend at the temple.',
+      answers:['お寺で友達と写真を撮りました。','お寺で友達と写真を撮りました','おてらでともだちと写真を撮りました','おてらでともだちとしゃしんをとりました'] },
+    { type:'translate', prompt:'I will meet my friend at the cafe at 3.',
+      answers:['3時にカフェで友達に会います。','3時にカフェで友達に会います','三時にカフェで友達に会います','さんじにカフェでともだちにあいます'] },
+  ]
+};
+
+GRAMMARS['part-s2'] = {
+  title: '🎯 Structure 2 ｜ 時間に + 目的地に／へ + 動詞 (移動)',
+  explanation: [
+    '<b>結構：</b>(時間) <b>に</b> + (目的地) <b>に／へ</b> + (移動動詞)',
+    '<b>移動動詞：</b>行く、来る、帰る',
+    '目的地的助詞 <b>に</b> 和 <b>へ</b> 都可以，意思一樣。に 比較常用。',
+    '⚠️ 目的地是<b>地點名詞</b>，不是受詞 — 不能用 を！「学校<b>を</b>行きます ✗」「学校<b>に</b>行きます ✓」',
+    '例：9時に大学に行きます。',
+    '例：明日カフェへ行きます。',
+    '例：6時にうちに帰ります。'
+  ],
+  examples: [
+    { jp:'9時に大学に行きます。',         reading:'くじにだいがくにいきます。',         en:'I go to university at 9.' },
+    { jp:'明日カフェへ行きます。',         reading:'あしたカフェへいきます。',           en:'I will go to the cafe tomorrow.' },
+    { jp:'6時にうちに帰ります。',         reading:'ろくじにうちにかえります。',         en:'I return home at 6.' },
+    { jp:'土曜日に図書館に行きました。', reading:'どようびにとしょかんにいきました。', en:'I went to the library on Saturday.' },
+  ],
+  exercises: [
+    // --- 目的地 に ---
+    { type:'fill', prompt:'学校____行きます。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'カフェ____行きます。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'うち____帰ります。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'図書館____行きました。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'日本____来ました。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'お寺____行きません。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'公園____行きます。', en:'destination particle', answers:['に','へ'] },
+    { type:'fill', prompt:'スーパー____行きました。', en:'destination particle', answers:['に','へ'] },
+    // --- 時間 (clock / day) に ---
+    { type:'fill', prompt:'9時____大学に行きます。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'6時____うちに帰ります。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'月曜日____学校に行きます。', en:'星期 particle', answers:['に'] },
+    { type:'fill', prompt:'土曜日____お寺に行きました。', en:'星期 particle', answers:['に'] },
+    // --- Time reference 不接 に ---
+    { type:'fill', prompt:'明日____カフェに行きます。(若不需要助詞填 ×)', en:'明日 = no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'今日____学校に行きません。(若不需要助詞填 ×)', en:'今日 = no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'昨日____レストランに行きました。(若不需要助詞填 ×)', en:'昨日 = no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎日____大学に来ます。(若不需要助詞填 ×)', en:'毎日 = no に', answers:NO_PARTICLE },
+    // --- ⚠️ 不要用 を！受詞題 trap ---
+    { type:'fill', prompt:'(警告：目的地不是受詞！) 大学____行きます。', en:'destination, NOT object', answers:['に','へ'] },
+    // --- Full sentence translation ---
+    { type:'translate', prompt:'I go to school at 9.',
+      answers:['9時に学校に行きます。','9時に学校に行きます','九時に学校に行きます','くじにがっこうにいきます','9時に学校へ行きます'] },
+    { type:'translate', prompt:'I return home at 6.',
+      answers:['6時にうちに帰ります。','6時にうちに帰ります','六時にうちに帰ります','ろくじにうちにかえります','6時に家に帰ります'] },
+    { type:'translate', prompt:'I will go to the cafe tomorrow.',
+      answers:['明日カフェに行きます。','明日カフェに行きます','あしたカフェに行きます','あしたカフェにいきます','明日カフェへ行きます'] },
+    { type:'translate', prompt:'I went to the library on Saturday.',
+      answers:['土曜日に図書館に行きました。','土曜日に図書館に行きました','どようびに図書館に行きました','どようびにとしょかんにいきました','土曜日に図書館へ行きました'] },
+    { type:'translate', prompt:"I don't go to school today.",
+      answers:['今日学校に行きません。','今日学校に行きません','きょう学校に行きません','きょうがっこうにいきません','今日学校へ行きません'] },
+    { type:'translate', prompt:'I came to Japan in April.',
+      answers:['4月に日本に来ました。','4月に日本に来ました','四月に日本に来ました','しがつににほんにきました','4月に日本へ来ました'] },
+    { type:'translate', prompt:'I go to the cafe every day.',
+      answers:['毎日カフェに行きます。','毎日カフェに行きます','まいにちカフェに行きます','まいにちカフェにいきます','毎日カフェへ行きます'] },
+  ]
+};
+
+GRAMMARS['part-s3'] = {
+  title: '🎯 Structure 3 ｜ 時間に + 動詞 (起床／睡覺)',
+  explanation: [
+    '<b>結構：</b>(時間) <b>に</b> + (動詞)',
+    '<b>適用動詞：</b>寝る (ねる)、起きる (おきる)',
+    '不需要場所或受詞 — 只有時間 + 動詞。',
+    '時間助詞 に 的規則跟其他 structure 一樣：時刻／星期／月份 加 に，毎日／今日／明日 等不加。',
+    '例：11時に寝ます。',
+    '例：7時に起きます。',
+    '例：今日6時に起きました。(今日 不接 に，但 6時 要接)'
+  ],
+  examples: [
+    { jp:'11時に寝ます。',         reading:'じゅういちじにねます。',     en:'I sleep at 11.' },
+    { jp:'7時に起きます。',         reading:'しちじにおきます。',         en:'I get up at 7.' },
+    { jp:'昨日12時に寝ました。',   reading:'きのうじゅうにじにねました。', en:'I went to bed at 12 last night.' },
+    { jp:'今日6時に起きました。', reading:'きょうろくじにおきました。', en:'I got up at 6 today.' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'11時____寝ます。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'7時____起きます。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'土曜日____10時に起きます。(土曜日 後面)', en:'星期 particle', answers:['に'] },
+    { type:'fill', prompt:'昨日12時____寝ました。', en:'時刻 particle', answers:['に'] },
+    { type:'fill', prompt:'今日____7時に起きました。(若不需要助詞填 ×)', en:'今日 = no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'明日____6時に起きます。(若不需要助詞填 ×)', en:'明日 = no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎日____7時に起きます。(若不需要助詞填 ×)', en:'毎日 = no に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎晩____11時に寝ます。(若不需要助詞填 ×)', en:'毎晩 = no に', answers:NO_PARTICLE },
+    { type:'translate', prompt:'I sleep at 11.',
+      answers:['11時に寝ます。','11時に寝ます','十一時に寝ます','じゅういちじにねます'] },
+    { type:'translate', prompt:'I get up at 7.',
+      answers:['7時に起きます。','7時に起きます','七時に起きます','しちじにおきます'] },
+    { type:'translate', prompt:'I went to bed at 12 last night.',
+      answers:['昨日12時に寝ました。','昨日12時に寝ました','きのう12時に寝ました','きのうじゅうにじにねました'] },
+    { type:'translate', prompt:'I got up at 6 today.',
+      answers:['今日6時に起きました。','今日6時に起きました','きょう6時に起きました','きょうろくじにおきました'] },
+    { type:'translate', prompt:'I sleep at 12 every day.',
+      answers:['毎日12時に寝ます。','毎日12時に寝ます','まいにち12時に寝ます','まいにちじゅうにじにねます'] },
+    { type:'translate', prompt:"I didn't get up at 7 yesterday.",
+      answers:['昨日7時に起きませんでした。','昨日7時に起きませんでした','きのう7時に起きませんでした','きのうしちじにおきませんでした'] },
+    { type:'translate', prompt:'I will get up at 6 tomorrow.',
+      answers:['明日6時に起きます。','明日6時に起きます','あした6時に起きます','あしたろくじにおきます'] },
+  ]
+};
+
+GRAMMARS['part-ni'] = {
+  title: '🎯 時間助詞 に 規則總整理 (に or 不接？)',
+  explanation: [
+    '<b>✅ 要接 に：</b>',
+    '　• 時刻 (clock)：9時<b>に</b>、3時半<b>に</b>',
+    '　• 星期：月曜日<b>に</b>、土曜日<b>に</b>',
+    '　• 月份／日期：4月<b>に</b>、1日<b>に</b>',
+    '　• 年份：2026年<b>に</b>',
+    '<b>❌ 不接 に：</b>',
+    '　• 相對時間：<b>今、今日、明日、昨日、今朝、今晩</b>',
+    '　• 「毎」系列：<b>毎日、毎週、毎月、毎年、毎朝、毎晩</b>',
+    '⚠️ 大原則：「<b>絕對時間 → 要 に</b>」「<b>相對／頻率時間 → 不要 に</b>」'
+  ],
+  examples: [
+    { jp:'9時に起きます。',       reading:'くじにおきます。',         en:'I get up at 9. (clock → に)' },
+    { jp:'月曜日に学校に行きます。', reading:'げつようびにがっこうにいきます。', en:'I go to school on Monday. (day → に)' },
+    { jp:'今日学校に行きます。',   reading:'きょうがっこうにいきます。', en:'I go to school today. (今日 → no に)' },
+    { jp:'毎日コーヒーを飲みます。', reading:'まいにちコーヒーをのみます。', en:'I drink coffee every day. (毎日 → no に)' },
+  ],
+  exercises: [
+    // ✅ Take に
+    { type:'fill', prompt:'9時____起きます。(填 に 或 ×)', en:'clock', answers:['に'] },
+    { type:'fill', prompt:'7時半____朝ご飯を食べます。(填 に 或 ×)', en:'clock', answers:['に'] },
+    { type:'fill', prompt:'月曜日____学校に行きます。(填 に 或 ×)', en:'day', answers:['に'] },
+    { type:'fill', prompt:'金曜日____映画を見ます。(填 に 或 ×)', en:'day', answers:['に'] },
+    { type:'fill', prompt:'土曜日____お寺で写真を撮ります。(填 に 或 ×)', en:'day', answers:['に'] },
+    { type:'fill', prompt:'日曜日____うちで休みます。(填 に 或 ×)', en:'day', answers:['に'] },
+    { type:'fill', prompt:'4月____日本に来ました。(填 に 或 ×)', en:'month', answers:['に'] },
+    { type:'fill', prompt:'9月____大学で勉強します。(填 に 或 ×)', en:'month', answers:['に'] },
+    { type:'fill', prompt:'1日____東京に行きます。(填 に 或 ×)', en:'date', answers:['に'] },
+    { type:'fill', prompt:'2026年____日本に行きます。(填 に 或 ×)', en:'year', answers:['に'] },
+    { type:'fill', prompt:'12時____寝ます。(填 に 或 ×)', en:'clock', answers:['に'] },
+    { type:'fill', prompt:'5時____うちに帰ります。(填 に 或 ×)', en:'clock', answers:['に'] },
+    // ❌ No に
+    { type:'fill', prompt:'今日____カフェに行きます。(填 に 或 ×)', en:'今日 = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'明日____勉強します。(填 に 或 ×)', en:'明日 = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'明後日____東京に行きます。(填 に 或 ×)', en:'明後日 = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'昨日____映画を見ました。(填 に 或 ×)', en:'昨日 = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'おととい____レストランで食べました。(填 に 或 ×)', en:'おととい = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎日____コーヒーを飲みます。(填 に 或 ×)', en:'毎日 = frequency', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎朝____7時に起きます。(填 に 或 ×)', en:'毎朝 = frequency', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎晩____11時に寝ます。(填 に 或 ×)', en:'毎晩 = frequency', answers:NO_PARTICLE },
+    { type:'fill', prompt:'毎週____お寺に行きます。(填 に 或 ×)', en:'毎週 = frequency', answers:NO_PARTICLE },
+    { type:'fill', prompt:'今____テレビを見ます。(填 に 或 ×)', en:'今 = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'今朝____朝ご飯を食べました。(填 に 或 ×)', en:'今朝 = relative', answers:NO_PARTICLE },
+    { type:'fill', prompt:'今晩____ともだちと話します。(填 に 或 ×)', en:'今晩 = relative', answers:NO_PARTICLE },
+    // Combined (clock yes, time reference no)
+    { type:'fill', prompt:'今日 7時____起きました。(7時 後面)', en:'clock → に', answers:['に'] },
+    { type:'fill', prompt:'明日 9時____学校に行きます。(9時 後面)', en:'clock → に', answers:['に'] },
+    { type:'fill', prompt:'昨日 12時____寝ました。(12時 後面)', en:'clock → に', answers:['に'] },
+    { type:'fill', prompt:'毎朝 7時____起きます。(7時 後面)', en:'clock → に', answers:['に'] },
+  ]
+};
+
+GRAMMARS['part-verb-particle'] = {
+  title: '🎯 動詞 ─ 助詞 配對 (哪個動詞接哪個助詞)',
+  explanation: [
+    '<b>受詞 を：</b>食べる、飲む、見る、聞く、買う、読む、書く、撮る、勉強する、話す、待つ',
+    '<b>目的地 に／へ：</b>行く、来る、帰る (移動方向)',
+    '<b>(人) に：</b>会う (見面)',
+    '<b>場所 で：</b>動作發生的地點 (在哪裡做事)',
+    '<b>時間 に：</b>絕對時間 (時刻、星期、月份)',
+    '⚠️ 不要寫「友達<b>を</b>会う」(✗)；正確是「友達<b>に</b>会う」(✓)',
+    '⚠️ 不要寫「学校<b>を</b>行く」(✗)；正確是「学校<b>に</b>行く」(✓)',
+  ],
+  examples: [
+    { jp:'コーヒーを飲みます。',     reading:'コーヒーをのみます。',     en:'drink coffee → を' },
+    { jp:'学校に行きます。',         reading:'がっこうにいきます。',     en:'go to school → に' },
+    { jp:'友達に会います。',         reading:'ともだちにあいます。',     en:'meet a friend → に (not を!)' },
+    { jp:'カフェで勉強します。',     reading:'カフェでべんきょうします。', en:'study at the cafe → で' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'コーヒー____飲みます。(飲む 接)', en:'drink + ?', answers:['を'] },
+    { type:'fill', prompt:'本____読みます。(読む 接)', en:'read + ?', answers:['を'] },
+    { type:'fill', prompt:'写真____撮ります。(撮る 接)', en:'take photo + ?', answers:['を'] },
+    { type:'fill', prompt:'映画____見ます。(見る 接)', en:'watch + ?', answers:['を'] },
+    { type:'fill', prompt:'音楽____聞きます。(聞く 接)', en:'listen + ?', answers:['を'] },
+    { type:'fill', prompt:'手紙____書きます。(書く 接)', en:'write + ?', answers:['を'] },
+    { type:'fill', prompt:'お土産____買いました。(買う 接)', en:'buy + ?', answers:['を'] },
+    { type:'fill', prompt:'日本語____勉強します。(勉強する 接)', en:'study + ?', answers:['を'] },
+    { type:'fill', prompt:'メアリーさん____待ちました。(待つ 接)', en:'wait + ?', answers:['を'] },
+    { type:'fill', prompt:'(人) 友達____会います。(会う 接)', en:'meet + ? ⚠ ', answers:['に'] },
+    { type:'fill', prompt:'(人) 先生____会いました。(会う 接)', en:'meet + ? ⚠ ', answers:['に'] },
+    { type:'fill', prompt:'(目的地) 学校____行きます。(行く 接)', en:'go to + ?', answers:['に','へ'] },
+    { type:'fill', prompt:'(目的地) うち____帰ります。(帰る 接)', en:'return + ?', answers:['に','へ'] },
+    { type:'fill', prompt:'(目的地) 日本____来ました。(来る 接)', en:'come + ?', answers:['に','へ'] },
+    { type:'fill', prompt:'(場所) カフェ____コーヒーを飲みます。', en:'at + place', answers:['で'] },
+    { type:'fill', prompt:'(場所) 図書館____勉強します。', en:'at + place', answers:['で'] },
+    { type:'fill', prompt:'(場所) 公園____友達に会いました。', en:'at + place', answers:['で'] },
+    { type:'fill', prompt:'(場所) お寺____写真を撮ります。', en:'at + place', answers:['で'] },
+    { type:'fill', prompt:'(場所) スーパー____ジュースを買います。', en:'at + place', answers:['で'] },
+    { type:'translate', prompt:'I will meet my friend at the cafe.',
+      answers:['カフェで友達に会います。','カフェで友達に会います','カフェでともだちにあいます'] },
+    { type:'translate', prompt:'I waited for Mary at the station.',
+      answers:['駅でメアリーさんを待ちました。','駅でメアリーさんを待ちました','えきでメアリーさんを待ちました','えきでメアリーさんをまちました'] },
+    { type:'translate', prompt:'I go to the library every day.',
+      answers:['毎日図書館に行きます。','毎日図書館に行きます','まいにち図書館に行きます','まいにちとしょかんにいきます','毎日図書館へ行きます'] },
+  ]
+};
+
+GRAMMARS['part-freq'] = {
+  title: '🎯 頻率副詞 (Frequency adverbs)',
+  explanation: [
+    '<b>結構：</b>(人)<b>は</b> + (頻率副詞) + (受詞)<b>を</b> + (動詞)',
+    '<b>頻率副詞放在動詞前面，主題 は 之後。</b>',
+    '<b>✅ 接肯定動詞：</b>',
+    '　• <b>よく</b> (often, 經常) — 私は<b>よく</b>コーヒーを飲みます',
+    '　• <b>ときどき</b> (sometimes, 有時候)',
+    '　• <b>たいてい</b> (usually, 通常)',
+    '　• <b>ちょっと</b> (a little, 一點點)',
+    '<b>❌ 必須接否定動詞：</b>',
+    '　• <b>あまり</b> + 〜ません (not often, 不太...) — 私はあまり<b>テレビを見ません</b>',
+    '　• <b>ぜんぜん</b> + 〜ません (not at all, 完全不...)',
+    '⚠️ あまり / ぜんぜん 寫成「あまり〜ます ✗」是錯的！必須是否定。'
+  ],
+  examples: [
+    { jp:'私はよくコーヒーを飲みます。',         reading:'わたしはよくコーヒーをのみます。',         en:'I often drink coffee.' },
+    { jp:'たけしさんはときどき映画を見ます。',   reading:'たけしさんはときどきえいがをみます。',     en:'Takeshi sometimes watches movies.' },
+    { jp:'私はあまりテレビを見ません。',         reading:'わたしはあまりテレビをみません。',         en:"I don't watch TV often." },
+    { jp:'メアリーさんはぜんぜん日本語を話しません。', reading:'メアリーさんはぜんぜんにほんごをはなしません。', en:'Mary does not speak Japanese at all.' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'私は____コーヒーを飲みます。(often)', en:'often = よく', answers:['よく'] },
+    { type:'fill', prompt:'たけしさんは____映画を見ます。(sometimes)', en:'sometimes = ときどき', answers:['ときどき'] },
+    { type:'fill', prompt:'私は____7時に起きます。(usually)', en:'usually = たいてい', answers:['たいてい'] },
+    { type:'fill', prompt:'メアリーさんは____テレビを見ません。(not often)', en:'not often = あまり (+ negative)', answers:['あまり'] },
+    { type:'fill', prompt:'私は____お酒を飲みません。(not at all)', en:'not at all = ぜんぜん (+ negative)', answers:['ぜんぜん'] },
+    { type:'fill', prompt:'たけしさんは____朝ご飯を食べません。(not often)', en:'not often = あまり', answers:['あまり'] },
+    { type:'fill', prompt:'私は____ハンバーガーを食べます。(a little)', en:'a little = ちょっと', answers:['ちょっと'] },
+    // Position drill — フィル空白 either 副詞 or 助詞
+    { type:'fill', prompt:'私____よく図書館に行きます。(主題助詞)', en:'topic particle', answers:['は'] },
+    { type:'fill', prompt:'たけしさん____ぜんぜん勉強しません。(主題助詞)', en:'topic particle', answers:['は'] },
+    // Translation
+    { type:'translate', prompt:'I often drink coffee.',
+      answers:['私はよくコーヒーを飲みます。','私はよくコーヒーを飲みます','わたしはよくコーヒーをのみます'] },
+    { type:'translate', prompt:'Takeshi sometimes watches movies.',
+      answers:['たけしさんはときどき映画を見ます。','たけしさんはときどき映画を見ます','たけしさんはときどきえいがをみます'] },
+    { type:'translate', prompt:"I don't watch TV often.",
+      answers:['私はあまりテレビを見ません。','私はあまりテレビを見ません','わたしはあまりテレビをみません'] },
+    { type:'translate', prompt:'Mary does not drink coffee at all.',
+      answers:['メアリーさんはぜんぜんコーヒーを飲みません。','メアリーさんはぜんぜんコーヒーを飲みません','メアリーさんはぜんぜんコーヒーをのみません'] },
+    { type:'translate', prompt:'I usually get up at 7.',
+      answers:['私はたいてい7時に起きます。','私はたいてい7時に起きます','わたしはたいてい7時に起きます','わたしはたいていしちじにおきます'] },
+    { type:'translate', prompt:"Mary doesn't go to the library often.",
+      answers:['メアリーさんはあまり図書館に行きません。','メアリーさんはあまり図書館に行きません','メアリーさんはあまりとしょかんにいきません'] },
+    { type:'translate', prompt:'I sometimes read books at the cafe.',
+      answers:['私はときどきカフェで本を読みます。','私はときどきカフェで本を読みます','わたしはときどきカフェで本を読みます','わたしはときどきカフェでほんをよみます'] },
+    { type:'translate', prompt:'I often eat hamburgers.',
+      answers:['私はよくハンバーガーを食べます。','私はよくハンバーガーを食べます','わたしはよくハンバーガーをたべます'] },
+    { type:'translate', prompt:"I don't write letters at all.",
+      answers:['私はぜんぜん手紙を書きません。','私はぜんぜん手紙を書きません','わたしはぜんぜん手紙を書きません','わたしはぜんぜんてがみをかきません'] },
+    { type:'translate', prompt:'Takeshi often meets his friends at the cafe.',
+      answers:['たけしさんはよくカフェで友達に会います。','たけしさんはよくカフェで友達に会います','たけしさんはよくカフェでともだちにあいます'] },
+  ]
+};
+
+GRAMMARS['part-masenka'] = {
+  title: '🎯 〜ませんか (邀請 Invitation)',
+  explanation: [
+    '<b>用法：</b>動詞ます形 → 把 <b>ます</b> 改成 <b>ませんか</b>，表示「(要不要) 一起做...?」',
+    '雖然字面是否定，但意思是<b>邀請</b>，不是真的問「不做嗎？」',
+    '常用回答：<b>ええ、いいですね。</b> (好啊) / <b>すみません、ちょっと…</b> (不好意思，有點...)',
+    '結構：(時間に)(場所で)(物を) <b>動詞ませんか</b>',
+    '例：テニスをしませんか。 (要不要一起打網球？)',
+    '例：明日カフェでお茶を飲みませんか。',
+    '例：土曜日に映画を見ませんか。'
+  ],
+  examples: [
+    { jp:'テニスをしませんか。',                       reading:'テニスをしませんか。',                         en:'Want to play tennis?' },
+    { jp:'明日カフェでお茶を飲みませんか。',           reading:'あしたカフェでおちゃをのみませんか。',         en:'Want to have tea at the cafe tomorrow?' },
+    { jp:'土曜日に映画を見ませんか。',                 reading:'どようびにえいがをみませんか。',               en:'Want to see a movie on Saturday?' },
+    { jp:'昼ご飯を食べませんか。',                     reading:'ひるごはんをたべませんか。',                   en:'Shall we have lunch?' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'昼ご飯を食べ____か。(invitation)', en:'invitation = ませんか', answers:['ません'] },
+    { type:'fill', prompt:'カフェでコーヒーを飲み____か。(invitation)', en:'invitation = ませんか', answers:['ません'] },
+    { type:'fill', prompt:'映画を見____か。(invitation)', en:'invitation = ませんか', answers:['ません'] },
+    { type:'fill', prompt:'土曜日にテニスをし____か。(invitation)', en:'invitation = ませんか', answers:['ません'] },
+    { type:'translate', prompt:'Want to play tennis?',
+      answers:['テニスをしませんか。','テニスをしませんか'] },
+    { type:'translate', prompt:'Want to have tea at the cafe tomorrow?',
+      answers:['明日カフェでお茶を飲みませんか。','明日カフェでお茶を飲みませんか','あしたカフェでお茶を飲みませんか','あしたカフェでおちゃをのみませんか'] },
+    { type:'translate', prompt:'Want to see a movie on Saturday?',
+      answers:['土曜日に映画を見ませんか。','土曜日に映画を見ませんか','どようびに映画を見ませんか','どようびにえいがをみませんか'] },
+    { type:'translate', prompt:'Shall we have lunch?',
+      answers:['昼ご飯を食べませんか。','昼ご飯を食べませんか','ひるごはんを食べませんか','ひるごはんをたべませんか'] },
+    { type:'translate', prompt:'Want to go to the library together?',
+      answers:['一緒に図書館に行きませんか。','一緒に図書館に行きませんか','いっしょに図書館に行きませんか','いっしょにとしょかんにいきませんか','一緒に図書館へ行きませんか'] },
+    { type:'translate', prompt:'Want to study Japanese together?',
+      answers:['一緒に日本語を勉強しませんか。','一緒に日本語を勉強しませんか','いっしょに日本語を勉強しませんか','いっしょににほんごをべんきょうしませんか'] },
+    { type:'translate', prompt:'Want to go to the temple on Sunday?',
+      answers:['日曜日にお寺に行きませんか。','日曜日にお寺に行きませんか','にちようびにお寺に行きませんか','にちようびにおてらにいきませんか','日曜日にお寺へ行きませんか'] },
+    { type:'translate', prompt:'Want to read books at the cafe?',
+      answers:['カフェで本を読みませんか。','カフェで本を読みませんか','カフェでほんをよみませんか'] },
+    { type:'translate', prompt:'Want to drink coffee at 3?',
+      answers:['3時にコーヒーを飲みませんか。','3時にコーヒーを飲みませんか','三時にコーヒーを飲みませんか','さんじにコーヒーをのみませんか'] },
+    { type:'translate', prompt:'Want to take photos at the park?',
+      answers:['公園で写真を撮りませんか。','公園で写真を撮りませんか','こうえんで写真を撮りませんか','こうえんでしゃしんをとりませんか'] },
+  ]
+};
 
 GRAMMARS['te-kudasai'] = {
   title: 'Grammar 2 ｜ 〜てください (Please do...)',
@@ -9931,6 +10385,7 @@ function showPage(name) {
   if (name === 'pinmanager') showPinManager();
   if (name === 'numbers') renderNumbersPage();
   if (name === 'counters') renderCountersPage();
+  if (name === 'particles') renderParticlesPage();
   if (name === 'kanji') renderKanjiPage();
   if (name === 'time') renderTimePage();
   if (name === 'hiragana') {
