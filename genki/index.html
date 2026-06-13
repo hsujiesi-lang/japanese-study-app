@@ -3088,6 +3088,66 @@ GRAMMARS['part-masenka'] = {
   ]
 };
 
+// ----- L6 Grammar 1: Te-form formation drill (W11 S1 Practice 2 — 25 verbs) -----
+GRAMMARS['l6-te-form-drill'] = {
+  title: 'Grammar 1 ｜ Te-form 變化規則 (Te-form formation drill)',
+  explanation: [
+    '<b>變化規則：</b>',
+    '・<b>Ru-verb：</b>る → <b>て</b>　(食べる → 食べて)',
+    '・<b>U-verb 結尾 う/つ/る</b>：→ <b>って</b>　(会う → 会って、待つ → 待って、とる → とって)',
+    '・<b>U-verb 結尾 む/ぶ/ぬ</b>：→ <b>んで</b>　(読む → 読んで、遊ぶ → 遊んで、死ぬ → 死んで)',
+    '・<b>U-verb 結尾 く</b>：→ <b>いて</b>　(書く → 書いて)　⚠️ <b>行く → 行って</b> (例外！)',
+    '・<b>U-verb 結尾 ぐ</b>：→ <b>いで</b>　(泳ぐ → 泳いで、急ぐ → 急いで)',
+    '・<b>U-verb 結尾 す</b>：→ <b>して</b>　(話す → 話して)',
+    '・<b>Irregular：</b>する → <b>して</b>、来る → <b>きて</b>'
+  ],
+  examples: [
+    { jp:'食べる → 食べて',     reading:'たべる → たべて',     en:'(Ru)' },
+    { jp:'会う → 会って',       reading:'あう → あって',       en:'(U う)' },
+    { jp:'読む → 読んで',       reading:'よむ → よんで',       en:'(U む)' },
+    { jp:'書く → 書いて',       reading:'かく → かいて',       en:'(U く)' },
+    { jp:'行く → 行って',       reading:'いく → いって',       en:'(U く 例外！)' },
+    { jp:'泳ぐ → 泳いで',       reading:'およぐ → およいで',   en:'(U ぐ)' },
+    { jp:'話す → 話して',       reading:'はなす → はなして',   en:'(U す)' },
+    { jp:'来る → きて',         reading:'くる → きて',         en:'(Irregular)' },
+  ],
+  exercises: [
+    // W11 S1 Practice 2 (textbook p.156 I-A) — 15 verbs
+    { type:'conj', prompt:'おきる → て形', en:'Ru', answers:['おきて','起きて'] },
+    { type:'conj', prompt:'たべる → て形', en:'Ru', answers:['たべて','食べて'] },
+    { type:'conj', prompt:'かう → て形',   en:'U う', answers:['かって','買って'] },
+    { type:'conj', prompt:'よむ → て形',   en:'U む', answers:['よんで','読んで'] },
+    { type:'conj', prompt:'かく → て形',   en:'U く', answers:['かいて','書いて'] },
+    { type:'conj', prompt:'くる → て形',   en:'Irregular', answers:['きて','来て'] },
+    { type:'conj', prompt:'まつ → て形',   en:'U つ', answers:['まって','待って'] },
+    { type:'conj', prompt:'あそぶ → て形', en:'U ぶ', answers:['あそんで','遊んで'] },
+    { type:'conj', prompt:'とる → て形',   en:'U る', answers:['とって','撮って'] },
+    { type:'conj', prompt:'する → て形',   en:'Irregular', answers:['して'] },
+    { type:'conj', prompt:'いそぐ → て形', en:'U ぐ', answers:['いそいで','急いで'] },
+    { type:'conj', prompt:'いく → て形',   en:'U く ⚠ 例外', answers:['いって','行って'] },
+    { type:'conj', prompt:'ねる → て形',   en:'Ru', answers:['ねて','寝て'] },
+    { type:'conj', prompt:'しぬ → て形',   en:'U ぬ', answers:['しんで','死んで'] },
+    { type:'conj', prompt:'はなす → て形', en:'U す', answers:['はなして','話して'] },
+    { type:'conj', prompt:'かえる → て形', en:'U る (歸來)', answers:['かえって','帰って'] },
+    // W11 S1 Practice 1 (workbook p.61) — additional U-verbs
+    { type:'conj', prompt:'のむ → て形',   en:'U む', answers:['のんで','飲んで'] },
+    { type:'conj', prompt:'みる → て形',   en:'Ru', answers:['みて','見て'] },
+    { type:'conj', prompt:'きく → て形',   en:'U く', answers:['きいて','聞いて'] },
+    { type:'conj', prompt:'あう → て形',   en:'U う', answers:['あって','会って'] },
+    { type:'conj', prompt:'およぐ → て形', en:'U ぐ', answers:['およいで','泳いで'] },
+    { type:'conj', prompt:'べんきょうする → て形', en:'Irregular', answers:['べんきょうして','勉強して'] },
+    { type:'conj', prompt:'ある → て形',   en:'U る', answers:['あって'] },
+    { type:'conj', prompt:'わかる → て形', en:'U る', answers:['わかって'] },
+    { type:'conj', prompt:'やる → て形',   en:'U る', answers:['やって'] },
+    { type:'conj', prompt:'でかける → て形', en:'Ru', answers:['でかけて','出かけて'] },
+    // Common traps
+    { type:'conj', prompt:'消す → て形',   en:'U す', answers:['けして','消して'] },
+    { type:'conj', prompt:'借りる → て形', en:'Ru', answers:['かりて','借りて'] },
+    { type:'conj', prompt:'使う → て形',   en:'U う', answers:['つかって','使って'] },
+    { type:'conj', prompt:'開ける → て形', en:'Ru', answers:['あけて','開けて'] },
+  ]
+};
+
 GRAMMARS['te-kudasai'] = {
   title: 'Grammar 2 ｜ 〜てください (Please do...)',
   explanation: [
@@ -3168,6 +3228,17 @@ GRAMMARS['te-kudasai'] = {
       answers:['このペンを使ってください。','このペンを使ってください','このペンをつかってください'] },
     { type:'translate', prompt:'Please help me.',
       answers:['手伝ってください。','手伝ってください','てつだってください'] },
+    // ── Lecture-sourced (W11 S1 + Dialogue I p.146) ──
+    { type:'translate', prompt:'Please read the next page. (from Dialogue I)',
+      answers:['次のページを読んでください。','次のページを読んでください','つぎのページを読んでください','つぎのページをよんでください'] },
+    { type:'translate', prompt:'Please wake up. (from Dialogue I)',
+      answers:['起きてください。','起きてください','おきてください'] },
+    { type:'translate', prompt:'Please bring the textbook. (from Dialogue I)',
+      answers:['教科書を持ってきてください。','教科書を持ってきてください','きょうかしょを持ってきてください','きょうかしょをもってきてください'] },
+    { type:'translate', prompt:'Please open the window. (lecture example: まどをあけて〜)',
+      answers:['まどをあけてください。','まどをあけてください','窓を開けてください','まどを開けてください','窓をあけてください'] },
+    { type:'translate', prompt:'Please return it soon. (from Dialogue II — すぐ返します)',
+      answers:['すぐ返してください。','すぐ返してください','すぐかえしてください'] },
   ]
 };
 
@@ -3231,6 +3302,17 @@ GRAMMARS['te-two'] = {
     { type:'conj', prompt:'読む → 連接型', en:'te-form for joining', answers:['読んで','よんで'] },
     { type:'conj', prompt:'買う → 連接型', en:'te-form for joining', answers:['買って','かって'] },
     { type:'conj', prompt:'急ぐ → 連接型', en:'te-form for joining', answers:['急いで','いそいで'] },
+    // ── Lecture-sourced (W12 S1 revision + Dialogue II) ──
+    { type:'translate', prompt:'Mary got up in the morning and ate breakfast. (W12 S1 reorder drill)',
+      answers:['メアリーさんは朝起きて朝ご飯を食べました。','メアリーさんは朝起きて朝ご飯を食べました','メアリーさんはあさおきてあさごはんをたべました'] },
+    { type:'translate', prompt:'Let\'s go to the university and study at the library. (W12 S1 reorder drill)',
+      answers:['大学に行って図書館で勉強しましょう。','大学に行って図書館で勉強しましょう','だいがくに行ってとしょかんで勉強しましょう','だいがくにいってとしょかんでべんきょうしましょう'] },
+    { type:'translate', prompt:'I will go home and study today. (from Dialogue II)',
+      answers:['今日は家に帰って勉強します。','今日は家に帰って勉強します','きょうは家に帰って勉強します','きょうはいえにかえってべんきょうします','今日はうちに帰って勉強します'] },
+    { type:'translate', prompt:'I will go to the temple and meet a friend tomorrow.',
+      answers:['明日お寺に行って友達に会います。','明日お寺に行って友達に会います','あしたお寺に行って友達に会います','あしたおてらにいってともだちにあいます'] },
+    { type:'translate', prompt:'I returned home and watched TV last night.',
+      answers:['昨日の夜うちに帰ってテレビを見ました。','昨日の夜うちに帰ってテレビを見ました','きのうのよるうちに帰ってテレビを見ました','きのうのよるうちにかえってテレビをみました'] },
   ]
 };
 
@@ -3290,6 +3372,25 @@ GRAMMARS['te-mo-ii'] = {
       answers:['ドアを開けてもいいですか。','ドアを開けてもいいですか','ドアをあけてもいいですか'] },
     { type:'translate', prompt:'May I bring my dog?',
       answers:['犬を連れてきてもいいですか。','犬を連れてきてもいいですか','いぬを連れてきてもいいですか','いぬをつれてきてもいいですか'] },
+    // ── Lecture-sourced (W12 S1 textbook p.160 C + Dialogue II) ──
+    { type:'translate', prompt:'May I take a picture? (textbook example)',
+      answers:['写真を撮ってもいいですか。','写真を撮ってもいいですか','しゃしんを撮ってもいいですか','しゃしんをとってもいいですか'] },
+    { type:'translate', prompt:'[With teacher] May I go to the bathroom?',
+      answers:['トイレに行ってもいいですか。','トイレに行ってもいいですか','トイレにいってもいいですか'] },
+    { type:'translate', prompt:'[With teacher] I feel sick — may I go home?',
+      answers:['帰ってもいいですか。','帰ってもいいですか','かえってもいいですか','うちに帰ってもいいですか','家に帰ってもいいですか'] },
+    { type:'translate', prompt:'[With teacher] May I bring the homework tomorrow?',
+      answers:['明日宿題を持ってきてもいいですか。','明日宿題を持ってきてもいいですか','あした宿題を持ってきてもいいですか','あしたしゅくだいを持ってきてもいいですか','あしたしゅくだいをもってきてもいいですか'] },
+    { type:'translate', prompt:'[With teacher] May I ask in English?',
+      answers:['英語で聞いてもいいですか。','英語で聞いてもいいですか','えいごで聞いてもいいですか','えいごできいてもいいですか'] },
+    { type:'translate', prompt:'[With friend] May I borrow your notebook?',
+      answers:['ノートを借りてもいいですか。','ノートを借りてもいいですか','ノートをかりてもいいですか'] },
+    { type:'translate', prompt:'[With friend] May I turn on the lights?',
+      answers:['電気をつけてもいいですか。','電気をつけてもいいですか','でんきをつけてもいいですか'] },
+    { type:'translate', prompt:'[With friend] May I bring my friend (to the party)?',
+      answers:['友達を連れてきてもいいですか。','友達を連れてきてもいいですか','ともだちを連れてきてもいいですか','ともだちをつれてきてもいいですか'] },
+    { type:'translate', prompt:'May I borrow your notebook later? (from Dialogue II)',
+      answers:['後でノートを借りてもいいですか。','後でノートを借りてもいいですか','あとでノートを借りてもいいですか','あとでノートをかりてもいいですか'] },
   ]
 };
 
@@ -3346,6 +3447,20 @@ GRAMMARS['te-wa-ikemasen'] = {
       answers:['図書館でパソコンを使ってはいけません。','図書館でパソコンを使ってはいけません','としょかんでパソコンをつかってはいけません'] },
     { type:'translate', prompt:'You must not stand here.',
       answers:['ここに立ってはいけません。','ここに立ってはいけません','ここにたってはいけません'] },
+    // ── Lecture-sourced (W12 S1 textbook p.161 B + Dialogue I) ──
+    { type:'translate', prompt:'You must not talk at the library.',
+      answers:['図書館で話してはいけません。','図書館で話してはいけません','としょかんで話してはいけません','としょかんではなしてはいけません'] },
+    { type:'translate', prompt:'You must not eat lunch at the library.',
+      answers:['図書館で昼ご飯を食べてはいけません。','図書館で昼ご飯を食べてはいけません','としょかんで昼ご飯を食べてはいけません','としょかんでひるごはんをたべてはいけません'] },
+    { type:'translate', prompt:'You must not drink coffee at the library.',
+      answers:['図書館でコーヒーを飲んではいけません。','図書館でコーヒーを飲んではいけません','としょかんでコーヒーを飲んではいけません','としょかんでコーヒーをのんではいけません'] },
+    { type:'translate', prompt:"An 18-year-old must not smoke.",
+      answers:['十八歳の人はたばこを吸ってはいけません。','十八歳の人はたばこを吸ってはいけません','18歳の人はたばこを吸ってはいけません','じゅうはっさいの人はたばこを吸ってはいけません','じゅうはっさいのひとはたばこをすってはいけません'] },
+    { type:'translate', prompt:"An 18-year-old must not drink alcohol.",
+      answers:['十八歳の人はお酒を飲んではいけません。','十八歳の人はお酒を飲んではいけません','18歳の人はお酒を飲んではいけません','じゅうはっさいの人はお酒を飲んではいけません','じゅうはっさいのひとはおさけをのんではいけません'] },
+    { type:'translate', prompt:'You must not sleep in class. (from Dialogue I)',
+      answers:['クラスで寝てはいけません。','クラスで寝てはいけません','クラスでねてはいけません'] },
+    { type:'fill', prompt:'A：図書館で電話してもいいですか。 B：いいえ、電話____。 (must not)', en:'must not = ては いけません', answers:['してはいけません'] },
   ]
 };
 
@@ -3394,6 +3509,26 @@ GRAMMARS['kara'] = {
       answers:['カフェに行きましょう。疲れましたから。','カフェに行きましょう。疲れましたから','カフェに行きましょう。つかれましたから'] },
     { type:'fill', prompt:'宿題があります____、勉強します。', en:"Since I have homework, I'll study.", answers:['から'] },
     { type:'fill', prompt:'病院に行きます。具合が悪いです____。', en:"I'll go to the hospital because I feel sick.", answers:['から'] },
+    // ── Lecture-sourced (W12 S1 textbook p.161 B + Dialogue I/II/III) ──
+    { type:'translate', prompt:"This week is tough. (W12 S1 prompt 1)",
+      answers:['今週は大変です。','今週は大変です','こんしゅうは大変です','こんしゅうはたいへんです'] },
+    { type:'translate', prompt:"I won't eat lunch — I don't have much money. (W12 S1 example)",
+      answers:['昼ご飯を食べません。あまりお金がありませんから。','昼ご飯を食べません。あまりお金がありませんから','ひるごはんを食べません。あまりお金がありませんから','ひるごはんをたべません。あまりおかねがありませんから'] },
+    { type:'translate', prompt:"I won't eat lunch — I have class. (W12 S1 example)",
+      answers:['昼ご飯を食べません。クラスがありますから。','昼ご飯を食べません。クラスがありますから','ひるごはんを食べません。クラスがありますから','ひるごはんをたべません。クラスがありますから'] },
+    { type:'translate', prompt:"I won't study Japanese next year — I don't have money. (W12 S1 prompt 5+6)",
+      answers:['来年は日本語を勉強しません。お金がぜんぜんありませんから。','来年は日本語を勉強しません。お金がぜんぜんありませんから','らいねんは日本語を勉強しません。お金がぜんぜんありませんから','らいねんはにほんごをべんきょうしません。おかねがぜんぜんありませんから'] },
+    { type:'translate', prompt:"Bring the textbook — we use it every day. (from Dialogue I)",
+      answers:['教科書を持ってきてください。毎日使いますから。','教科書を持ってきてください。毎日使いますから','きょうかしょをもってきてください。まいにちつかいますから'] },
+    { type:'translate', prompt:"Because you were absent on Friday. (from Dialogue II)",
+      answers:['金曜日に休みましたから。','金曜日に休みましたから','きんようびに休みましたから','きんようびにやすみましたから'] },
+    { type:'translate', prompt:"No, thank you — I'll get off soon. (from Dialogue III)",
+      answers:['いいえ、けっこうです。すぐ降りますから。','いいえ、けっこうです。すぐ降りますから','いいえ、けっこうです。すぐおりますから'] },
+    { type:'translate', prompt:"I will go home and study today — there is a test tomorrow.",
+      answers:['今日は家に帰って勉強します。明日テストがありますから。','今日は家に帰って勉強します。明日テストがありますから','きょうはいえにかえってべんきょうします。あしたテストがありますから','今日はうちに帰って勉強します。明日テストがありますから'] },
+    { type:'fill', prompt:'昼ご飯を食べません。クラスがあります____。', en:"Use the conjunction for reason", answers:['から'] },
+    { type:'fill', prompt:'教科書を持ってきてください。毎日使います____。', en:"Use the conjunction for reason", answers:['から'] },
+    { type:'fill', prompt:'すぐ降ります____、いいえ、けっこうです。', en:"Use the conjunction for reason", answers:['から'] },
   ]
 };
 
@@ -6223,6 +6358,19 @@ GRAMMARS['mashou-ka'] = {
       answers:['ドアを閉めましょうか。','ドアを閉めましょうか','ドアをしめましょうか'] },
     { type:'translate', prompt:'Shall I buy bread for you?',
       answers:['パンを買いましょうか。','パンを買いましょうか','パンをかいましょうか'] },
+    // ── Lecture-sourced (W12 S1 textbook p.162 VII A + Dialogue III) ──
+    { type:'translate', prompt:'Shall I turn off the TV? (textbook example p.162)',
+      answers:['テレビを消しましょうか。','テレビを消しましょうか','テレビをけしましょうか'] },
+    { type:'translate', prompt:'Shall I carry the luggage? (from Dialogue III)',
+      answers:['荷物を持ちましょうか。','荷物を持ちましょうか','にもつを持ちましょうか','にもつをもちましょうか'] },
+    { type:'translate', prompt:'Shall I open the window?',
+      answers:['窓を開けましょうか。','窓を開けましょうか','まどを開けましょうか','まどをあけましょうか'] },
+    { type:'translate', prompt:'Shall I turn on the lights?',
+      answers:['電気をつけましょうか。','電気をつけましょうか','でんきをつけましょうか'] },
+    { type:'translate', prompt:'Shall I help you? (general assistance)',
+      answers:['手伝いましょうか。','手伝いましょうか','てつだいましょうか'] },
+    { type:'fill', prompt:'A：テレビを____か。 B：すみません。お願いします。 (Shall I turn off ~)', en:'turn off TV = 消し', answers:['消しましょう','けしましょう'] },
+    { type:'fill', prompt:'A：荷物を____か。(Shall I carry ~)', en:'carry = 持ち', answers:['持ちましょう','もちましょう'] },
   ]
 };
 
@@ -9577,7 +9725,7 @@ function buildLessonContent(num) {
 
   // Lesson 6 — vocab + Vocab Quiz + Grammar 2-7 (each in its own collapsible section)
   if (VOCAB[num] && num === 6) {
-    const grammarIds = ['l6-vocab-quiz','te-kudasai','te-two','te-mo-ii','te-wa-ikemasen','kara','mashou-ka']
+    const grammarIds = ['l6-vocab-quiz','l6-te-form-drill','te-kudasai','te-two','te-mo-ii','te-wa-ikemasen','kara','mashou-ka']
       .filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
