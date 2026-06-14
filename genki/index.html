@@ -1030,8 +1030,6 @@
     <button onclick="speechDiagnostic()" style="margin-top:10px; background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:18px; padding:6px 16px; font-size:0.82em; font-weight:600; cursor:pointer;">🔊 測試發音 / 診斷</button>
   </header>
   <main>
-    <div id="profile-bar" style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; background:#E8EAF6; border:1.5px solid #C5CAE9; border-radius:12px; padding:10px 14px; margin:0 16px 14px;"></div>
-    <div style="margin:-8px 16px 14px; font-size:0.8em; color:#7986CB; line-height:1.5;">💡 三個人共用時，先在上面選/建立自己的名字，釘選就不會混在一起。各自用自己的手機則本來就獨立。</div>
     <div class="hub-grid">
       <div class="hub-card verbs-card" onclick="showPage('verbs')">
         <div class="lesson-num">📖 VERBS REFERENCE</div>
@@ -8988,159 +8986,45 @@ function refreshVisibleVocabAndVerbs() {
 }
 
 // ============================================================
-// USER PROFILES — multi-user on one or many devices
-// All pin/sync localStorage keys are namespaced by the active
-// profile, so three people can use the app (even on the same
-// device) without their pins mixing.
-//   genki-profiles        → JSON array of profile names
-//   genki-active-profile  → currently selected name
-//   genki-u-<name>-...     → that profile's pins / sync-id
+// PIN STORAGE KEYS — per-device (localStorage is already isolated
+// per browser/device, so each person on their own device has an
+// independent app). The profile/multi-user feature was removed.
+// These helpers are kept so all call sites stay unchanged.
 // ============================================================
-function getProfiles() {
-  try {
-    const raw = localStorage.getItem('genki-profiles');
-    const arr = raw ? JSON.parse(raw) : null;
-    return (Array.isArray(arr) && arr.length) ? arr : ['1'];
-  } catch(e) { return ['1']; }
-}
-function setProfiles(arr) {
-  try { localStorage.setItem('genki-profiles', JSON.stringify(arr)); } catch(e){}
-}
-function getActiveProfile() {
-  try {
-    const p = localStorage.getItem('genki-active-profile');
-    const list = getProfiles();
-    return (p && list.includes(p)) ? p : list[0];
-  } catch(e) { return '1'; }
-}
-function profilePrefix() { return 'genki-u-' + getActiveProfile() + '-'; }
-// Profile-aware storage keys (replace the old global keys)
-function vocabPinKey(num) { return profilePrefix() + 'vocab-pinned-' + num; }
-function verbPinKey()     { return profilePrefix() + 'verb-pinned'; }
-function adjPinKey()      { return profilePrefix() + 'adj-pinned'; }
-function syncIdKey()      { return profilePrefix() + 'sync-id'; }
+function vocabPinKey(num) { return 'genki-vocab-pinned-' + num; }
+function verbPinKey()     { return 'genki-verb-pinned'; }
+function adjPinKey()      { return 'genki-adj-pinned'; }
+function syncIdKey()      { return 'genki-sync-id'; }
 
-// One-time migration: if the user already had un-prefixed pins from
-// before profiles existed, move them into profile "1" so nothing is lost.
-function migrateLegacyPins() {
-  let already;
-  try { already = localStorage.getItem('genki-profiles'); } catch(e){ already = null; }
-  if (already) return;  // profiles already initialised
-
-  const firstName = '1';
-  try { localStorage.setItem('genki-active-profile', firstName); } catch(e){}
-  const prefix = 'genki-u-' + firstName + '-';
-  const move = (oldK, newK) => {
-    try {
-      const v = localStorage.getItem(oldK);
-      if (v !== null && localStorage.getItem(newK) === null) localStorage.setItem(newK, v);
-    } catch(e){}
-  };
-  move('genki-verb-pinned', prefix + 'verb-pinned');
-  move('genki-adj-pinned',  prefix + 'adj-pinned');
-  move('genki-sync-id',     prefix + 'sync-id');
-  // vocab pins are per-lesson: scan existing keys first, then move
-  const vocabKeys = [];
+// One-time cleanup: an earlier build added a "profiles" system that
+// stored pins under genki-u-1-*. Move profile "1"'s data back to the
+// plain keys and remove all profile bookkeeping, so nobody loses pins.
+(function revertProfilesIfAny(){
+  let hadProfiles;
+  try { hadProfiles = localStorage.getItem('genki-profiles'); } catch(e){ hadProfiles = null; }
+  if (!hadProfiles) return;  // profiles feature was never used on this device
+  const keys = [];
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && /^genki-vocab-pinned-\d+$/.test(k)) vocabKeys.push(k);
+      if (k && k.indexOf('genki-u-') === 0) keys.push(k);
     }
   } catch(e){}
-  vocabKeys.forEach(k => move(k, prefix + 'vocab-pinned-' + k.replace('genki-vocab-pinned-', '')));
-
-  setProfiles([firstName]);
-}
-migrateLegacyPins();
-
-// Switch active profile, reload that profile's cloud-sync state, re-render.
-function switchProfile(name) {
-  const list = getProfiles();
-  if (!list.includes(name)) return;
-  try { localStorage.setItem('genki-active-profile', name); } catch(e){}
-  // Re-point cloud sync at the new profile's bucket
-  clearTimeout(cloudSync.pushTimer);
-  cloudSync.syncing = false;
-  try { cloudSync.id = localStorage.getItem(syncIdKey()) || null; } catch(e){ cloudSync.id = null; }
-  // Refresh everything the user might be looking at
-  refreshVisibleVocabAndVerbs();
-  if (document.getElementById('page-pinmanager') &&
-      document.getElementById('page-pinmanager').classList.contains('active')) {
-    showPinManager();
-  }
-  renderProfileBar();
-  if (cloudSync.id) setTimeout(() => pullFromCloud(), 200);
-}
-
-function addProfile() {
-  const name = (prompt('新增使用者名稱（例如你朋友的名字）：') || '').trim();
-  if (!name) return;
-  const list = getProfiles();
-  if (list.includes(name)) { switchProfile(name); return; }
-  list.push(name);
-  setProfiles(list);
-  switchProfile(name);   // new profile starts empty + no cloud sync
-  alert('已建立使用者「' + name + '」，目前已切換過去。釘選與雲端同步都是獨立的。');
-}
-
-function renameProfile() {
-  const cur = getActiveProfile();
-  const name = (prompt('將「' + cur + '」改名為：', cur) || '').trim();
-  if (!name || name === cur) return;
-  const list = getProfiles();
-  if (list.includes(name)) { alert('已有同名使用者。'); return; }
-  // Move all of this profile's keys to the new prefix
-  const oldPrefix = 'genki-u-' + cur + '-';
-  const newPrefix = 'genki-u-' + name + '-';
-  const keys = [];
-  try { for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf(oldPrefix) === 0) keys.push(k); } } catch(e){}
+  const prefix1 = 'genki-u-1-';
   keys.forEach(k => {
-    try {
-      const v = localStorage.getItem(k);
-      localStorage.setItem(newPrefix + k.slice(oldPrefix.length), v);
-      localStorage.removeItem(k);
-    } catch(e){}
+    if (k.indexOf(prefix1) === 0) {
+      const plain = 'genki-' + k.slice(prefix1.length);  // genki-u-1-verb-pinned → genki-verb-pinned
+      try {
+        const v = localStorage.getItem(k);
+        if (v !== null && localStorage.getItem(plain) === null) localStorage.setItem(plain, v);
+      } catch(e){}
+    }
   });
-  setProfiles(list.map(p => p === cur ? name : p));
-  try { localStorage.setItem('genki-active-profile', name); } catch(e){}
-  renderProfileBar();
-}
-
-function deleteProfile() {
-  const list = getProfiles();
-  if (list.length <= 1) { alert('至少要保留一個使用者。'); return; }
-  const cur = getActiveProfile();
-  if (!confirm('確定要刪除使用者「' + cur + '」？此使用者的所有釘選會被清除，無法復原。')) return;
-  // Remove all keys for this profile
-  const prefix = 'genki-u-' + cur + '-';
-  const keys = [];
-  try { for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf(prefix) === 0) keys.push(k); } } catch(e){}
+  // remove every profile key + bookkeeping
   keys.forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
-  const next = list.filter(p => p !== cur);
-  setProfiles(next);
-  switchProfile(next[0]);
-}
-
-// Render the profile selector (shown on the hub page).
-function renderProfileBar() {
-  const host = document.getElementById('profile-bar');
-  if (!host) return;
-  const list = getProfiles();
-  const active = getActiveProfile();
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  const options = list.map(p =>
-    `<option value="${esc(p)}" ${p === active ? 'selected' : ''}>${esc(p)}</option>`
-  ).join('');
-  host.innerHTML = `
-    <span style="font-weight:700; color:#5C6BC0;">👤 使用者：</span>
-    <select onchange="switchProfile(this.value)" style="font-size:0.95em; padding:6px 10px; border-radius:8px; border:1.5px solid #C5CAE9; font-weight:700; color:#3949AB; background:white; cursor:pointer;">
-      ${options}
-    </select>
-    <button onclick="addProfile()"    title="新增使用者" style="background:#5C6BC0; color:white; border:none; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">➕ 新增</button>
-    <button onclick="renameProfile()" title="改名" style="background:white; color:#5C6BC0; border:1.5px solid #C5CAE9; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">✏️</button>
-    <button onclick="deleteProfile()" title="刪除目前使用者" style="background:white; color:#E53935; border:1.5px solid #FFCDD2; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">🗑️</button>
-  `;
-}
+  try { localStorage.removeItem('genki-profiles'); } catch(e){}
+  try { localStorage.removeItem('genki-active-profile'); } catch(e){}
+})();
 
 // ============================
 // CLOUD SYNC (auto sync via kvdb.io — free, no auth, CORS-enabled)
@@ -10704,7 +10588,6 @@ function showPage(name) {
 
 // init
 window.addEventListener('load', () => {
-  renderProfileBar();
   renderVerbs();
   // If cloud sync is enabled, pull latest pins in the background
   if (cloudSync.id) {
