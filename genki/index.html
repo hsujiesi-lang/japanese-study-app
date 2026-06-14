@@ -1030,6 +1030,8 @@
     <button onclick="speechDiagnostic()" style="margin-top:10px; background:rgba(255,255,255,0.25); color:white; border:1.5px solid white; border-radius:18px; padding:6px 16px; font-size:0.82em; font-weight:600; cursor:pointer;">🔊 測試發音 / 診斷</button>
   </header>
   <main>
+    <div id="profile-bar" style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; background:#E8EAF6; border:1.5px solid #C5CAE9; border-radius:12px; padding:10px 14px; margin:0 16px 14px;"></div>
+    <div style="margin:-8px 16px 14px; font-size:0.8em; color:#7986CB; line-height:1.5;">💡 三個人共用時，先在上面選/建立自己的名字，釘選就不會混在一起。各自用自己的手機則本來就獨立。</div>
     <div class="hub-grid">
       <div class="hub-card verbs-card" onclick="showPage('verbs')">
         <div class="lesson-num">📖 VERBS REFERENCE</div>
@@ -7247,13 +7249,13 @@ function setFilter(btn, kind, value) {
 function verbKey(v) { return v.lesson + '-' + v.hira; }
 function getPinnedVerbs() {
   try {
-    const raw = localStorage.getItem('genki-verb-pinned');
+    const raw = localStorage.getItem(verbPinKey());
     return new Set(raw ? JSON.parse(raw) : []);
   } catch(e) { return new Set(); }
 }
 function getPinnedVerbsArr() {
   try {
-    const raw = localStorage.getItem('genki-verb-pinned');
+    const raw = localStorage.getItem(verbPinKey());
     return raw ? JSON.parse(raw) : [];
   } catch(e) { return []; }
 }
@@ -7292,7 +7294,7 @@ function togglePinVerb(key) {
   preserveScroll('.verb-card[data-verb-key]', el => el.dataset.verbKey, key, () => {
     const pinned = getPinnedVerbs();
     if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
-    try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
+    try { localStorage.setItem(verbPinKey(), JSON.stringify(Array.from(pinned))); } catch(e){}
     renderVerbs();
   });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
@@ -7302,13 +7304,13 @@ function togglePinVerb(key) {
 function adjKey(a) { return a.lesson + '-' + a.hira; }
 function getPinnedAdj() {
   try {
-    const raw = localStorage.getItem('genki-adj-pinned');
+    const raw = localStorage.getItem(adjPinKey());
     return new Set(raw ? JSON.parse(raw) : []);
   } catch(e) { return new Set(); }
 }
 function getPinnedAdjArr() {
   try {
-    const raw = localStorage.getItem('genki-adj-pinned');
+    const raw = localStorage.getItem(adjPinKey());
     return raw ? JSON.parse(raw) : [];
   } catch(e) { return []; }
 }
@@ -7316,7 +7318,7 @@ function togglePinAdj(key) {
   preserveScroll('.verb-card[data-adj-key]', el => el.dataset.adjKey, key, () => {
     const pinned = getPinnedAdj();
     if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
-    try { localStorage.setItem('genki-adj-pinned', JSON.stringify(Array.from(pinned))); } catch(e){}
+    try { localStorage.setItem(adjPinKey(), JSON.stringify(Array.from(pinned))); } catch(e){}
     renderAdjectives();
   });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
@@ -7327,7 +7329,7 @@ function reorderVerbPin(fromIdx, toIdx) {
   if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return;
   const [moved] = arr.splice(fromIdx, 1);
   arr.splice(toIdx, 0, moved);
-  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(arr)); } catch(e){}
+  try { localStorage.setItem(verbPinKey(), JSON.stringify(arr)); } catch(e){}
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
   renderPinList();
   refreshPinnedPractice();
@@ -8339,14 +8341,14 @@ GRAMMARS['kanji-quiz'] = buildKanjiQuiz('all');
 // --- Pin persistence (localStorage) ---
 function getPinnedVocab(num) {
   try {
-    const raw = localStorage.getItem('genki-vocab-pinned-' + num);
+    const raw = localStorage.getItem(vocabPinKey(num));
     return new Set(raw ? JSON.parse(raw) : []);
   } catch(e) { return new Set(); }
 }
 // Same as above but returns array preserving saved order
 function getPinnedVocabArr(num) {
   try {
-    const raw = localStorage.getItem('genki-vocab-pinned-' + num);
+    const raw = localStorage.getItem(vocabPinKey(num));
     return raw ? JSON.parse(raw) : [];
   } catch(e) { return []; }
 }
@@ -8355,7 +8357,7 @@ function togglePinVocab(num, hira) {
   preserveScroll('.vocab-card[data-vocab-key]', el => el.dataset.vocabKey, skipKey, () => {
     const pinned = getPinnedVocab(num);
     if (pinned.has(hira)) pinned.delete(hira); else pinned.add(hira);
-    try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(pinned))); } catch(e){}
+    try { localStorage.setItem(vocabPinKey(num), JSON.stringify(Array.from(pinned))); } catch(e){}
     renderVocabBody(num);
   });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
@@ -8366,7 +8368,7 @@ function reorderVocabPin(num, fromIdx, toIdx) {
   if (fromIdx < 0 || fromIdx >= arr.length || toIdx < 0 || toIdx >= arr.length) return;
   const [moved] = arr.splice(fromIdx, 1);
   arr.splice(toIdx, 0, moved);
-  try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(arr)); } catch(e){}
+  try { localStorage.setItem(vocabPinKey(num), JSON.stringify(arr)); } catch(e){}
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
   renderPinList();
   refreshPinnedPractice();
@@ -8775,13 +8777,13 @@ function initPinSortables() {
         if (kind === 'vocab') {
           const num = parseInt(group.getAttribute('data-pin-num'), 10);
           const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
-          try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(newOrder)); } catch(e){}
+          try { localStorage.setItem(vocabPinKey(num), JSON.stringify(newOrder)); } catch(e){}
         } else if (kind === 'verb') {
           const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
-          try { localStorage.setItem('genki-verb-pinned', JSON.stringify(newOrder)); } catch(e){}
+          try { localStorage.setItem(verbPinKey(), JSON.stringify(newOrder)); } catch(e){}
         } else if (kind === 'adj') {
           const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
-          try { localStorage.setItem('genki-adj-pinned', JSON.stringify(newOrder)); } catch(e){}
+          try { localStorage.setItem(adjPinKey(), JSON.stringify(newOrder)); } catch(e){}
         }
         if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
         refreshPinnedPractice();  // practice pool reflects new order
@@ -8916,10 +8918,10 @@ function playPinnedVerbs() {
 function clearAllPins() {
   if (!confirm('確定要清除所有釘選嗎？此動作無法復原。')) return;
   knownVocabLessons().forEach(num => {
-    try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){}
+    try { localStorage.removeItem(vocabPinKey(num)); } catch(e){}
   });
-  try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
-  try { localStorage.removeItem('genki-adj-pinned'); } catch(e){}
+  try { localStorage.removeItem(verbPinKey()); } catch(e){}
+  try { localStorage.removeItem(adjPinKey()); } catch(e){}
   alert('已清除所有釘選。');
   showPinManager();
 }
@@ -8941,21 +8943,21 @@ function copyPinCode() {
 
 function applyPinData(data, mode) {
   if (mode === 'replace') {
-    knownVocabLessons().forEach(num => { try { localStorage.removeItem('genki-vocab-pinned-' + num); } catch(e){} });
-    try { localStorage.removeItem('genki-verb-pinned'); } catch(e){}
-    try { localStorage.removeItem('genki-adj-pinned'); } catch(e){}
+    knownVocabLessons().forEach(num => { try { localStorage.removeItem(vocabPinKey(num)); } catch(e){} });
+    try { localStorage.removeItem(verbPinKey()); } catch(e){}
+    try { localStorage.removeItem(adjPinKey()); } catch(e){}
   }
   Object.entries(data.vocab || {}).forEach(([num, arr]) => {
     const current = getPinnedVocab(num);
     arr.forEach(k => current.add(k));
-    try { localStorage.setItem('genki-vocab-pinned-' + num, JSON.stringify(Array.from(current))); } catch(e){}
+    try { localStorage.setItem(vocabPinKey(num), JSON.stringify(Array.from(current))); } catch(e){}
   });
   const verbs = getPinnedVerbs();
   (data.verbs || []).forEach(k => verbs.add(k));
-  try { localStorage.setItem('genki-verb-pinned', JSON.stringify(Array.from(verbs))); } catch(e){}
+  try { localStorage.setItem(verbPinKey(), JSON.stringify(Array.from(verbs))); } catch(e){}
   const adjs = getPinnedAdj();
   (data.adj || []).forEach(k => adjs.add(k));
-  try { localStorage.setItem('genki-adj-pinned', JSON.stringify(Array.from(adjs))); } catch(e){}
+  try { localStorage.setItem(adjPinKey(), JSON.stringify(Array.from(adjs))); } catch(e){}
 }
 
 function importPinCode(mode) {
@@ -8985,6 +8987,161 @@ function refreshVisibleVocabAndVerbs() {
   });
 }
 
+// ============================================================
+// USER PROFILES — multi-user on one or many devices
+// All pin/sync localStorage keys are namespaced by the active
+// profile, so three people can use the app (even on the same
+// device) without their pins mixing.
+//   genki-profiles        → JSON array of profile names
+//   genki-active-profile  → currently selected name
+//   genki-u-<name>-...     → that profile's pins / sync-id
+// ============================================================
+function getProfiles() {
+  try {
+    const raw = localStorage.getItem('genki-profiles');
+    const arr = raw ? JSON.parse(raw) : null;
+    return (Array.isArray(arr) && arr.length) ? arr : ['1'];
+  } catch(e) { return ['1']; }
+}
+function setProfiles(arr) {
+  try { localStorage.setItem('genki-profiles', JSON.stringify(arr)); } catch(e){}
+}
+function getActiveProfile() {
+  try {
+    const p = localStorage.getItem('genki-active-profile');
+    const list = getProfiles();
+    return (p && list.includes(p)) ? p : list[0];
+  } catch(e) { return '1'; }
+}
+function profilePrefix() { return 'genki-u-' + getActiveProfile() + '-'; }
+// Profile-aware storage keys (replace the old global keys)
+function vocabPinKey(num) { return profilePrefix() + 'vocab-pinned-' + num; }
+function verbPinKey()     { return profilePrefix() + 'verb-pinned'; }
+function adjPinKey()      { return profilePrefix() + 'adj-pinned'; }
+function syncIdKey()      { return profilePrefix() + 'sync-id'; }
+
+// One-time migration: if the user already had un-prefixed pins from
+// before profiles existed, move them into profile "1" so nothing is lost.
+function migrateLegacyPins() {
+  let already;
+  try { already = localStorage.getItem('genki-profiles'); } catch(e){ already = null; }
+  if (already) return;  // profiles already initialised
+
+  const firstName = '1';
+  try { localStorage.setItem('genki-active-profile', firstName); } catch(e){}
+  const prefix = 'genki-u-' + firstName + '-';
+  const move = (oldK, newK) => {
+    try {
+      const v = localStorage.getItem(oldK);
+      if (v !== null && localStorage.getItem(newK) === null) localStorage.setItem(newK, v);
+    } catch(e){}
+  };
+  move('genki-verb-pinned', prefix + 'verb-pinned');
+  move('genki-adj-pinned',  prefix + 'adj-pinned');
+  move('genki-sync-id',     prefix + 'sync-id');
+  // vocab pins are per-lesson: scan existing keys first, then move
+  const vocabKeys = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && /^genki-vocab-pinned-\d+$/.test(k)) vocabKeys.push(k);
+    }
+  } catch(e){}
+  vocabKeys.forEach(k => move(k, prefix + 'vocab-pinned-' + k.replace('genki-vocab-pinned-', '')));
+
+  setProfiles([firstName]);
+}
+migrateLegacyPins();
+
+// Switch active profile, reload that profile's cloud-sync state, re-render.
+function switchProfile(name) {
+  const list = getProfiles();
+  if (!list.includes(name)) return;
+  try { localStorage.setItem('genki-active-profile', name); } catch(e){}
+  // Re-point cloud sync at the new profile's bucket
+  clearTimeout(cloudSync.pushTimer);
+  cloudSync.syncing = false;
+  try { cloudSync.id = localStorage.getItem(syncIdKey()) || null; } catch(e){ cloudSync.id = null; }
+  // Refresh everything the user might be looking at
+  refreshVisibleVocabAndVerbs();
+  if (document.getElementById('page-pinmanager') &&
+      document.getElementById('page-pinmanager').classList.contains('active')) {
+    showPinManager();
+  }
+  renderProfileBar();
+  if (cloudSync.id) setTimeout(() => pullFromCloud(), 200);
+}
+
+function addProfile() {
+  const name = (prompt('新增使用者名稱（例如你朋友的名字）：') || '').trim();
+  if (!name) return;
+  const list = getProfiles();
+  if (list.includes(name)) { switchProfile(name); return; }
+  list.push(name);
+  setProfiles(list);
+  switchProfile(name);   // new profile starts empty + no cloud sync
+  alert('已建立使用者「' + name + '」，目前已切換過去。釘選與雲端同步都是獨立的。');
+}
+
+function renameProfile() {
+  const cur = getActiveProfile();
+  const name = (prompt('將「' + cur + '」改名為：', cur) || '').trim();
+  if (!name || name === cur) return;
+  const list = getProfiles();
+  if (list.includes(name)) { alert('已有同名使用者。'); return; }
+  // Move all of this profile's keys to the new prefix
+  const oldPrefix = 'genki-u-' + cur + '-';
+  const newPrefix = 'genki-u-' + name + '-';
+  const keys = [];
+  try { for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf(oldPrefix) === 0) keys.push(k); } } catch(e){}
+  keys.forEach(k => {
+    try {
+      const v = localStorage.getItem(k);
+      localStorage.setItem(newPrefix + k.slice(oldPrefix.length), v);
+      localStorage.removeItem(k);
+    } catch(e){}
+  });
+  setProfiles(list.map(p => p === cur ? name : p));
+  try { localStorage.setItem('genki-active-profile', name); } catch(e){}
+  renderProfileBar();
+}
+
+function deleteProfile() {
+  const list = getProfiles();
+  if (list.length <= 1) { alert('至少要保留一個使用者。'); return; }
+  const cur = getActiveProfile();
+  if (!confirm('確定要刪除使用者「' + cur + '」？此使用者的所有釘選會被清除，無法復原。')) return;
+  // Remove all keys for this profile
+  const prefix = 'genki-u-' + cur + '-';
+  const keys = [];
+  try { for (let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if (k && k.indexOf(prefix) === 0) keys.push(k); } } catch(e){}
+  keys.forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
+  const next = list.filter(p => p !== cur);
+  setProfiles(next);
+  switchProfile(next[0]);
+}
+
+// Render the profile selector (shown on the hub page).
+function renderProfileBar() {
+  const host = document.getElementById('profile-bar');
+  if (!host) return;
+  const list = getProfiles();
+  const active = getActiveProfile();
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const options = list.map(p =>
+    `<option value="${esc(p)}" ${p === active ? 'selected' : ''}>${esc(p)}</option>`
+  ).join('');
+  host.innerHTML = `
+    <span style="font-weight:700; color:#5C6BC0;">👤 使用者：</span>
+    <select onchange="switchProfile(this.value)" style="font-size:0.95em; padding:6px 10px; border-radius:8px; border:1.5px solid #C5CAE9; font-weight:700; color:#3949AB; background:white; cursor:pointer;">
+      ${options}
+    </select>
+    <button onclick="addProfile()"    title="新增使用者" style="background:#5C6BC0; color:white; border:none; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">➕ 新增</button>
+    <button onclick="renameProfile()" title="改名" style="background:white; color:#5C6BC0; border:1.5px solid #C5CAE9; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">✏️</button>
+    <button onclick="deleteProfile()" title="刪除目前使用者" style="background:white; color:#E53935; border:1.5px solid #FFCDD2; border-radius:8px; padding:6px 10px; font-weight:700; cursor:pointer;">🗑️</button>
+  `;
+}
+
 // ============================
 // CLOUD SYNC (auto sync via kvdb.io — free, no auth, CORS-enabled)
 // ============================
@@ -8996,7 +9153,7 @@ const cloudSync = {
   syncing: false,
   lastErr: null
 };
-try { cloudSync.id = localStorage.getItem('genki-sync-id') || null; } catch(e){}
+try { cloudSync.id = localStorage.getItem(syncIdKey()) || null; } catch(e){}
 
 function setSyncStatus(msg, color) {
   const el = document.getElementById('cloud-sync-status');
@@ -9022,7 +9179,7 @@ async function createCloudSync() {
     if (!put.ok) throw new Error('寫入失敗 HTTP ' + put.status);
 
     cloudSync.id = bucketId;
-    localStorage.setItem('genki-sync-id', bucketId);
+    localStorage.setItem(syncIdKey(), bucketId);
     alert('✅ 雲端同步已啟用！\n你的同步 ID 已產生。在其他裝置貼上此 ID 即可同步。');
     renderCloudSyncBox();
   } catch(e) {
@@ -9044,7 +9201,7 @@ async function joinCloudSync() {
     if (!data || typeof data !== 'object') throw new Error('雲端資料格式錯誤');
     applyPinData(data, 'merge');
     cloudSync.id = id;
-    localStorage.setItem('genki-sync-id', id);
+    localStorage.setItem(syncIdKey(), id);
     // push merged back (so both devices converge)
     await pushToCloud(true);
     alert('✅ 已加入同步！釘選已合併。');
@@ -9105,7 +9262,7 @@ function schedulePushToCloud() {
 function disableCloudSync() {
   if (!confirm('停用雲端同步嗎？目前裝置的釘選會保留，但不再自動同步。')) return;
   cloudSync.id = null;
-  try { localStorage.removeItem('genki-sync-id'); } catch(e){}
+  try { localStorage.removeItem(syncIdKey()); } catch(e){}
   renderCloudSyncBox();
 }
 
@@ -10547,6 +10704,7 @@ function showPage(name) {
 
 // init
 window.addEventListener('load', () => {
+  renderProfileBar();
   renderVerbs();
   // If cloud sync is enabled, pull latest pins in the background
   if (cloudSync.id) {
