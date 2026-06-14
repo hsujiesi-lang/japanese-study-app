@@ -5720,6 +5720,65 @@ GRAMMARS['l5-suki'] = {
   ]
 };
 
+// ----- L5 Grammar ｜ どんな + Noun (what kind of...) -----
+GRAMMARS['l5-donna'] = {
+  title: 'Grammar 3 復習 ｜ どんな + 名詞 (What kind of...?)',
+  explanation: [
+    '<b>どんな</b> = 「什麼樣的」，後面<b>一定要接名詞</b>（どんな + N）。',
+    '<b>結構：</b>どんな + (名詞) + ですか？ → 問「是什麼樣的 N？」',
+    '常跟 <b>好き</b> 一起用：<b>どんな N が好きですか</b>。(你喜歡什麼樣的 N？)',
+    '回答用「形容詞 + N」：<b>(形容詞) N が好きです</b>。',
+    '⚠️ <b>どんな</b> 後面直接接名詞，中間<b>不加 な</b>（不是 どんなな）。',
+    '例：どんな人ですか。→ 親切な人です。',
+    '例：どんな食べ物が好きですか。→ 安い食べ物が好きです。'
+  ],
+  examples: [
+    { jp:'メアリーさんはどんな人ですか。',       reading:'メアリーさんはどんなひとですか。',         en:'What kind of person is Mary?' },
+    { jp:'どんなスポーツが好きですか。',         reading:'どんなスポーツがすきですか。',             en:'What kind of sports do you like?' },
+    { jp:'どんな食べ物が好きですか。',           reading:'どんなたべものがすきですか。',             en:'What kind of food do you like?' },
+    { jp:'どんな音楽が好きですか。',             reading:'どんなおんがくがすきですか。',             en:'What kind of music do you like?' },
+  ],
+  exercises: [
+    // --- Asking どんな + N ---
+    { type:'translate', prompt:'What kind of person is Mary?',
+      answers:['メアリーさんはどんな人ですか。','メアリーさんはどんな人ですか','メアリーさんはどんなひとですか'] },
+    { type:'translate', prompt:'What kind of sports do you like?',
+      answers:['どんなスポーツが好きですか。','どんなスポーツが好きですか','どんなスポーツがすきですか'] },
+    { type:'translate', prompt:'What kind of food do you like?',
+      answers:['どんな食べ物が好きですか。','どんな食べ物が好きですか','どんなたべものが好きですか','どんなたべものがすきですか'] },
+    { type:'translate', prompt:'What kind of drink do you like?',
+      answers:['どんな飲み物が好きですか。','どんな飲み物が好きですか','どんなのみものが好きですか','どんなのみものがすきですか'] },
+    { type:'translate', prompt:'What kind of fruit do you like?',
+      answers:['どんな果物が好きですか。','どんな果物が好きですか','どんなくだものが好きですか','どんなくだものがすきですか'] },
+    { type:'translate', prompt:'What kind of movies do you like?',
+      answers:['どんな映画が好きですか。','どんな映画が好きですか','どんなえいがが好きですか','どんなえいががすきですか'] },
+    { type:'translate', prompt:'What kind of music do you like?',
+      answers:['どんな音楽が好きですか。','どんな音楽が好きですか','どんなおんがくが好きですか','どんなおんがくがすきですか'] },
+    { type:'translate', prompt:'What kind of town is it?',
+      answers:['どんな町ですか。','どんな町ですか','どんなまちですか'] },
+    { type:'translate', prompt:'What kind of hotel is it?',
+      answers:['どんなホテルですか。','どんなホテルですか'] },
+    { type:'translate', prompt:'What kind of class is it?',
+      answers:['どんなクラスですか。','どんなクラスですか'] },
+    // --- Answering (形容詞 + N) ---
+    { type:'translate', prompt:'Answer: (She is) a kind person.',
+      answers:['親切な人です。','親切な人です','しんせつな人です','しんせつなひとです'] },
+    { type:'translate', prompt:'Answer: I like cheap food.',
+      answers:['安い食べ物が好きです。','安い食べ物が好きです','やすいたべものが好きです','やすいたべものがすきです'] },
+    { type:'translate', prompt:'Answer: I like interesting movies.',
+      answers:['面白い映画が好きです。','面白い映画が好きです','おもしろいえいがが好きです','おもしろいえいががすきです'] },
+    { type:'translate', prompt:'Answer: It is a lively (にぎやか) town.',
+      answers:['にぎやかな町です。','にぎやかな町です','にぎやかなまちです'] },
+    { type:'translate', prompt:'Answer: It is a quiet (with きれい) hotel. (clean/pretty)',
+      answers:['きれいなホテルです。','きれいなホテルです'] },
+    // --- Fill: どんな usage ---
+    { type:'fill', prompt:'____人ですか。(what kind of)', en:'what kind of = どんな', answers:['どんな'] },
+    { type:'fill', prompt:'____食べ物が好きですか。(what kind of)', en:'what kind of = どんな', answers:['どんな'] },
+    { type:'fill', prompt:'どんなスポーツ____好きですか。(particle)', en:'like + が', answers:['が'] },
+    { type:'fill', prompt:'親切____人です。(kind person — なadj+N)', en:'な-adj + noun = な', answers:['な'] },
+  ]
+};
+
 // ----- L5 Grammar 5: ～ましょう / ～ましょうか -----
 GRAMMARS['l5-mashou'] = {
   title: 'Grammar 5 ｜ 〜ましょう / 〜ましょうか (Let\'s ...)',
@@ -9820,7 +9879,7 @@ function buildLessonContent(num) {
 
   // Lesson 5 — vocab + Vocab Quiz + Adjectives (present/past) + N-modification + 好き + ～ましょう
   if (VOCAB[num] && num === 5) {
-    const grammarIds = ['l5-vocab-quiz','l5-adj','l5-adj-mod','l5-suki','l5-mashou'].filter(id => GRAMMARS[id]);
+    const grammarIds = ['l5-vocab-quiz','l5-adj','l5-adj-mod','l5-donna','l5-suki','l5-mashou'].filter(id => GRAMMARS[id]);
     container.innerHTML =
       vocabSectionHTML(num) +
       grammarIds.map(id => grammarSectionHTML(id)).join('');
