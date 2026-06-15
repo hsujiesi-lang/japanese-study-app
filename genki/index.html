@@ -1061,6 +1061,11 @@
         <div class="lesson-title">Particles 練習 (に / で / を / へ)</div>
         <div class="lesson-en">3 種句型 + に 規則 + 頻率副詞 · 150+ 題</div>
       </div>
+      <div class="hub-card verbs-card" onclick="showPage('questions')" style="background:linear-gradient(135deg,#E8F5E9 0%,#A5D6A7 100%);">
+        <div class="lesson-num" style="color:#2E7D32">❓ 疑問詞</div>
+        <div class="lesson-title">問句練習 (なに/だれ/どこ/いつ…)</div>
+        <div class="lesson-en">各疑問詞 + 助詞搭配 · 看答句問問題</div>
+      </div>
       <div class="hub-card verbs-card" onclick="showPage('kanji')" style="background:linear-gradient(135deg,#F3E5F5 0%,#CE93D8 100%);">
         <div class="lesson-num" style="color:#6A1B9A">📖 KANJI</div>
         <div class="lesson-title">漢字 Lessons 3〜6</div>
@@ -1289,6 +1294,20 @@
     💡 練習 <b>に / で / を / へ</b> 等助詞。每個 section 對應一個句型。<b>遇到「不需要助詞」</b>時，請填 <b style="color:#C62828">×</b>（也接受 <b>x / なし / 無</b>）。
   </div>
   <div id="particles-content"></div>
+  <div class="bottom-pad"></div>
+</div>
+
+<!-- ============ QUESTION WORDS PAGE ============ -->
+<div id="page-questions" class="page">
+  <div class="top-nav">
+    <button class="back-btn" onclick="showPage('hub')">← もどる</button>
+    <h2>❓ 疑問詞 Question Words</h2>
+    <span style="width:60px"></span>
+  </div>
+  <div class="particle-info">
+    💡 練習各種疑問詞（なに・だれ・どこ・いつ・なんじ・どう・どんな・どうして・いくら…）以及它們要搭配的<b>助詞</b>。題型有：看中文寫問句、看答句寫問句、填疑問詞／助詞。
+  </div>
+  <div id="questions-content"></div>
   <div class="bottom-pad"></div>
 </div>
 
@@ -3080,6 +3099,352 @@ GRAMMARS['part-masenka'] = {
       answers:['公園で写真を撮りませんか。','公園で写真を撮りませんか','こうえんで写真を撮りませんか','こうえんでしゃしんをとりませんか'] },
   ]
 };
+
+// ============================================================
+// QUESTION WORDS PRACTICE — 疑問詞 (なに/だれ/どこ/いつ/なんじ/どう/どんな/どうして/いくら…)
+// All vocabulary drawn from Lesson 1-6. Emphasis on which question
+// word pairs with which particle (どこに行く vs どこで読む; なにを).
+// ============================================================
+GRAMMARS['q-nani'] = {
+  title: '❓ なに / なん (What)',
+  explanation: [
+    '<b>なに／なん</b> = 什麼。受詞用 <b>なに を</b>：「なにをしましたか」。',
+    '在某些音前面唸 <b>なん</b>：<b>なんですか</b>（は何ですか）、<b>なんじ</b>(何時)、<b>なんようび</b>(何曜日)、<b>なんがつなんにち</b>(何月何日)。',
+    '問「做什麼」：(人)は + (時間) + <b>なにをしましたか</b>。',
+    '問「在哪做什麼」：(人)は + (場所)<b>で</b> + <b>なにをしましたか</b>。',
+    '例：メアリーさんはきのうなにをしましたか。',
+    '例：メアリーさんはきのう図書館でなにをしましたか。'
+  ],
+  examples: [
+    { jp:'これはなんですか。',                       reading:'これはなんですか。',                         en:'What is this?' },
+    { jp:'きのうなにをしましたか。',                 reading:'きのうなにをしましたか。',                   en:'What did you do yesterday?' },
+    { jp:'カフェでなにを飲みましたか。',             reading:'カフェでなにをのみましたか。',               en:'What did you drink at the cafe?' },
+    { jp:'なにが好きですか。',                       reading:'なにがすきですか。',                         en:'What do you like?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'What is this?',
+      answers:['これはなんですか。','これはなんですか','これは何ですか'] },
+    { type:'translate', prompt:'What did you do yesterday?',
+      answers:['きのうなにをしましたか。','きのうなにをしましたか','昨日何をしましたか','きのう何をしましたか'] },
+    { type:'translate', prompt:'What did Mary do at the library yesterday?',
+      answers:['メアリーさんはきのう図書館でなにをしましたか。','メアリーさんはきのう図書館でなにをしましたか','メアリーさんはきのうとしょかんでなにをしましたか','メアリーさんはきのう図書館で何をしましたか'] },
+    { type:'translate', prompt:'What did you drink at the cafe?',
+      answers:['カフェでなにを飲みましたか。','カフェでなにを飲みましたか','カフェでなにをのみましたか','カフェで何を飲みましたか'] },
+    { type:'translate', prompt:'What do you like?',
+      answers:['なにが好きですか。','なにが好きですか','なにがすきですか','何が好きですか'] },
+    { type:'translate', prompt:'What will you eat tomorrow?',
+      answers:['明日なにを食べますか。','明日なにを食べますか','あしたなにをたべますか','明日何を食べますか'] },
+    { type:'translate', prompt:'What did you buy at the supermarket?',
+      answers:['スーパーでなにを買いましたか。','スーパーでなにを買いましたか','スーパーでなにをかいましたか','スーパーで何を買いましたか'] },
+    // fill: question word / particle
+    { type:'fill', prompt:'きのう____をしましたか。(what)', en:'what = なに', answers:['なに','何'] },
+    { type:'fill', prompt:'カフェでなに____飲みましたか。(particle)', en:'object = を', answers:['を'] },
+    { type:'fill', prompt:'これは____ですか。(what — before です)', en:'what (before です) = なん', answers:['なん','何'] },
+    { type:'fill', prompt:'なに____好きですか。(particle)', en:'like + が', answers:['が'] },
+  ]
+};
+
+GRAMMARS['q-dare'] = {
+  title: '❓ だれ (Who) ／ だれの (Whose)',
+  explanation: [
+    '<b>だれ</b> = 誰。<b>だれの</b> = 誰的（所有）。',
+    '「跟誰」：(人)<b>と</b> → 問句用 <b>だれと</b>：「だれと行きましたか」。',
+    '「見了誰」：(人)<b>に</b>会う → 問句用 <b>だれに</b>：「だれに会いましたか」。',
+    '「誰的」：<b>だれの</b> + 名詞：「これはだれの本ですか」。',
+    '禮貌問「哪位」可用 <b>どなた</b>。'
+  ],
+  examples: [
+    { jp:'あの人はだれですか。',         reading:'あのひとはだれですか。',         en:'Who is that person?' },
+    { jp:'だれと行きましたか。',         reading:'だれといきましたか。',           en:'Who did you go with?' },
+    { jp:'これはだれの本ですか。',       reading:'これはだれのほんですか。',       en:'Whose book is this?' },
+    { jp:'きのうだれに会いましたか。',   reading:'きのうだれにあいましたか。',     en:'Who did you meet yesterday?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Who is that person?',
+      answers:['あの人はだれですか。','あの人はだれですか','あのひとはだれですか'] },
+    { type:'translate', prompt:'Who did you go to the movie with?',
+      answers:['だれと映画に行きましたか。','だれと映画に行きましたか','だれとえいがに行きましたか','だれとえいがにいきましたか'] },
+    { type:'translate', prompt:'Whose book is this?',
+      answers:['これはだれの本ですか。','これはだれの本ですか','これはだれのほんですか'] },
+    { type:'translate', prompt:'Who did you meet at the cafe?',
+      answers:['カフェでだれに会いましたか。','カフェでだれに会いましたか','カフェでだれにあいましたか'] },
+    { type:'translate', prompt:'Who did you study with yesterday?',
+      answers:['きのうだれと勉強しましたか。','きのうだれと勉強しましたか','きのうだれとべんきょうしましたか'] },
+    { type:'translate', prompt:'Whose umbrella is this?',
+      answers:['これはだれのかさですか。','これはだれのかさですか'] },
+    { type:'fill', prompt:'あの人は____ですか。(who)', en:'who = だれ', answers:['だれ'] },
+    { type:'fill', prompt:'____と行きましたか。(who with)', en:'who = だれ', answers:['だれ'] },
+    { type:'fill', prompt:'だれ____行きましたか。(particle: with)', en:'with someone = と', answers:['と'] },
+    { type:'fill', prompt:'これは____本ですか。(whose)', en:'whose = だれの', answers:['だれの'] },
+    { type:'fill', prompt:'だれ____会いましたか。(particle: meet)', en:'meet someone = に', answers:['に'] },
+  ]
+};
+
+GRAMMARS['q-doko'] = {
+  title: '❓ どこ (Where) ─ どこに vs どこで',
+  explanation: [
+    '<b>どこ</b> = 哪裡。<b>關鍵：助詞會變！</b>',
+    '<b>どこに：</b>移動的目的地（行く・来る・帰る）→ 「どこ<b>に</b>行きましたか」。',
+    '<b>どこで：</b>動作發生的場所（食べる・読む・する…）→ 「どこ<b>で</b>読みましたか」。',
+    '⚠️ 對照你的筆記：',
+    '　• メアリーさんはきのうどこ<b>に</b>行きましたか（去哪）',
+    '　• メアリーさんはきのうどこ<b>で</b>雑誌を読みましたか（在哪讀）',
+    '單純問「在哪裡」：<b>どこですか</b>。'
+  ],
+  examples: [
+    { jp:'メアリーさんはきのうどこに行きましたか。',     reading:'メアリーさんはきのうどこにいきましたか。',     en:'Where did Mary go yesterday?' },
+    { jp:'メアリーさんはきのうどこで雑誌を読みましたか。', reading:'メアリーさんはきのうどこでざっしをよみましたか。', en:'Where did Mary read a magazine yesterday?' },
+    { jp:'トイレはどこですか。',                         reading:'トイレはどこですか。',                         en:'Where is the bathroom?' },
+  ],
+  exercises: [
+    // どこに (destination)
+    { type:'translate', prompt:'Where did Mary go yesterday?',
+      answers:['メアリーさんはきのうどこに行きましたか。','メアリーさんはきのうどこに行きましたか','メアリーさんはきのうどこにいきましたか','メアリーさんはきのうどこへ行きましたか'] },
+    { type:'translate', prompt:'Where will you go tomorrow?',
+      answers:['明日どこに行きますか。','明日どこに行きますか','あしたどこに行きますか','あしたどこにいきますか','明日どこへ行きますか'] },
+    { type:'translate', prompt:'Where did you go on Saturday?',
+      answers:['土曜日にどこに行きましたか。','土曜日にどこに行きましたか','どようびにどこに行きましたか','どようびにどこにいきましたか','土曜日にどこへ行きましたか'] },
+    // どこで (place of action)
+    { type:'translate', prompt:'Where did Mary read a magazine yesterday?',
+      answers:['メアリーさんはきのうどこで雑誌を読みましたか。','メアリーさんはきのうどこで雑誌を読みましたか','メアリーさんはきのうどこでざっしをよみましたか'] },
+    { type:'translate', prompt:'Where did you eat lunch?',
+      answers:['どこで昼ご飯を食べましたか。','どこで昼ご飯を食べましたか','どこでひるごはんを食べましたか','どこでひるごはんをたべましたか'] },
+    { type:'translate', prompt:'Where do you study Japanese?',
+      answers:['どこで日本語を勉強しますか。','どこで日本語を勉強しますか','どこでにほんごをべんきょうしますか'] },
+    { type:'translate', prompt:'Where is the bathroom?',
+      answers:['トイレはどこですか。','トイレはどこですか'] },
+    // fill — に vs で
+    { type:'fill', prompt:'きのうどこ____行きましたか。(go → particle)', en:'destination = に (or へ)', answers:['に','へ'] },
+    { type:'fill', prompt:'どこ____雑誌を読みましたか。(read → particle)', en:'place of action = で', answers:['で'] },
+    { type:'fill', prompt:'どこ____昼ご飯を食べましたか。(eat → particle)', en:'place of action = で', answers:['で'] },
+    { type:'fill', prompt:'どこ____帰りますか。(return → particle)', en:'destination = に (or へ)', answers:['に','へ'] },
+    { type:'fill', prompt:'____に行きましたか。(where)', en:'where = どこ', answers:['どこ'] },
+  ]
+};
+
+GRAMMARS['q-itsu'] = {
+  title: '❓ いつ (When)',
+  explanation: [
+    '<b>いつ</b> = 什麼時候。<b>いつ 本身不加 に！</b>（いつに ✗）',
+    '結構：(人)は + <b>いつ</b> + (動詞)ますか／ましたか。',
+    '回答時才看時間種類決定加不加 に：月曜日<b>に</b>、9時<b>に</b>；明日／毎日 不加。',
+    '對照筆記：「いつ図書館に行きましたか」→「月曜日に行きました」。',
+    '⚠️ 不要寫「いつに」。'
+  ],
+  examples: [
+    { jp:'いつ図書館に行きましたか。',   reading:'いつとしょかんにいきましたか。', en:'When did you go to the library?' },
+    { jp:'いつ日本に来ましたか。',       reading:'いつにほんにきましたか。',       en:'When did you come to Japan?' },
+    { jp:'テストはいつですか。',         reading:'テストはいつですか。',           en:'When is the test?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'When did you go to the library?',
+      answers:['いつ図書館に行きましたか。','いつ図書館に行きましたか','いつとしょかんに行きましたか','いつとしょかんにいきましたか','いつ図書館へ行きましたか'] },
+    { type:'translate', prompt:'When did you come to Japan?',
+      answers:['いつ日本に来ましたか。','いつ日本に来ましたか','いつにほんに来ましたか','いつにほんにきましたか','いつ日本へ来ましたか'] },
+    { type:'translate', prompt:'When is the test?',
+      answers:['テストはいつですか。','テストはいつですか'] },
+    { type:'translate', prompt:'When do you get up?',
+      answers:['いつ起きますか。','いつ起きますか','いつおきますか'] },
+    { type:'translate', prompt:'When did you watch the movie?',
+      answers:['いつ映画を見ましたか。','いつ映画を見ましたか','いつえいがをみましたか'] },
+    // trap: いつ takes no に
+    { type:'fill', prompt:'____図書館に行きましたか。(when)', en:'when = いつ', answers:['いつ'] },
+    { type:'fill', prompt:'いつ____日本に来ましたか。(若不需要助詞填 ×)', en:'いつ takes NO に', answers:NO_PARTICLE },
+    { type:'fill', prompt:'(answer) 月曜日____行きました。(particle)', en:'day → に', answers:['に'] },
+  ]
+};
+
+GRAMMARS['q-nanji'] = {
+  title: '❓ なんじ (What time) ／ なんようび・なんがつなんにち',
+  explanation: [
+    '<b>なんじ</b> (何時) = 幾點。問「幾點做」用 <b>なんじに</b>：「なんじに起きましたか」。',
+    '⚠️ <b>なんじ 要加 に</b>（因為是時刻）：なんじ<b>に</b>。',
+    '<b>なんようび</b> (何曜日) = 星期幾。<b>なんがつなんにち</b> (何月何日) = 幾月幾號。',
+    '時間問句總覽：いつ(when，不加に) / なんじに(幾點) / なんようび(星期幾) / なんがつなんにち(幾月幾日)。',
+    '對照筆記：「きのうなんじに起きましたか」→「きのう七時に起きました」。'
+  ],
+  examples: [
+    { jp:'きのうなんじに起きましたか。',     reading:'きのうなんじにおきましたか。',         en:'What time did you get up yesterday?' },
+    { jp:'今日はなんようびですか。',         reading:'きょうはなんようびですか。',           en:'What day is it today?' },
+    { jp:'今日はなんがつなんにちですか。',   reading:'きょうはなんがつなんにちですか。',     en:'What is the date today?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'What time did you get up yesterday?',
+      answers:['きのうなんじに起きましたか。','きのうなんじに起きましたか','きのうなんじにおきましたか','昨日何時に起きましたか'] },
+    { type:'translate', prompt:'What time do you go to school?',
+      answers:['なんじに学校に行きますか。','なんじに学校に行きますか','なんじにがっこうに行きますか','なんじにがっこうにいきますか','何時に学校に行きますか'] },
+    { type:'translate', prompt:'What time did you go to bed?',
+      answers:['なんじに寝ましたか。','なんじに寝ましたか','なんじにねましたか','何時に寝ましたか'] },
+    { type:'translate', prompt:'What day is it today?',
+      answers:['今日はなんようびですか。','今日はなんようびですか','きょうはなんようびですか'] },
+    { type:'translate', prompt:'What is the date today?',
+      answers:['今日はなんがつなんにちですか。','今日はなんがつなんにちですか','きょうはなんがつなんにちですか'] },
+    { type:'fill', prompt:'きのう____に起きましたか。(what time)', en:'what time = なんじ', answers:['なんじ','何時'] },
+    { type:'fill', prompt:'なんじ____起きましたか。(particle)', en:'clock time → に', answers:['に'] },
+    { type:'fill', prompt:'今日は____ですか。(what day of week)', en:'what day = なんようび', answers:['なんようび','何曜日'] },
+  ]
+};
+
+GRAMMARS['q-dou-donna'] = {
+  title: '❓ どう (How was it?) ／ どんな (What kind of)',
+  explanation: [
+    '<b>どう</b> = 怎麼樣（問感想／狀態）：「旅行は<b>どう</b>でしたか」(旅行怎麼樣？)。',
+    '回答用形容詞：「楽しかったです」「きれいでした」。',
+    '<b>どんな + 名詞</b> = 什麼樣的 N：「<b>どんな</b>人ですか」「<b>どんな</b>映画が好きですか」。',
+    '⚠️ <b>どう</b> 後面直接接 でした／ですか；<b>どんな</b> 後面一定接名詞。',
+    '別搞混：どう(how) vs どんな(what kind of) vs どこ(where)。'
+  ],
+  examples: [
+    { jp:'旅行はどうでしたか。',           reading:'りょこうはどうでしたか。',         en:'How was the trip?' },
+    { jp:'天気はどうでしたか。',           reading:'てんきはどうでしたか。',           en:'How was the weather?' },
+    { jp:'メアリーさんはどんな人ですか。', reading:'メアリーさんはどんなひとですか。', en:'What kind of person is Mary?' },
+    { jp:'どんな音楽が好きですか。',       reading:'どんなおんがくがすきですか。',     en:'What kind of music do you like?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'How was the trip?',
+      answers:['旅行はどうでしたか。','旅行はどうでしたか','りょこうはどうでしたか'] },
+    { type:'translate', prompt:'How was the weather?',
+      answers:['天気はどうでしたか。','天気はどうでしたか','てんきはどうでしたか'] },
+    { type:'translate', prompt:'How was the test?',
+      answers:['テストはどうでしたか。','テストはどうでしたか'] },
+    { type:'translate', prompt:'What kind of person is Mary?',
+      answers:['メアリーさんはどんな人ですか。','メアリーさんはどんな人ですか','メアリーさんはどんなひとですか'] },
+    { type:'translate', prompt:'What kind of food do you like?',
+      answers:['どんな食べ物が好きですか。','どんな食べ物が好きですか','どんなたべものが好きですか','どんなたべものがすきですか'] },
+    { type:'translate', prompt:'What kind of movies do you like?',
+      answers:['どんな映画が好きですか。','どんな映画が好きですか','どんなえいがが好きですか','どんなえいががすきですか'] },
+    { type:'fill', prompt:'旅行は____でしたか。(how)', en:'how = どう', answers:['どう'] },
+    { type:'fill', prompt:'____人ですか。(what kind of)', en:'what kind of = どんな', answers:['どんな'] },
+    { type:'fill', prompt:'____音楽が好きですか。(what kind of)', en:'what kind of = どんな', answers:['どんな'] },
+  ]
+};
+
+GRAMMARS['q-doushite'] = {
+  title: '❓ どうして (Why)',
+  explanation: [
+    '<b>どうして</b> = 為什麼（口語）。',
+    '回答用 <b>〜から</b>（因為…）：「時間がありませんから」。',
+    '典型對話：A：〜ません。 B：<b>どうして</b>ですか。 A：[理由]<b>から</b>。',
+    '別跟 <b>だから</b>(所以) 搞混：どうして 問原因；だから 接結果。'
+  ],
+  examples: [
+    { jp:'どうしてですか。',             reading:'どうしてですか。',             en:'Why?' },
+    { jp:'どうして来ませんでしたか。',   reading:'どうしてきませんでしたか。',   en:"Why didn't you come?" },
+    { jp:'どうして日本語を勉強しますか。', reading:'どうしてにほんごをべんきょうしますか。', en:'Why do you study Japanese?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'Why?',
+      answers:['どうしてですか。','どうしてですか'] },
+    { type:'translate', prompt:"Why didn't you come?",
+      answers:['どうして来ませんでしたか。','どうして来ませんでしたか','どうしてきませんでしたか'] },
+    { type:'translate', prompt:'Why do you study Japanese?',
+      answers:['どうして日本語を勉強しますか。','どうして日本語を勉強しますか','どうしてにほんごをべんきょうしますか'] },
+    { type:'translate', prompt:"Why didn't you eat lunch?",
+      answers:['どうして昼ご飯を食べませんでしたか。','どうして昼ご飯を食べませんでしたか','どうしてひるごはんを食べませんでしたか','どうしてひるごはんをたべませんでしたか'] },
+    { type:'fill', prompt:'____ですか。(why)', en:'why = どうして', answers:['どうして'] },
+    { type:'fill', prompt:'(answer) 時間がありません____。(because)', en:'because = から', answers:['から'] },
+  ]
+};
+
+GRAMMARS['q-ikura-ikutsu'] = {
+  title: '❓ いくら (How much) ／ いくつ・なんさい (How many / How old)',
+  explanation: [
+    '<b>いくら</b> = 多少錢：「これはいくらですか」。',
+    '<b>いくつ</b> = 幾個（一般 counter）／ <b>おいくつ</b> = 幾歲(禮貌)。',
+    '<b>なんさい</b> (何歳) = 幾歲。<b>どのぐらい</b> = 多久／多少(程度)。',
+    '回答用數字 + counter：500円です／三つです／十九歳です。'
+  ],
+  examples: [
+    { jp:'これはいくらですか。',     reading:'これはいくらですか。',       en:'How much is this?' },
+    { jp:'いくつですか。',           reading:'いくつですか。',             en:'How many? / How old?' },
+    { jp:'なんさいですか。',         reading:'なんさいですか。',           en:'How old are you?' },
+  ],
+  exercises: [
+    { type:'translate', prompt:'How much is this?',
+      answers:['これはいくらですか。','これはいくらですか'] },
+    { type:'translate', prompt:'How much is the coffee?',
+      answers:['コーヒーはいくらですか。','コーヒーはいくらですか'] },
+    { type:'translate', prompt:'How old are you? (polite)',
+      answers:['おいくつですか。','おいくつですか'] },
+    { type:'translate', prompt:'How old is Mary?',
+      answers:['メアリーさんはなんさいですか。','メアリーさんはなんさいですか','メアリーさんは何歳ですか'] },
+    { type:'fill', prompt:'これは____ですか。(how much)', en:'how much = いくら', answers:['いくら'] },
+    { type:'fill', prompt:'____ですか。(how old, 何歳)', en:'how old = なんさい', answers:['なんさい','何歳'] },
+  ]
+};
+
+GRAMMARS['q-mixed'] = {
+  title: '❓ 綜合 ｜ 選對的疑問詞 (Pick the right question word)',
+  explanation: [
+    '看英文意思，填入正確的疑問詞。',
+    '速查：<b>なに</b>(what) / <b>だれ</b>(who) / <b>どこ</b>(where) / <b>いつ</b>(when) / <b>なんじ</b>(what time) / <b>どう</b>(how was) / <b>どんな</b>(what kind) / <b>どうして</b>(why) / <b>いくら</b>(how much) / <b>なんようび</b>(what day)。',
+    '記得搭配正確助詞：どこ<b>に</b>行く／どこ<b>で</b>食べる、なに<b>を</b>、だれ<b>と</b>／だれ<b>に</b>。'
+  ],
+  examples: [
+    { jp:'きのうなにをしましたか。',     reading:'きのうなにをしましたか。',     en:'What did you do yesterday?' },
+    { jp:'どこで食べましたか。',         reading:'どこでたべましたか。',         en:'Where did you eat?' },
+    { jp:'だれと行きましたか。',         reading:'だれといきましたか。',         en:'Who did you go with?' },
+  ],
+  exercises: [
+    { type:'fill', prompt:'きのう____をしましたか。(what)', en:'what', answers:['なに','何'] },
+    { type:'fill', prompt:'あの人は____ですか。(who)', en:'who', answers:['だれ'] },
+    { type:'fill', prompt:'きのう____に行きましたか。(where)', en:'where', answers:['どこ'] },
+    { type:'fill', prompt:'____図書館に行きましたか。(when)', en:'when', answers:['いつ'] },
+    { type:'fill', prompt:'____に起きましたか。(what time)', en:'what time', answers:['なんじ','何時'] },
+    { type:'fill', prompt:'旅行は____でしたか。(how was)', en:'how was', answers:['どう'] },
+    { type:'fill', prompt:'____人ですか。(what kind of)', en:'what kind of', answers:['どんな'] },
+    { type:'fill', prompt:'____来ませんでしたか。(why)', en:'why', answers:['どうして'] },
+    { type:'fill', prompt:'これは____ですか。(how much)', en:'how much', answers:['いくら'] },
+    { type:'fill', prompt:'今日は____ですか。(what day of week)', en:'what day', answers:['なんようび','何曜日'] },
+    // particle pairing
+    { type:'fill', prompt:'どこ____食べましたか。(eat → particle)', en:'place of action = で', answers:['で'] },
+    { type:'fill', prompt:'どこ____行きましたか。(go → particle)', en:'destination = に / へ', answers:['に','へ'] },
+    { type:'fill', prompt:'なに____しましたか。(particle)', en:'object = を', answers:['を'] },
+    { type:'fill', prompt:'だれ____会いましたか。(meet → particle)', en:'meet someone = に', answers:['に'] },
+    // full translations
+    { type:'translate', prompt:'Where did you eat lunch yesterday?',
+      answers:['きのうどこで昼ご飯を食べましたか。','きのうどこで昼ご飯を食べましたか','きのうどこでひるごはんを食べましたか','きのうどこでひるごはんをたべましたか'] },
+    { type:'translate', prompt:'What did you buy and how much was it? (just: How much was it?)',
+      answers:['いくらでしたか。','いくらでしたか'] },
+  ]
+};
+
+const QUESTION_GRAMMARS = ['q-nani','q-dare','q-doko','q-itsu','q-nanji','q-dou-donna','q-doushite','q-ikura-ikutsu','q-mixed'];
+
+function renderQuestionsPage() {
+  const root = document.getElementById('questions-content');
+  if (!root) return;
+
+  let html = `
+    <div class="counters-rule-box" style="background:linear-gradient(135deg,#E8F5E9 0%,#C8E6C9 100%); border-left-color:#2E7D32;">
+      <div style="font-size:1.05em; font-weight:700; margin-bottom:8px; color:#1B5E20;">📐 疑問詞速查表</div>
+      <div style="margin:5px 0;"><b>なに／なん</b> what　・　<b>だれ</b> who　・　<b>どこ</b> where　・　<b>いつ</b> when</div>
+      <div style="margin:5px 0;"><b>なんじ</b> what time　・　<b>なんようび</b> what day　・　<b>なんがつなんにち</b> what date</div>
+      <div style="margin:5px 0;"><b>どう</b> how(感想)　・　<b>どんな</b>+N what kind　・　<b>どうして</b> why　・　<b>いくら</b> how much　・　<b>なんさい</b> how old</div>
+      <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #2E7D32;">
+        <b>⚠️ 疑問詞 + 助詞（最容易錯）：</b><br>
+        　• どこ<b>に</b>行く（目的地）　vs　どこ<b>で</b>食べる（動作地點）<br>
+        　• なに<b>を</b>する　・　だれ<b>と</b>行く　・　だれ<b>に</b>会う<br>
+        　• なんじ<b>に</b>（時刻要加に）　vs　<b>いつ</b>（不加に！）
+      </div>
+    </div>
+  `;
+
+  html += QUESTION_GRAMMARS.filter(id => GRAMMARS[id]).map(id => grammarSectionHTML(id)).join('');
+  root.innerHTML = html;
+
+  QUESTION_GRAMMARS.filter(id => GRAMMARS[id]).forEach(id => {
+    const st = getGrammarState(id);
+    st.correct = 0; st.wrong = 0;
+    st.sessionCount = 0; st.sessionWrong = [];
+    st.sessionDone = false; st.currentMarkedWrong = false;
+    st.current = null; st.attempts = 0;
+    st.revealed = false; st.advanceArmed = false;
+  });
+  setTimeout(() => {
+    QUESTION_GRAMMARS.filter(id => GRAMMARS[id]).forEach(id => pickNextGrammarExercise(id));
+  }, 50);
+}
 
 // ----- L6 Grammar 1: Te-form formation drill (W11 S1 Practice 2 — 25 verbs) -----
 GRAMMARS['l6-te-form-drill'] = {
@@ -10627,6 +10992,7 @@ function showPage(name) {
   if (name === 'numbers') renderNumbersPage();
   if (name === 'counters') renderCountersPage();
   if (name === 'particles') renderParticlesPage();
+  if (name === 'questions') renderQuestionsPage();
   if (name === 'kanji') renderKanjiPage();
   if (name === 'time') renderTimePage();
   if (name === 'hiragana') {
