@@ -2072,6 +2072,46 @@ const COUNTERS_DATA = {
   ]
 };
 
+// A few dual-reading counter words also accept an alternate reading.
+const COUNTER_ALT = {
+  '10分':['じっぷん'], '10歳':['じゅっさい'],
+  '7年':['しちねん'],  '7人':['ななにん'], '9人':['くにん'],
+  '7時間':['ななじかん'],
+};
+
+// Build a reading quiz from COUNTERS_DATA, focused on the tricky numbers
+// (4/7/8/9) and every specially-flagged reading (はたち, ひとり, やっつ…).
+function buildCounterQuiz() {
+  const exercises = [];
+  const seen = new Set();
+  const isFocusNum = jp => /[4789四七八九]/.test(jp);
+  COUNTERS_DATA.sections.forEach(sec => {
+    sec.items.forEach(it => {
+      if (!it.jp || !it.hira) return;
+      if (!(it.special || isFocusNum(it.jp))) return;   // only the variable/irregular ones
+      if (seen.has(it.jp)) return;
+      seen.add(it.jp);
+      const answers = it.hira.split(/[\/／]/).map(s => s.trim()).filter(Boolean);
+      (COUNTER_ALT[it.jp] || []).forEach(a => { if (!answers.includes(a)) answers.push(a); });
+      exercises.push({
+        type: 'translate',
+        prompt: `「${it.jp}」的讀音是？(hiragana)${it.en ? '　— ' + it.en : ''}`,
+        answers
+      });
+    });
+  });
+  return {
+    title: '🧮 特殊數字讀音測驗 (4 / 7 / 8 / 9 …)',
+    explanation: [
+      '<b>用法：</b>看上面的數字（時／分／月／歲／年／人／つ／円／時間），打出正確讀音（平假名）。',
+      '專考<b>會變的數字</b>：4(し/よ/よん)、7(しち/なな)、8(はち→はっ/やっ)、9(く/きゅう)，以及特殊讀法 <b>はたち・ひとり・ふたり・やっつ</b> 等。',
+      '不確定就先看上面的對照表，或按 <b>👀 看答案</b>。'
+    ],
+    examples: [],
+    exercises
+  };
+}
+
 function renderCountersPage() {
   const root = document.getElementById('counters-content');
   if (!root) return;
@@ -2131,7 +2171,20 @@ function renderCountersPage() {
     html += `</div>`;
   });
 
+  // === Section 4: special-number reading quiz ===
+  GRAMMARS['counter-quiz'] = buildCounterQuiz();
+  html += grammarSectionHTML('counter-quiz');
+
   root.innerHTML = html;
+
+  // Reset the quiz session and start the first question
+  const st = getGrammarState('counter-quiz');
+  st.correct = 0; st.wrong = 0;
+  st.sessionCount = 0; st.sessionWrong = [];
+  st.sessionDone = false; st.currentMarkedWrong = false;
+  st.current = null; st.attempts = 0;
+  st.revealed = false; st.advanceArmed = false;
+  setTimeout(() => pickNextGrammarExercise('counter-quiz'), 50);
 }
 
 // ============================
