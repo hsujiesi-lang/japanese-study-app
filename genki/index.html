@@ -600,6 +600,12 @@
     margin: 10px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     border-left: 5px solid #9C27B0;
   }
+  .kanji-card.pinned {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    box-shadow: 0 2px 10px rgba(255,112,67,0.3);
+    border-left: 5px solid #FF7043;
+  }
+  .kanji-card.pinned .kanji-big { color: #BF360C; }
   .kanji-card-header {
     display: flex; gap: 14px; align-items: flex-start;
   }
@@ -2398,42 +2404,69 @@ function rebuildKanjiPractice() {
   setTimeout(() => pickNextGrammarExercise('kanji-quiz'), 50);
 }
 
+function kanjiCardHTML(k, isPinned) {
+  const key = kanjiKey(k);
+  const readingChips = k.readings.map(r => {
+    const safe = r.replace(/'/g, "\\'");
+    return `<button class="kanji-reading" onclick="speak('${safe}')">${r}</button>`;
+  }).join('');
+  const wordItems = k.words.map(w => {
+    // w[1] may contain "／" or "/" for alternates — pick first variant for speech
+    const reading = w[1];
+    const spoken = reading.split(/[\/／]/)[0].replace(/'/g, "\\'");
+    return `<div class="kanji-word-item" onclick="speak('${spoken}')">
+      <div>
+        <span class="kanji-word-jp">${w[0]}</span>
+        <span class="kanji-word-reading">[${reading}]</span>
+      </div>
+      <span class="kanji-word-en">${w[2]}</span>
+    </div>`;
+  }).join('');
+  const safeFirst = (k.readings[0] || '').replace(/'/g, "\\'");
+  return `
+    <div class="kanji-card ${isPinned ? 'pinned' : ''}" data-kanji-key="${key}">
+      <div class="kanji-card-header">
+        <div class="kanji-big" onclick="speak('${safeFirst}')">${k.k}</div>
+        <div class="kanji-info">
+          <div class="kanji-meaning">${k.meaning} <span class="kanji-lesson-tag">L${k.lesson}</span></div>
+          <div class="kanji-readings">${readingChips}</div>
+        </div>
+        <button class="verb-pin ${isPinned ? 'active' : ''}" onclick="event.stopPropagation(); togglePinKanji('${key}')" title="${isPinned ? '取消釘選' : '釘選置頂'}">📌</button>
+      </div>
+      <div class="kanji-words">${wordItems}</div>
+    </div>
+  `;
+}
+
 function renderKanjiPage() {
   const root = document.getElementById('kanji-list');
   if (!root) return;
   const list = KANJI_DATA.filter(k => kanjiFilter === 'all' || String(k.lesson) === kanjiFilter);
-  let html = '';
-  list.forEach(k => {
-    const readingChips = k.readings.map(r => {
-      const safe = r.replace(/'/g, "\\'");
-      return `<button class="kanji-reading" onclick="speak('${safe}')">${r}</button>`;
-    }).join('');
-    const wordItems = k.words.map(w => {
-      // w[1] may contain "／" or "/" for alternates — pick first variant for speech
-      const reading = w[1];
-      const spoken = reading.split(/[\/／]/)[0].replace(/'/g, "\\'");
-      return `<div class="kanji-word-item" onclick="speak('${spoken}')">
-        <div>
-          <span class="kanji-word-jp">${w[0]}</span>
-          <span class="kanji-word-reading">[${reading}]</span>
-        </div>
-        <span class="kanji-word-en">${w[2]}</span>
-      </div>`;
-    }).join('');
-    const safeFirst = (k.readings[0] || '').replace(/'/g, "\\'");
-    html += `
-      <div class="kanji-card">
-        <div class="kanji-card-header">
-          <div class="kanji-big" onclick="speak('${safeFirst}')">${k.k}</div>
-          <div class="kanji-info">
-            <div class="kanji-meaning">${k.meaning} <span class="kanji-lesson-tag">L${k.lesson}</span></div>
-            <div class="kanji-readings">${readingChips}</div>
-          </div>
-        </div>
-        <div class="kanji-words">${wordItems}</div>
-      </div>
-    `;
+
+  // Pinned section first (in saved pin order), then the rest
+  const pinnedSet = getPinnedKanji();
+  const pinOrder = getPinnedKanjiArr();
+  const byKey = new Map(list.map(k => [kanjiKey(k), k]));
+  const pinnedList = [];
+  const consumed = new Set();
+  pinOrder.forEach(key => {
+    if (pinnedSet.has(key) && byKey.has(key) && !consumed.has(key)) {
+      pinnedList.push(byKey.get(key));
+      consumed.add(key);
+    }
   });
+  list.forEach(k => {
+    const key = kanjiKey(k);
+    if (pinnedSet.has(key) && !consumed.has(key)) { pinnedList.push(k); consumed.add(key); }
+  });
+  const restList = list.filter(k => !pinnedSet.has(kanjiKey(k)));
+
+  let html = '';
+  if (pinnedList.length > 0) {
+    html += `<div class="vocab-section-title" style="background:#FFE0B2; color:#E65100; margin:12px 16px 6px;">📌 釘選 Pinned <span class="count">${pinnedList.length} 個</span></div>`;
+    pinnedList.forEach(k => { html += kanjiCardHTML(k, true); });
+  }
+  restList.forEach(k => { html += kanjiCardHTML(k, false); });
   root.innerHTML = html;
 }
 
@@ -7745,6 +7778,30 @@ function togglePinAdj(key) {
   });
   if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
 }
+
+// --- Kanji pin persistence (localStorage) — mirrors the adjective pin API ---
+function kanjiKey(k) { return k.lesson + '-' + k.k; }   // e.g. "6-東"
+function getPinnedKanji() {
+  try {
+    const raw = localStorage.getItem(kanjiPinKey());
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch(e) { return new Set(); }
+}
+function getPinnedKanjiArr() {
+  try {
+    const raw = localStorage.getItem(kanjiPinKey());
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+function togglePinKanji(key) {
+  preserveScroll('.kanji-card[data-kanji-key]', el => el.dataset.kanjiKey, key, () => {
+    const pinned = getPinnedKanji();
+    if (pinned.has(key)) pinned.delete(key); else pinned.add(key);
+    try { localStorage.setItem(kanjiPinKey(), JSON.stringify(Array.from(pinned))); } catch(e){}
+    renderKanjiPage();
+  });
+  if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
+}
 // Reorder a verb pin (move from -> to)
 function reorderVerbPin(fromIdx, toIdx) {
   const arr = getPinnedVerbsArr();
@@ -8804,7 +8861,7 @@ function knownVocabLessons() {
 }
 
 function collectAllPins() {
-  const data = { vocab: {}, verbs: [], adj: [] };
+  const data = { vocab: {}, verbs: [], adj: [], kanji: [] };
   knownVocabLessons().forEach(num => {
     const arr = getPinnedVocabArr(num);
     if (arr.length) data.vocab[num] = arr;
@@ -8813,6 +8870,8 @@ function collectAllPins() {
   if (v.length) data.verbs = v;
   const a = getPinnedAdjArr();
   if (a.length) data.adj = a;
+  const kj = getPinnedKanjiArr();
+  if (kj.length) data.kanji = kj;
   return data;
 }
 
@@ -8821,6 +8880,7 @@ function pinCount(data) {
   Object.values(data.vocab || {}).forEach(arr => n += arr.length);
   n += (data.verbs || []).length;
   n += (data.adj || []).length;
+  n += (data.kanji || []).length;
   return n;
 }
 
@@ -8832,8 +8892,9 @@ function showPinManager() {
   }).join('<br>');
   const verbLine = `・動詞：<b>${(data.verbs||[]).length}</b> 個`;
   const adjLine  = `・形容詞：<b>${(data.adj||[]).length}</b> 個`;
+  const kanjiLine = `・漢字：<b>${(data.kanji||[]).length}</b> 個`;
   document.getElementById('pin-stats').innerHTML =
-    `${vocabLines}<br>${verbLine}<br>${adjLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
+    `${vocabLines}<br>${verbLine}<br>${adjLine}<br>${kanjiLine}<br>合計：<b style="color:#FF7043">${pinCount(data)}</b> 個`;
 
   renderPinList();
   refreshPinnedPractice();
@@ -9158,11 +9219,64 @@ function renderPinList() {
     }
   }
 
-  if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞／形容詞頁點 📌 開始釘選。</p>';
+  // ----- Kanji pins (iterate saved order) -----
+  const kanjiOrder = getPinnedKanjiArr();
+  if (kanjiOrder.length > 0) {
+    const byKanjiKey = new Map(KANJI_DATA.map(k => [kanjiKey(k), k]));
+    const kanjiList = kanjiOrder.map(key => byKanjiKey.get(key)).filter(Boolean);
+    if (kanjiList.length > 0) {
+      html += `<div class="pin-list-section-title">📖 漢字 (${kanjiList.length}) <button class="pin-list-play-all" onclick="playPinnedKanji()">▶ 連續播放讀音</button></div>`;
+      html += `<div class="pin-sortable-group" data-pin-kind="kanji">`;
+      kanjiList.forEach(k => {
+        const safeKey = kanjiKey(k).replace(/'/g, "\\'");
+        const safeFirst = (k.readings[0] || '').replace(/'/g, "\\'");
+        // word chips: kanji compound + reading, click to hear
+        const chips = k.words.map(w => {
+          const spoken = w[1].split(/[\/／]/)[0].replace(/'/g, "\\'");
+          return `<button class="pin-form-chip" onclick="speak('${spoken}')">${w[0]}<b> [${w[1]}]</b></button>`;
+        }).join('');
+        html += `<div class="pin-list-item pin-list-verb" data-key="${kanjiKey(k)}">
+          <span class="pin-drag-handle" title="拖曳排序">≡</span>
+          <div class="pin-list-text">
+            <div>
+              <span class="pin-list-jp" style="font-size:1.3em;">${k.k}</span>
+              <span class="pin-list-en">${k.meaning}</span>
+              <span class="pin-list-meta">L${k.lesson} · ${k.readings.join('／')}</span>
+            </div>
+            <div class="pin-form-chips">${chips}</div>
+          </div>
+          <div class="pin-list-actions">
+            <button class="pin-list-speak" title="發音" onclick="speak('${safeFirst}')">🔊</button>
+            <button class="pin-list-remove" title="移除釘選" onclick="togglePinKanji('${safeKey}'); showPinManager();">✕</button>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+  }
+
+  if (html === '') html = '<p style="color:#999; font-size:0.9em;">目前沒有任何釘選。到單字／動詞／形容詞／漢字頁點 📌 開始釘選。</p>';
   container.innerHTML = html;
 
   // Initialize SortableJS on each draggable group
   initPinSortables();
+}
+
+// Play all pinned kanji readings (first reading of each word)
+function playPinnedKanji() {
+  const order = getPinnedKanjiArr();
+  if (order.length === 0) return;
+  const byKey = new Map(KANJI_DATA.map(k => [kanjiKey(k), k]));
+  const kanjis = order.map(key => byKey.get(key)).filter(Boolean);
+  if (kanjis.length === 0) return;
+  const items = [];
+  kanjis.forEach(k => {
+    k.words.forEach((w, i) => {
+      const spoken = w[1].split(/[\/／]/)[0];
+      items.push({ text: spoken, label: `${k.k} ${w[0]}`, boundary: i === k.words.length - 1 });
+    });
+  });
+  startPinPlayback(items, '釘選漢字讀音');
 }
 
 // Play all pinned adjectives (辞書形 → 現·肯 → 現·否 → 過·肯 → 過·否)
@@ -9206,6 +9320,9 @@ function initPinSortables() {
         } else if (kind === 'adj') {
           const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
           try { localStorage.setItem(adjPinKey(), JSON.stringify(newOrder)); } catch(e){}
+        } else if (kind === 'kanji') {
+          const newOrder = Array.from(group.children).map(el => el.getAttribute('data-key'));
+          try { localStorage.setItem(kanjiPinKey(), JSON.stringify(newOrder)); } catch(e){}
         }
         if (typeof schedulePushToCloud === 'function') schedulePushToCloud();
         refreshPinnedPractice();  // practice pool reflects new order
@@ -9344,6 +9461,7 @@ function clearAllPins() {
   });
   try { localStorage.removeItem(verbPinKey()); } catch(e){}
   try { localStorage.removeItem(adjPinKey()); } catch(e){}
+  try { localStorage.removeItem(kanjiPinKey()); } catch(e){}
   alert('已清除所有釘選。');
   showPinManager();
 }
@@ -9368,6 +9486,7 @@ function applyPinData(data, mode) {
     knownVocabLessons().forEach(num => { try { localStorage.removeItem(vocabPinKey(num)); } catch(e){} });
     try { localStorage.removeItem(verbPinKey()); } catch(e){}
     try { localStorage.removeItem(adjPinKey()); } catch(e){}
+    try { localStorage.removeItem(kanjiPinKey()); } catch(e){}
   }
   Object.entries(data.vocab || {}).forEach(([num, arr]) => {
     const current = getPinnedVocab(num);
@@ -9380,6 +9499,9 @@ function applyPinData(data, mode) {
   const adjs = getPinnedAdj();
   (data.adj || []).forEach(k => adjs.add(k));
   try { localStorage.setItem(adjPinKey(), JSON.stringify(Array.from(adjs))); } catch(e){}
+  const kanjis = getPinnedKanji();
+  (data.kanji || []).forEach(k => kanjis.add(k));
+  try { localStorage.setItem(kanjiPinKey(), JSON.stringify(Array.from(kanjis))); } catch(e){}
 }
 
 function importPinCode(mode) {
@@ -9404,6 +9526,7 @@ function importPinCode(mode) {
 function refreshVisibleVocabAndVerbs() {
   if (document.getElementById('page-verbs') && document.getElementById('page-verbs').classList.contains('active')) renderVerbs();
   if (document.getElementById('page-adjectives') && document.getElementById('page-adjectives').classList.contains('active')) renderAdjectives();
+  if (document.getElementById('page-kanji') && document.getElementById('page-kanji').classList.contains('active')) renderKanjiPage();
   knownVocabLessons().forEach(num => {
     if (document.getElementById('vocab-body-' + num)) renderVocabBody(num);
   });
@@ -9418,6 +9541,7 @@ function refreshVisibleVocabAndVerbs() {
 function vocabPinKey(num) { return 'genki-vocab-pinned-' + num; }
 function verbPinKey()     { return 'genki-verb-pinned'; }
 function adjPinKey()      { return 'genki-adj-pinned'; }
+function kanjiPinKey()    { return 'genki-kanji-pinned'; }
 function syncIdKey()      { return 'genki-sync-id'; }
 
 // One-time cleanup: an earlier build added a "profiles" system that
